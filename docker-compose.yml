@@ -1,0 +1,36 @@
+version: "3.7"
+
+networks:
+  mynetwork:
+    driver: bridge
+services:
+  psql:
+    image: postgres:12.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    restart: always
+    networks:
+      - mynetwork
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=hr_system
+  app:
+    build:
+      context: ./
+      dockerfile: ./DockerFiles/HRSystemDockerfile
+    restart: always
+    networks:
+      - mynetwork
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8000:8000
+    volumes:
+      - ./osint:/osint
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - psql
+
+volumes:
+  postgres_data:
