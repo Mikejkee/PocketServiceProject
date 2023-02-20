@@ -23,6 +23,7 @@ var/
 wheels/
 .idea/
 .Example
+.osint
 *.egg-info/
 .installed.cfg
 *.egg
