@@ -20,12 +20,8 @@ class Role(Registrator):
     class Meta:
         db_table = 'roles'
         indexes = [
-            models.Index(fields=['role_type'],
-                         name='index_roles_type'),
             models.Index(fields=['creation_datetime'],
                          name='index_roles_creation_datetime'),
-            models.Index(fields=['flag'],
-                         name='index_roles_flag'),
         ]
 
 
@@ -40,18 +36,11 @@ class Area(Registrator):
     class Meta:
         db_table = 'areas'
         indexes = [
-            models.Index(fields=['region', 'city', 'area_name', ],
-                         name='index_areas_full_area'),
-            models.Index(fields=['area_areas_name'],
-                         name='index_areas_name'),
-            models.Index(fields=['city'],
-                         name='index_areas_city'),
-            models.Index(fields=['region'],
-                         name='index_areas_region'),
+       
+            models.Index(fields=['area_name'],
+                         name='index_area_name'),
             models.Index(fields=['creation_datetime'],
                          name='index_roles_creation_datetime'),
-            models.Index(fields=['flag'],
-                         name='index_roles_flag'),
         ]
 
 
@@ -76,18 +65,12 @@ class Person(Registrator):
         indexes = [
             models.Index(fields=['phone_number'],
                          name='index_persons_phone_number'),
-            models.Index(fields=['username'],
-                         name='index_persons_username'),
             models.Index(fields=['telegram_id'],
                          name='index_persons_telegram_id'),
             models.Index(fields=['email'],
                          name='index_persons_email'),
-            models.Index(fields=['role'],
-                         name='index_persons_role'),
             models.Index(fields=['creation_datetime'],
                          name='index_roles_creation_datetime'),
-            models.Index(fields=['flag'],
-                         name='index_roles_flag'),
         ]
 
 
@@ -102,15 +85,7 @@ class ImageObject(Registrator):
 
     class Meta:
         db_table = 'image_objects'
-        indexes = [
-            models.Index(fields=['person'],
-                         name='index_images_person'),
-            models.Index(fields=['creation_datetime'],
-                         name='index_roles_creation_datetime'),
-            models.Index(fields=['flag'],
-                         name='index_roles_flag'),
-        ]
-
+   
 
 class FileObject(Registrator):
     person = models.ForeignKey(Person, on_delete=models.SET_NULL, related_name='person_files', null=True, blank=True,
@@ -124,17 +99,7 @@ class FileObject(Registrator):
 
     class Meta:
         db_table = 'file_objects'
-        indexes = [
-            models.Index(fields=['person'],
-                         name='index_files_person'),
-            models.Index(fields=['object_type'],
-                         name='index_objects_type'),
-            models.Index(fields=['creation_datetime'],
-                         name='index_roles_creation_datetime'),
-            models.Index(fields=['flag'],
-                         name='index_roles_flag'),
-        ]
-
+    
 
 class Agent(Person):
     agent_description = models.TextField(verbose_name="Описание агента", null=True, blank=True)
@@ -164,12 +129,8 @@ class Agent(Person):
                          name='index_agents_telegram_id'),
             models.Index(fields=['email'],
                          name='index_agents_email'),
-            models.Index(fields=['role'],
-                         name='index_agents_role'),
             models.Index(fields=['creation_datetime'],
                          name='index_roles_creation_datetime'),
-            models.Index(fields=['flag'],
-                         name='index_roles_flag'),
             # TODO: индексы по типу выполняемых работ (перед этим их типизировать одинаково списком)
         ]
 
@@ -188,18 +149,12 @@ class Client(Person):
         indexes = [
             models.Index(fields=['phone_number'],
                          name='index_clients_phone_number'),
-            models.Index(fields=['username'],
-                         name='index_clients_username'),
             models.Index(fields=['telegram_id'],
                          name='index_clients_telegram_id'),
             models.Index(fields=['email'],
                          name='index_clients_email'),
-            models.Index(fields=['role'],
-                         name='index_clients_role'),
             models.Index(fields=['creation_datetime'],
                          name='index_roles_creation_datetime'),
-            models.Index(fields=['flag'],
-                         name='index_roles_flag'),
         ]
 
 
@@ -213,12 +168,8 @@ class Administrator(Person):
     class Meta:
         db_table = 'administrators'
         indexes = [
-            models.Index(fields=['role'],
-                         name='index_administrators_role'),
             models.Index(fields=['creation_datetime'],
                          name='index_roles_creation_datetime'),
-            models.Index(fields=['flag'],
-                         name='index_roles_flag'),
         ]
 
 
@@ -248,14 +199,10 @@ class Product(Registrator):  # услуги товары
     class Meta:
         db_table = 'products'
         indexes = [
-            models.Index(fields=['add_time'],
-                         name='index_products_time'),
-            models.Index(fields=['product_type'],
-                         name='index_products_type'),
+            models.Index(fields=['name'],
+                         name='index_name_product'),
             models.Index(fields=['creation_datetime'],
                          name='index_roles_creation_datetime'),
-            models.Index(fields=['flag'],
-                         name='index_roles_flag'),
         ]
 
 
@@ -280,18 +227,11 @@ class Order(Registrator):
     class Meta:
         db_table = 'orders'
         indexes = [
-            models.Index(fields=['deadline'],
-                         name='index_orders_deadline'),
-            models.Index(fields=['client'],
-                         name='index_orders_client'),
-            models.Index(fields=['agent'],
-                         name='index_orders_client'),
-            models.Index(fields=['product'],
-                         name='index_orders_product'),
+            models.Index(fields=['name'],
+                         name='index_name_order'),
             models.Index(fields=['creation_datetime'],
                          name='index_roles_creation_datetime'),
-            models.Index(fields=['flag'],
-                         name='index_roles_flag'),
+           
         ]
 
 
