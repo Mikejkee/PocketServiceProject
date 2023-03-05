@@ -235,11 +235,30 @@ class Order(Registrator):
         ]
 
 
+class OnlineTransaction(Registrator):
+    order = models.ForeignKey(Order, on_delete=models.SET_NULL, blank=True, null=True, related_name='order',
+                              verbose_name="Заказ")
+    currency = models.CharField('Валюта', max_length=255, blank=True, null=True)
+    total_amount = models.CharField('Итоговая сумма', max_length=255, blank=True, null=True)
+    invoice_payload = models.CharField('Invoice payload', max_length=255, blank=True, null=True)
+    provider_payment_charge_id = models.CharField('Provider Payment Charge ID', max_length=255, blank=True, null=True)
+    status = models.BooleanField(default=False, verbose_name="Status")
+    status_str = models.CharField('Status Str', max_length=255, blank=True, null=True)
+    operation = models.CharField('Operation', max_length=255, blank=True, null=True)
 
-class OnlinePayment(Registrator):
-    # тут поля позже скину - оплата через эквайринг - или покупка товара-услуги или покупка подписки на платформе в
-    # форме автоплатежей
-    pass
+    masked_pan = models.CharField('Masked Pan', max_length=255, blank=True, null=True)
+    bank_name = models.CharField('Bank Name', max_length=255, blank=True, null=True)
+    payment_way = models.CharField('Payment Way', max_length=255, blank=True, null=True)
+    expiry = models.CharField('Expiry', max_length=255, blank=True, null=True)
+    payment_date = models.DateTimeField(blank=True, null=True, verbose_name="Payment Time")
+
+    class Meta:
+        ordering = ['-id']
+        verbose_name = "Transaction"
+        verbose_name_plural = "Transactions"
+
+    def str(self):
+        return f'{self.chat}'
 
 
 

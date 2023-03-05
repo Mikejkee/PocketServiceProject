@@ -7,48 +7,20 @@ from .serializers import *
 
 
 class AdminsViewSet(viewsets.ModelViewSet):
+    queryset = Administrator.objects.all()
     serializer_class = AdministratorSerializer
-
-    def get_queryset(self):
-        pk = self.kwargs.get('pk')
-
-        if not pk:
-            return Administrator.objects.all()
-
-        return Administrator.objects.filter(pk=pk)
 
 
 class ClientViewSet(viewsets.ModelViewSet):
+    queryset = Client.objects.all()
     serializer_class = ClientSerializer
-
-    def get_queryset(self):
-        pk = self.kwargs.get('pk')
-
-        if not pk:
-            return Client.objects.all()
-
-        return Client.objects.filter(pk=pk)
 
 
 class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
     serializer_class = ProductSerializer
-
-    def get_queryset(self):
-        pk = self.kwargs.get('pk')
-
-        if not pk:
-            return Product.objects.all()
-
-        return Product.objects.filter(pk=pk)
 
 
 class OrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
     serializer_class = OrderSerializer
-
-    def get_queryset(self):
-        pk = self.kwargs.get('pk')
-
-        if not pk:
-            return Order.objects.all()
-
-        return Order.objects.filter(pk=pk)
