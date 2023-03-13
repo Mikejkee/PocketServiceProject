@@ -18,7 +18,7 @@ class Role(Registrator):
         return self.role_type
 
     class Meta:
-        db_table = 'roles'
+        db_table = 'role'
         indexes = [
             models.Index(fields=['creation_datetime'],
                          name='index_roles_creation_datetime'),
@@ -34,7 +34,7 @@ class Area(Registrator):
         return self.area_name
 
     class Meta:
-        db_table = 'areas'
+        db_table = 'area'
         indexes = [
        
             models.Index(fields=['area_name'],
@@ -61,7 +61,7 @@ class Person(Registrator):
     role = models.ManyToManyField(Role, blank=True, related_name='roles', verbose_name="Роли")
 
     class Meta:
-        db_table = 'persons'
+        db_table = 'person'
         indexes = [
             models.Index(fields=['phone_number'],
                          name='index_persons_phone_number'),
@@ -84,7 +84,7 @@ class ImageObject(Registrator):
         return self.person_image
 
     class Meta:
-        db_table = 'image_objects'
+        db_table = 'image_object'
    
 
 class FileObject(Registrator):
@@ -98,7 +98,7 @@ class FileObject(Registrator):
         return self.person_file
 
     class Meta:
-        db_table = 'file_objects'
+        db_table = 'file_object'
     
 
 class Agent(Person):
@@ -119,7 +119,7 @@ class Agent(Person):
         return self.username
 
     class Meta:
-        db_table = 'agents'
+        db_table = 'agent'
         indexes = [
             models.Index(fields=['phone_number'],
                          name='index_agents_phone_number'),
@@ -145,7 +145,7 @@ class Client(Person):
         return self.username
 
     class Meta:
-        db_table = 'clients'
+        db_table = 'client'
         indexes = [
             models.Index(fields=['phone_number'],
                          name='index_clients_phone_number'),
@@ -197,7 +197,7 @@ class Product(Registrator):  # услуги товары
         return self.name
 
     class Meta:
-        db_table = 'products'
+        db_table = 'product'
         indexes = [
             models.Index(fields=['name'],
                          name='index_name_product'),
@@ -225,7 +225,7 @@ class Order(Registrator):
         return self.name
 
     class Meta:
-        db_table = 'orders'
+        db_table = 'order'
         indexes = [
             models.Index(fields=['name'],
                          name='index_name_order'),
