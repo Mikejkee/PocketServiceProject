@@ -8,6 +8,9 @@ class Registrator(models.Model):
 
     class Meta:
         abstract = True
+        indexes = [
+            models.Index(fields=['creation_datetime'], name='index_%(class)s_time'),
+        ]
 
 
 class Role(Registrator):
@@ -19,10 +22,7 @@ class Role(Registrator):
 
     class Meta:
         db_table = 'role'
-        indexes = [
-            models.Index(fields=['creation_datetime'],
-                         name='index_roles_creation_datetime'),
-        ]
+        indexes = [] + Registrator.Meta.indexes
 
 
 class Area(Registrator):
@@ -36,12 +36,9 @@ class Area(Registrator):
     class Meta:
         db_table = 'area'
         indexes = [
-       
             models.Index(fields=['area_name'],
                          name='index_area_name'),
-            models.Index(fields=['creation_datetime'],
-                         name='index_roles_creation_datetime'),
-        ]
+        ] + Registrator.Meta.indexes
 
 
 class Person(Registrator):
@@ -69,9 +66,7 @@ class Person(Registrator):
                          name='index_persons_telegram_id'),
             models.Index(fields=['email'],
                          name='index_persons_email'),
-            models.Index(fields=['creation_datetime'],
-                         name='index_roles_creation_datetime'),
-        ]
+        ] + Registrator.Meta.indexes
 
 
 class ImageObject(Registrator):
@@ -85,7 +80,8 @@ class ImageObject(Registrator):
 
     class Meta:
         db_table = 'image_object'
-   
+        indexes = [] + Registrator.Meta.indexes
+
 
 class FileObject(Registrator):
     person = models.ForeignKey(Person, on_delete=models.SET_NULL, related_name='person_files', null=True, blank=True,
@@ -99,7 +95,8 @@ class FileObject(Registrator):
 
     class Meta:
         db_table = 'file_object'
-    
+        indexes = [] + Registrator.Meta.indexes
+
 
 class Agent(Person):
     agent_description = models.TextField(verbose_name="Описание агента", null=True, blank=True)
@@ -120,20 +117,6 @@ class Agent(Person):
 
     class Meta:
         db_table = 'agent'
-        indexes = [
-            models.Index(fields=['phone_number'],
-                         name='index_agents_phone_number'),
-            models.Index(fields=['username'],
-                         name='index_agents_username'),
-            models.Index(fields=['telegram_id'],
-                         name='index_agents_telegram_id'),
-            models.Index(fields=['email'],
-                         name='index_agents_email'),
-            models.Index(fields=['creation_datetime'],
-                         name='index_roles_creation_datetime'),
-            # TODO: индексы по типу выполняемых работ (перед этим их типизировать одинаково списком)
-        ]
-
 
 
 class Client(Person):
@@ -146,16 +129,6 @@ class Client(Person):
 
     class Meta:
         db_table = 'client'
-        indexes = [
-            models.Index(fields=['phone_number'],
-                         name='index_clients_phone_number'),
-            models.Index(fields=['telegram_id'],
-                         name='index_clients_telegram_id'),
-            models.Index(fields=['email'],
-                         name='index_clients_email'),
-            models.Index(fields=['creation_datetime'],
-                         name='index_roles_creation_datetime'),
-        ]
 
 
 class Administrator(Person):
@@ -166,11 +139,7 @@ class Administrator(Person):
         return self.username
 
     class Meta:
-        db_table = 'administrators'
-        indexes = [
-            models.Index(fields=['creation_datetime'],
-                         name='index_roles_creation_datetime'),
-        ]
+        db_table = 'administrator'
 
 
 # TODO: Лучше проанализировать область и выписать все возможные моменты
@@ -201,9 +170,7 @@ class Product(Registrator):  # услуги товары
         indexes = [
             models.Index(fields=['name'],
                          name='index_name_product'),
-            models.Index(fields=['creation_datetime'],
-                         name='index_roles_creation_datetime'),
-        ]
+        ] + Registrator.Meta.indexes
 
 
 class Order(Registrator):
@@ -229,10 +196,7 @@ class Order(Registrator):
         indexes = [
             models.Index(fields=['name'],
                          name='index_name_order'),
-            models.Index(fields=['creation_datetime'],
-                         name='index_roles_creation_datetime'),
-           
-        ]
+        ] + Registrator.Meta.indexes
 
 
 class OnlineTransaction(Registrator):
@@ -256,6 +220,8 @@ class OnlineTransaction(Registrator):
         ordering = ['-id']
         verbose_name = "Transaction"
         verbose_name_plural = "Transactions"
+        db_table = 'Transactions'
+        indexes = [] + Registrator.Meta.indexes
 
     def str(self):
         return f'{self.chat}'

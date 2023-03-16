@@ -1,36 +1,78 @@
-version: "3.7"
+version: "3.8"
 
-networks:
-  mynetwork:
-    driver: bridge
 services:
-  psql:
-    image: postgres:12.0-alpine
+  app:
+    build:
+      context: .
+      dockerfile: ./compose/local/django/Dockerfile
+    restart: always
+    # '/start' is the shell script used to run the service
+    command: /start
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/hcs_hr
+    env_file:
+      - ./.env/.env.dev
+    depends_on:
+      - redis
+      - db
+
+  db:
+    image: postgres:14-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     restart: always
-    networks:
-      - mynetwork
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin
       - POSTGRES_DB=hr_system
-  app:
-    build:
-      context: ./
-      dockerfile: ./DockerFiles/HRSystemDockerfile
-    restart: always
-    networks:
-      - mynetwork
-    command: python manage.py runserver 0.0.0.0:8000
     ports:
-      - 8000:8000
+      - 5433:5432
+
+  redis:
+    image: redis:7-alpine
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: ./compose/local/django/Dockerfile
+    command: /start-celeryworker
     volumes:
-      - ./osint:/osint
+      - .:/hcs_hr
     env_file:
-      - ./.env.dev
+      - ./.env/.env.dev
     depends_on:
-      - psql
+      - redis
+      - db
+
+  celery_beat:
+    build:
+      context: .
+      dockerfile: ./compose/local/django/Dockerfile
+    command: /start-celerybeat
+    volumes:
+      - .:/hcs_hr
+    env_file:
+      - ./.env/.env.dev
+    depends_on:
+      - redis
+      - db
+
+  flower:
+    build:
+      context: .
+      dockerfile: ./compose/local/django/Dockerfile
+    command: /start-flower
+    volumes:
+      - .:/hcs_hr
+    env_file:
+      - ./.env/.env.dev
+    ports:
+      - 5557:5555
+    depends_on:
+      - redis
+      - db
 
 volumes:
   postgres_data:
