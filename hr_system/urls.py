@@ -26,4 +26,6 @@ urlpatterns += [
     re_path(r'^swagger(?P<id>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    # path("tasks/<task_id>/", get_status, name="get_status"),
+    # path("tasks/", run_task, name="run_task"),
 ]

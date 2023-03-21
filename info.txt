@@ -1,3 +1,7 @@
+USUALLY RUN: docker-compose up
+USUALLY reRUN without downloads dockers: docker-compose up --no-deps --build
+USUALLY reRUN without downloads dockers and packages: docker-compose up --build 
+
 Все имеющиеся сущности: Пользователь, объект, заказ 
 
 Сущность Пользователь с полями:

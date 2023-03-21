@@ -47,12 +47,12 @@ class Person(Registrator):
     surname = models.CharField("Фамилия", max_length=20, null=True, blank=True)
     patronymic = models.CharField("Отчество", max_length=20, null=True, blank=True)
     date_of_birth = models.DateField("Дата рождения", null=True, blank=True)
-    phone_number = models.CharField("Номер телефона", max_length=10, null=True, blank=True)
+    phone_number = models.CharField("Номер телефона", max_length=12, null=True, blank=True)
     username = models.CharField("Имя пользователя", max_length=20, null=True, blank=True)
     telegram_id = models.CharField("ID Телеграмм", max_length=20, null=True, blank=True)
     telegram_username = models.CharField("Имя пользователя Телеграмм", max_length=20, null=True, blank=True)
     email = models.EmailField("Электронная почта", null=True, blank=True)
-    background_image = models.ImageField('Аватар пользователя ', upload_to='person_images/background/', null=True,
+    background_image = models.ImageField('Аватар пользователя ', upload_to='./postgres_data/objects/persons/background/', null=True,
                                          blank=True)
 
     role = models.ManyToManyField(Role, blank=True, related_name='roles', verbose_name="Роли")
@@ -73,7 +73,7 @@ class ImageObject(Registrator):
     person = models.ForeignKey(Person, on_delete=models.SET_NULL, related_name='person_image', null=True, blank=True,
                                verbose_name="Пользователь")
 
-    person_image = models.ImageField('Картинка пользователя', upload_to='person_images/', null=True, blank=True)
+    person_image = models.ImageField('Картинка пользователя', upload_to='./postgres_data/objects/persons/images/', null=True, blank=True)
 
     def __str__(self):
         return self.person_image
@@ -88,7 +88,7 @@ class FileObject(Registrator):
                                verbose_name="Пользователь")
 
     object_type = models.CharField("Тип объекта", max_length=100)
-    person_file = models.FileField('Файл пользователя', upload_to='person_files/', null=True, blank=True)
+    person_file = models.FileField('Файл пользователя', upload_to='./postgres_data/objects/persons/files/', null=True, blank=True)
 
     def __str__(self):
         return self.person_file
@@ -108,8 +108,7 @@ class Agent(Person):
     guarantee_period = models.TextField(verbose_name="Гарантийный период", null=True, blank=True)
     services_prices = models.TextField(verbose_name="Услуги и цены", null=True, blank=True)
 
-    area = models.ForeignKey(Area, on_delete=models.SET_NULL, related_name='area_agents', null=True, blank=True,
-                             verbose_name="Район")
+    area = models.ManyToManyField(Area, blank=True, related_name='area_agents', verbose_name="Районы")
     #comment = models.TextField(verbose_name="Образование")
 
     def __str__(self):
@@ -153,12 +152,13 @@ PRODUCT_TYPES_CHOICE = [
 ]
 
 
-class Product(Registrator):  # услуги товары
+class Product(Registrator):
+    # Услуги товары
     name = models.CharField("Имя", max_length=255, null=True, blank=True)
     product_type = models.PositiveSmallIntegerField('Тип услуги', choices=PRODUCT_TYPES_CHOICE, blank=True, null=True)
     price = models.DecimalField("Цена", max_digits=10, decimal_places=2, blank=True, null=True)
     addition_information = models.TextField("Дополнительная информация", null=True, blank=True)
-    product_image = models.ImageField('Картинка услуг', upload_to='product_images/', null=True,  blank=True)
+    product_image = models.ImageField('Картинка услуг', upload_to='./postgres_data/objects/products/images/', null=True,  blank=True)
     agent = models.ForeignKey(Agent, on_delete=models.SET_NULL, related_name='agent_products', null=True, blank=True,
                               verbose_name="Агент")
 
@@ -174,6 +174,7 @@ class Product(Registrator):  # услуги товары
 
 
 class Order(Registrator):
+    # Заявка
     name = models.CharField("Имя", max_length=255, null=True, blank=True)
     result_price = models.DecimalField("Цена", max_digits=10, decimal_places=2, blank=True, null=True)
     deadline = models.DateTimeField("Срок конца работы", blank=True, null=True)
