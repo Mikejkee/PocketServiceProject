@@ -38,6 +38,10 @@ COPY ./compose/local/django/celery/flower/start /start-flower
 RUN sed -i 's/\r$//g' /start-flower
 RUN chmod +x /start-flower
 
+COPY ./compose/local/django/entrybot /entrybot
+RUN sed -i 's/\r$//g' /entrybot
+RUN chmod +x /entrybot
+
 WORKDIR /hcs_hr
 COPY . .
 

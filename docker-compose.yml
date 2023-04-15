@@ -5,7 +5,6 @@ services:
     build:
       context: .
       dockerfile: ./compose/local/django/Dockerfile
-    restart: always
     # '/start' is the shell script used to run the service
     command: /start
     ports:
@@ -70,6 +69,20 @@ services:
       - ./.env/.env.dev
     ports:
       - 5557:5555
+    depends_on:
+      - redis
+      - db
+
+  telegrambot:
+    build:
+      context: .
+      dockerfile: ./compose/local/django/Dockerfile
+    image: telegrambot
+    command: /entrybot
+    volumes:
+      - .:/hcs_hr
+    env_file:
+      - ./.env/.env.dev
     depends_on:
       - redis
       - db
