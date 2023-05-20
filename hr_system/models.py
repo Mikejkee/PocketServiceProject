@@ -227,9 +227,3 @@ class OnlineTransaction(Registrator):
     def str(self):
         return f'{self.chat}'
 
-
-
-
-
-
-
