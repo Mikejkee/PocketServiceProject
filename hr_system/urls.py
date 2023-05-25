@@ -21,7 +21,9 @@ router.register('admins', api.AdminsViewSet, basename="Administrator")
 router.register('clients', api.ClientViewSet, basename="Client")
 router.register('products', api.ProductViewSet, basename="Product")
 router.register('orders', api.OrderViewSet, basename="Order")
+
 urlpatterns = router.urls
+
 urlpatterns += [
     re_path(r'^swagger(?P<id>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
