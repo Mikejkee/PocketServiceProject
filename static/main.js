@@ -30,7 +30,7 @@ function getStatus(taskID) {
         <td>${res.task_status}</td>
         <td>${res.task_result}</td>
       </tr>`
-    $('#tasks').prepend(html);
+    $('#controllers').prepend(html);
 
     const taskStatus = res.task_status;
 

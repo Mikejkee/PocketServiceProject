@@ -86,6 +86,7 @@ services:
     depends_on:
       - redis
       - db
+      - app
 
   pgadmin:
     container_name: pgadmin_container_for_hcs

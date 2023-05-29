@@ -5,7 +5,7 @@ from rest_framework import generics
 from rest_framework import viewsets
 from celery.result import AsyncResult
 
-from .tasks import api_tasks
+from .controllers import bot_services
 from .models import *
 from .serializers import *
 
@@ -29,16 +29,16 @@ class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-
-        # Задача в celery
-        task = api_tasks.create_order.delay(serializer.data)
-
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_202_ACCEPTED, headers=headers)
+    # def create(self, request, *args, **kwargs):
+    #     serializer = self.get_serializer(data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+    #     self.perform_create(serializer)
+    #
+    #     # Задача в celery
+    #     task = api_tasks.create_order.delay(serializer.data)
+    #
+    #     headers = self.get_success_headers(serializer.data)
+    #     return Response(serializer.data, status=status.HTTP_202_ACCEPTED, headers=headers)
 
 
 def task_status(request):

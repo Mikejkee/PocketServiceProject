@@ -57,9 +57,12 @@ class Person(Registrator):
     patronymic = models.CharField("Отчество", max_length=20, null=True, blank=True)
     date_of_birth = models.DateField("Дата рождения", null=True, blank=True)
     phone_number = models.CharField("Номер телефона", max_length=12, null=True, blank=True)
+    telegram_chat_id = models.CharField('ID Чата', max_length=255, null=True, blank=True)
     username = models.CharField("Имя пользователя", max_length=20, null=True, blank=True)
     telegram_id = models.CharField("ID Телеграмм", max_length=20, null=True, blank=True)
-    telegram_username = models.CharField("Имя пользователя Телеграмм", max_length=20, null=True, blank=True)
+    telegram_username = models.CharField("Пользователь Телеграмм", max_length=20, null=True, blank=True)
+    telegram_name = models.CharField("Имя пользователя Телеграмм", max_length=20, null=True, blank=True)
+    telegram_surname = models.CharField("Фамилия пользователя Телеграмм", max_length=20, null=True, blank=True)
     email = models.EmailField("Электронная почта", null=True, blank=True)
     background_image = models.ImageField('Аватар пользователя ',
                                          upload_to='./postgres_data/objects/persons/background/', null=True,
@@ -77,112 +80,6 @@ class Person(Registrator):
                       models.Index(fields=['email'],
                                    name='index_persons_email'),
                   ] + Registrator.Meta.indexes
-
-
-class Contract(models.Model):
-    name = models.CharField("Название контракта")
-    number_contract = models.CharField("Номер договора")
-    begin_date = models.DateTimeField("Дата начала")
-    end_date = models.DateTimeField("Дата конца")
-
-
-class Smeta(models.Model):
-    name = models.CharField("Название сметы")
-    smeta_type = models.PositiveSmallIntegerField("Тип сметы",
-                                                  choices=SMETA_TYPES_CHOICE,
-                                                  blank=True,
-                                                  null=True)
-    description = models.TextField("Описание сметы")
-    name_work = models.CharField("Наименование работ/материалов")
-    quantity = models.CharField("Кол-во")
-    unit = models.CharField("Единица измерения")
-    cost = models.IntegerField("Цена")
-    price = models.IntegerField("Стоимость")
-    contract = models.ForeignKey(Contract,
-                                 on_delete=models.SET_NULL,
-                                 null=True,
-                                 blank=True,
-                                 related_name='contract_smeta',
-                                 verbose_name="Контракт"
-                                 )
-
-
-class ImageObject(Registrator):
-    person = models.ForeignKey(Person,
-                               on_delete=models.SET_NULL,
-                               related_name='person_image',
-                               null=True,
-                               blank=True,
-                               verbose_name="Пользователь")
-
-    smeta = models.ForeignKey(Smeta,
-                              on_delete=models.SET_NULL,
-                              null=True,
-                              blank=True,
-                              related_name='smeta_image',
-                              verbose_name="Смета"
-                              )
-    contract = models.ForeignKey(Contract,
-                                 on_delete=models.SET_NULL,
-                                 null=True,
-                                 blank=True,
-                                 related_name='contract_image',
-                                 verbose_name="Контракт"
-                                 )
-    person_image = models.ImageField(
-        'Картинка пользователя',
-        upload_to='./postgres_data/objects/persons/images/',
-        null=True,
-        blank=True
-    )
-
-    def __str__(self):
-        return self.person_image
-
-    class Meta:
-        db_table = 'image_object'
-        indexes = [] + Registrator.Meta.indexes
-
-
-class FileObject(Registrator):
-    person = models.ForeignKey(
-        Person,
-        on_delete=models.SET_NULL,
-        related_name='person_files',
-        null=True,
-        blank=True,
-        verbose_name="Пользователь",
-    )
-
-    object_type = models.CharField("Тип объекта",
-                                   max_length=100)
-    person_file = models.FileField(
-        'Файл пользователя',
-        upload_to='./postgres_data/objects/persons/files/',
-        null=True,
-        blank=True,
-    )
-    smeta = models.ForeignKey(Smeta,
-                              on_delete=models.SET_NULL,
-                              null=True,
-                              blank=True,
-                              related_name='smeta_image',
-                              verbose_name="Смета"
-                              )
-    contract = models.ForeignKey(Contract,
-                                 on_delete=models.SET_NULL,
-                                 null=True,
-                                 blank=True,
-                                 related_name='contract_image',
-                                 verbose_name="Контракт"
-                                 )
-
-    def __str__(self):
-        return self.person_file
-
-    class Meta:
-        db_table = 'file_object'
-        indexes = [] + Registrator.Meta.indexes
 
 
 class Agent(Person):
@@ -212,7 +109,7 @@ class Client(Person):
     object_information = models.TextField("Информация об объекте проживания", null=True, blank=True)
 
     def __str__(self):
-        return self.username
+        return self.telegram_id
 
     class Meta:
         db_table = 'client'
@@ -230,10 +127,12 @@ class Administrator(Person):
 
 
 # TODO: Лучше проанализировать область и выписать все возможные моменты
-PLUBMING_REPAIR = 0
-FURNITURE_REPAIR = 1
-CLEANING = 2
+FLAT_REPAIR = 0
+PLUBMING_REPAIR = 1
+FURNITURE_REPAIR = 2
+CLEANING = 3
 PRODUCT_TYPES_CHOICE = [
+    (FLAT_REPAIR, 'Ремонт квартиры'),
     (PLUBMING_REPAIR, 'Ремонт сантехники'),
     (FURNITURE_REPAIR, 'Ремонт мебели'),
     (CLEANING, 'Уборка'),
@@ -242,22 +141,18 @@ PRODUCT_TYPES_CHOICE = [
 
 class Product(Registrator):
     # Услуги товары
-    name = models.CharField("Имя", max_length=255, null=True, blank=True)
     product_type = models.PositiveSmallIntegerField('Тип услуги', choices=PRODUCT_TYPES_CHOICE, blank=True, null=True)
-    price = models.DecimalField("Цена", max_digits=10, decimal_places=2, blank=True, null=True)
     addition_information = models.TextField("Дополнительная информация", null=True, blank=True)
     product_image = models.ImageField('Картинка услуг', upload_to='./postgres_data/objects/products/images/', null=True,
                                       blank=True)
-    agent = models.ForeignKey(Agent, on_delete=models.SET_NULL, related_name='agent_products', null=True, blank=True,
-                              verbose_name="Агент")
 
     def __str__(self):
-        return self.name
+        return self.addition_information
 
     class Meta:
         db_table = 'product'
         indexes = [
-                      models.Index(fields=['name'],
+                      models.Index(fields=['product_type'],
                                    name='index_name_product'),
                   ] + Registrator.Meta.indexes
 
@@ -265,9 +160,11 @@ class Product(Registrator):
 class Order(Registrator):
     # Заявка
     name = models.CharField("Имя", max_length=255, null=True, blank=True)
-    result_price = models.DecimalField("Цена", max_digits=10, decimal_places=2, blank=True, null=True)
+    price = models.DecimalField("Цена", max_digits=10, decimal_places=2, blank=True, null=True)
     deadline = models.DateTimeField("Срок конца работы", blank=True, null=True)
     addition_information = models.TextField("Дополнительная информация", null=True, blank=True)
+    reminder_status = models.BooleanField("Статус напоминания", default=0)
+    control_flag = models.BooleanField("Флаг новизны", default=0)
 
     client = models.ForeignKey(Client, on_delete=models.SET_NULL, related_name='client_orders', null=True, blank=True,
                                verbose_name="Клиент")
@@ -287,6 +184,127 @@ class Order(Registrator):
                       models.Index(fields=['name'],
                                    name='index_name_order'),
                   ] + Registrator.Meta.indexes
+
+
+class Contract(Registrator):
+    name = models.CharField("Название контракта", max_length=20, null=True, blank=True)
+    contract_number = models.CharField("Номер договора", max_length=20, null=True, blank=True)
+    start_date = models.DateTimeField("Дата начала работ", null=True, blank=True)
+    end_date = models.DateTimeField("Дата конца работ", null=True, blank=True)
+
+    order = models.ForeignKey(Order, on_delete=models.SET_NULL, related_name='contact_order', null=True, blank=True,
+                              verbose_name="Заявка")
+
+    class Meta:
+        db_table = 'сontract'
+        indexes = [
+                      models.Index(fields=['contract_number'],
+                                   name='index_number_contract'),
+                  ] + Registrator.Meta.indexes
+
+
+class Smeta(Registrator):
+    name = models.CharField("Название сметы", max_length=20, null=True, blank=True)
+    smeta_type = models.PositiveSmallIntegerField("Тип сметы", choices=SMETA_TYPES_CHOICE, blank=True, null=True)
+    description = models.TextField("Описание сметы", null=True, blank=True)
+    name_work = models.CharField("Наименование работ/материалов", max_length=20, null=True, blank=True)
+    quantity = models.CharField("Количество", max_length=20, null=True, blank=True)
+    unit = models.CharField("Единица измерения", max_length=10, null=True, blank=True)
+    cost = models.IntegerField("Цена", null=True, blank=True)
+    price = models.IntegerField("Стоимость", null=True, blank=True)
+
+    contract = models.ForeignKey(Contract,
+                                 on_delete=models.SET_NULL,
+                                 related_name='smeta_contract',
+                                 null=True,
+                                 blank=True,
+                                 verbose_name="Смета контракта")
+
+    class Meta:
+        db_table = 'smeta'
+        indexes = [
+
+                  ] + Registrator.Meta.indexes
+
+
+class ImageObject(Registrator):
+    person = models.ForeignKey(Person,
+                               on_delete=models.SET_NULL,
+                               related_name='person_image',
+                               null=True,
+                               blank=True,
+                               verbose_name="Картинки пользователя")
+
+    smeta = models.ForeignKey(Smeta,
+                              on_delete=models.SET_NULL,
+                              null=True,
+                              blank=True,
+                              related_name='smeta_image',
+                              verbose_name="Картинки для сметы"
+                              )
+    contract = models.ForeignKey(Contract,
+                                 on_delete=models.SET_NULL,
+                                 null=True,
+                                 blank=True,
+                                 related_name='contract_image',
+                                 verbose_name="Картинки для контракта"
+                                 )
+
+    image_object = models.ImageField(
+        'Объект картинки',
+        upload_to='./postgres_data/objects/persons/images/',
+        null=True,
+        blank=True
+    )
+
+    def __str__(self):
+        return self.image_object
+
+    class Meta:
+        db_table = 'image_object'
+        indexes = [] + Registrator.Meta.indexes
+
+
+class FileObject(Registrator):
+    person = models.ForeignKey(
+        Person,
+        on_delete=models.SET_NULL,
+        related_name='person_files',
+        null=True,
+        blank=True,
+        verbose_name="Файлы пользователя",
+    )
+
+    smeta = models.ForeignKey(Smeta,
+                              on_delete=models.SET_NULL,
+                              null=True,
+                              blank=True,
+                              related_name='smeta_file',
+                              verbose_name="Файлы для сметы"
+                              )
+    contract = models.ForeignKey(Contract,
+                                 on_delete=models.SET_NULL,
+                                 null=True,
+                                 blank=True,
+                                 related_name='contract_file',
+                                 verbose_name="Файлы для контракта"
+                                 )
+
+    object_type = models.CharField("Тип объекта",
+                                   max_length=100)
+    file_object = models.FileField(
+        'Объект файла',
+        upload_to='./postgres_data/objects/persons/files/',
+        null=True,
+        blank=True,
+    )
+
+    def __str__(self):
+        return self.file_object
+
+    class Meta:
+        db_table = 'file_object'
+        indexes = [] + Registrator.Meta.indexes
 
 
 class OnlineTransaction(Registrator):
@@ -314,4 +332,4 @@ class OnlineTransaction(Registrator):
         indexes = [] + Registrator.Meta.indexes
 
     def str(self):
-        return f'{self.chat}'
+        return f'{self.provider_payment_charge_id}'
