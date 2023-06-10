@@ -5,6 +5,7 @@ from aiogram import F, Bot, Dispatcher, types
 from aiogram.types import Message, KeyboardButton, ReplyKeyboardMarkup
 from aiogram.filters import Text
 from aiogram.filters.command import Command
+from aiogram.types.web_app_info import WebAppInfo
 
 from hr_system.telegram_tasks import save_client_task, create_product_order_task, tg_message_task, \
     update_product_order_task
@@ -14,10 +15,38 @@ logging.basicConfig(level=logging.INFO)
 
 # Объект бота TODO: вынести в отдельный файл env-ы
 TOKEN = "6138821594:AAEatK-fHgdQoHqNT-tSBX-DMk2T-MCRB14"
+CREW_URL = '127.0.0.1:8000'
 
 # Диспетчер
 dp = Dispatcher()
 
+start_buttons = [
+    [
+        KeyboardButton(text='Личный кабинет 💼'),
+        KeyboardButton(text='Ремонт квартир 🛠️'),
+    ]
+]
+
+keyboard_start = ReplyKeyboardMarkup(
+    keyboard=start_buttons,
+    resize_keyboard=True
+)
+
+flat_repair_buttons = [
+        [
+            KeyboardButton(text="Витрина услуг 🛒"),
+            KeyboardButton(text="Галерея работ 📸"),
+        ],
+        [
+            KeyboardButton(text="Рассчитать стоимость 💲"),
+            KeyboardButton(text="🔙 Главное меню"),
+        ],
+    ]
+
+keyboard_flat_repair = ReplyKeyboardMarkup(
+        keyboard=flat_repair_buttons,
+        resize_keyboard=True,
+    )
 
 @sync_to_async
 def save_client(name=None, surname=None, patronymic=None,
@@ -98,15 +127,6 @@ async def cmd_start(message: Message):
                                  telegram_name=telegram_name, telegram_surname=telegram_surname,
                                  telegram_username=telegram_username)
 
-    buttons = [
-        KeyboardButton(text='Личный кабинет 💼'),
-        KeyboardButton(text='Ремонт квартир 🛠️'),
-    ]
-
-    keyboard_start = ReplyKeyboardMarkup(
-        keyboard=[buttons, ],
-        resize_keyboard=True
-    )
     await message.answer(f'{hello}\n\n'
                          'У тебя что-то сломалось? Тебе надо сделать ремонт? \n\n'
                          '<b>Личный кабинет</b> 💼 - для просмотра информации о своем объекте.\n'
@@ -116,20 +136,15 @@ async def cmd_start(message: Message):
                          parse_mode='HTML')
 
 
-@dp.message(Text('Ремонт квартир 🛠️'))
-async def flat_repair(message: types.Message):
-    buttons = [
-        [
-            KeyboardButton(text="Витрина услуг 🛒"),
-            KeyboardButton(text="Галерея работ 📸"),
-            KeyboardButton(text="Рассчитать стоимость 💲"),
-        ],
-    ]
+@dp.message(Text('🔙 Главное меню'))
+async def flat_repair(message: Message):
+    await message.answer('Выберите необходимое',
+                         reply_markup=keyboard_start,
+                         parse_mode='HTML')
 
-    keyboard_flat_repair = ReplyKeyboardMarkup(
-        keyboard=buttons,
-        resize_keyboard=True,
-    )
+
+@dp.message(Text('Ремонт квартир 🛠️'))
+async def flat_repair(message: Message):
     await message.answer(f'Выбери:\n\n'
                          f'<b>Витрину услуг</b> 🛒 - если хочешь заказать бригаду\n'
                          f'<b>Галерею работ</b> 📸 - для просмотра примеров выполненных работ\n'
@@ -139,20 +154,51 @@ async def flat_repair(message: types.Message):
                          parse_mode='HTML')
 
 
+@dp.message(Text('🔙 Назад в ремонт'))
+async def flat_repair(message: Message):
+    await message.answer('Выберите необходимое',
+                         reply_markup=keyboard_flat_repair,
+                         parse_mode='HTML')
+
+
 @dp.message(Text("Витрина услуг 🛒"))
-async def test_smeta(message: types.Message):
+async def showcase(message: Message):
     chat = message.chat
     telegram_chat_id = chat.id
 
     from_user = message.from_user
     client_id = from_user.id
 
-    await create_product_order('8802553535', telegram_chat_id, client_id, 'maikl.kurpatov@yandex.ru',
-                               'address', 'addition_information', 'object_information',
-                               '5721238199', 0, 'Заказать сметчика',
-                               'Первый заказ тест', '50000', '2023-07-07', 'Первый заказ сметчика')
+    # Пример работы заказа сметчика
+    # await create_product_order('8802553535', telegram_chat_id, client_id, 'maikl.kurpatov@yandex.ru',
+    #                            'address', 'addition_information', 'object_information',
+    #                            '5721238199', 0, 'Заказать сметчика',
+    #                            'Первый заказ тест', '50000', '2023-07-07', 'Первый заказ сметчика')
 
-    await message.reply("Сметчик заказан")
+    webapp_data = message.web_app_data
+
+    if not webapp_data:
+        webApp_fixrepair = WebAppInfo(url=f'https://{CREW_URL}/hr_system/showcase/?TelegramId={client_id}&ShowcaseType=0')
+        button_0 = KeyboardButton(text='Ремонт (фиксированный)', web_app=webApp_fixrepair)
+
+        webApp_smeta = WebAppInfo(url=f'https://{CREW_URL}/hr_system/showcase/?TelegramId={client_id}&ShowcaseType=1')
+        button_1 = KeyboardButton(text='Рассчет сметы', web_app=webApp_smeta)
+
+        button_back = KeyboardButton(text='🔙 Назад в ремонт')
+
+        buttons = [
+            [
+                button_0,
+                button_1,
+            ],
+            [
+                button_back,
+            ],
+        ]
+
+        keyboard_showcase = ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
+
+        await message.answer(f'Выберите нужную Вам услугу', reply_markup=keyboard_showcase, parse_mode='HTML')
 
 
 # Запуск процесса поллинга новых апдейтов
