@@ -23,7 +23,7 @@ dp = Dispatcher()
 start_buttons = [
     [
         KeyboardButton(text='Личный кабинет 💼'),
-        KeyboardButton(text='Ремонт квартир 🛠️'),
+        KeyboardButton(text='Витрина услуг 📜️'),
     ]
 ]
 
@@ -32,21 +32,6 @@ keyboard_start = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
-flat_repair_buttons = [
-        [
-            KeyboardButton(text="Витрина услуг 🛒"),
-            KeyboardButton(text="Галерея работ 📸"),
-        ],
-        [
-            KeyboardButton(text="Рассчитать стоимость 💲"),
-            KeyboardButton(text="🔙 Главное меню"),
-        ],
-    ]
-
-keyboard_flat_repair = ReplyKeyboardMarkup(
-        keyboard=flat_repair_buttons,
-        resize_keyboard=True,
-    )
 
 @sync_to_async
 def save_client(name=None, surname=None, patronymic=None,
@@ -128,9 +113,10 @@ async def cmd_start(message: Message):
                                  telegram_username=telegram_username)
 
     await message.answer(f'{hello}\n\n'
-                         'У тебя что-то сломалось? Тебе надо сделать ремонт? \n\n'
+                         'У тебя что-то сломалось? Тебе надо сделать ремонт? Ищешь мастера? \n\n'
                          '<b>Личный кабинет</b> 💼 - для просмотра информации о своем объекте.\n'
-                         '<b>Ремонт квартир </b> 🛠 - здесь можно заказать ремонт квартиры.\n'
+                         '<b>Витрина услуг </b> 📜 - здесь можно заказать ремонт квартиры, сантехники, '
+                         'найти мастера по маникюру, бровям.\n'
                          '',
                          reply_markup=keyboard_start,
                          parse_mode='HTML')
@@ -143,25 +129,7 @@ async def flat_repair(message: Message):
                          parse_mode='HTML')
 
 
-@dp.message(Text('Ремонт квартир 🛠️'))
-async def flat_repair(message: Message):
-    await message.answer(f'Выбери:\n\n'
-                         f'<b>Витрину услуг</b> 🛒 - если хочешь заказать бригаду\n'
-                         f'<b>Галерею работ</b> 📸 - для просмотра примеров выполненных работ\n'
-                         f'<b>Рассчитать стоимость</b> 💲 - для расчета примероной стоимости ремонта.\n'
-                         '',
-                         reply_markup=keyboard_flat_repair,
-                         parse_mode='HTML')
-
-
-@dp.message(Text('🔙 Назад в ремонт'))
-async def flat_repair(message: Message):
-    await message.answer('Выберите необходимое',
-                         reply_markup=keyboard_flat_repair,
-                         parse_mode='HTML')
-
-
-@dp.message(Text("Витрина услуг 🛒"))
+@dp.message(Text("Витрина услуг 📜️"))
 async def showcase(message: Message):
     chat = message.chat
     telegram_chat_id = chat.id
@@ -178,18 +146,32 @@ async def showcase(message: Message):
     webapp_data = message.web_app_data
 
     if not webapp_data:
-        webApp_fixrepair = WebAppInfo(url=f'https://{CREW_URL}/hr_system/showcase/?TelegramId={client_id}&ShowcaseType=0')
-        button_0 = KeyboardButton(text='Ремонт (фиксированный)', web_app=webApp_fixrepair)
+        webApp_flat_repair = WebAppInfo(
+            url=f'https://{CREW_URL}/hr_system/showcase/?TelegramId={client_id}&ShowcaseType=0')
+        button_0 = KeyboardButton(text='Ремонт квартиры', web_app=webApp_flat_repair)
 
-        webApp_smeta = WebAppInfo(url=f'https://{CREW_URL}/hr_system/showcase/?TelegramId={client_id}&ShowcaseType=1')
-        button_1 = KeyboardButton(text='Рассчет сметы', web_app=webApp_smeta)
+        webApp_technique_repair = WebAppInfo(
+            url=f'https://{CREW_URL}/hr_system/showcase/?TelegramId={client_id}&ShowcaseType=1')
+        button_1 = KeyboardButton(text='Ремонт техники', web_app=webApp_technique_repair)
 
-        button_back = KeyboardButton(text='🔙 Назад в ремонт')
+        webApp_furniture_repair = WebAppInfo(
+            url=f'https://{CREW_URL}/hr_system/showcase/?TelegramId={client_id}&ShowcaseType=2')
+        button_2 = KeyboardButton(text='Ремонт мебели', web_app=webApp_furniture_repair)
+
+        webApp_beauty_services = WebAppInfo(
+            url=f'https://{CREW_URL}/hr_system/showcase/?TelegramId={client_id}&ShowcaseType=2')
+        button_3 = KeyboardButton(text='Услуги красоты', web_app=webApp_beauty_services)
+
+        button_back = KeyboardButton(text='🔙 Главное меню')
 
         buttons = [
             [
                 button_0,
                 button_1,
+            ],
+            [
+                button_2,
+                button_3,
             ],
             [
                 button_back,
@@ -198,7 +180,14 @@ async def showcase(message: Message):
 
         keyboard_showcase = ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
 
-        await message.answer(f'Выберите нужную Вам услугу', reply_markup=keyboard_showcase, parse_mode='HTML')
+        await message.answer(f'Выбери:\n\n'
+                             f'<b>Ремонт квартиры</b> - если хочешь заказать бригаду для ремонта квартиры\n'
+                             f'<b>Ремонт техники</b> - найти рабочего для ремонта техники\n'
+                             f'<b>Ремонт мебели</b> - найти рабочего для ремонта мебели.\n'
+                             f'<b>Услуги красоты</b> - поиск мастеров маникюра, педикюра, бровей и т.д.\n'
+                             f'',
+                             reply_markup=keyboard_showcase,
+                             parse_mode='HTML')
 
 
 # Запуск процесса поллинга новых апдейтов
