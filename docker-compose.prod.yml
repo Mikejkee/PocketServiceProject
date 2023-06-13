@@ -1,0 +1,161 @@
+version: "3.8"
+
+services:
+  nginx-proxy:
+    container_name: nginx-proxy
+    build: ./compose/production/nginx
+    restart: always
+    volumes:
+      - staticfiles:/hcs_hr/static
+      - mediafiles:/hcs_hr/media
+      - certs:/etc/nginx/certs
+      - html:/usr/share/nginx/html
+      - vhost:/etc/nginx/vhost.d
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    ports:
+      - 80:80
+      - 443:443
+      - 15672:15672
+    depends_on:
+      - app
+      - flower
+    networks:
+      - net
+
+  app:
+    build:
+      context: .
+      dockerfile: ./compose/local/django/Dockerfile
+    # '/start' is the shell script used to run the service
+    command: /start
+    restart: always
+    ports:
+      - 8000:8000
+    volumes:
+      - staticfiles:/hcs_hr/static
+      - mediafiles:/hcs_hr/media
+    env_file:
+      - ./.env/.env-prod.dev
+    depends_on:
+      - rabbitmq
+      - db
+    networks:
+      - net
+    links:
+      - flower
+
+  db:
+    image: postgres:14-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    restart: always
+    environment:
+      - POSTGRES_USER=Mikejkeee
+      - POSTGRES_PASSWORD=119988
+      - POSTGRES_DB=hr_system
+    networks:
+      - net
+      -
+  rabbitmq:
+    image: rabbitmq:latest
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+      - RABBITMQ_CONSUMER_TIMEOUT=31622400000
+    expose:
+      - 5672
+    volumes:
+      - /etc/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - staticfiles:/hcs_hr/static
+      - mediafiles:/hcs_hr/media
+      - certs:/etc/nginx/certs
+    networks:
+      - net
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: ./compose/local/django/Dockerfile
+    command: /start-celeryworker
+    restart: always
+    volumes:
+      - staticfiles:/hcs_hr/static
+      - mediafiles:/hcs_hr/media
+    env_file:
+      - ./.env/.env-prod.dev
+    depends_on:
+      - rabbitmq
+      - db
+    networks:
+      - net
+
+  celery_beat:
+    build:
+      context: .
+      dockerfile: ./compose/local/django/Dockerfile
+    command: /start-celerybeat
+    restart: always
+    volumes:
+      - staticfiles:/hcs_hr/static
+      - mediafiles:/hcs_hr/media
+    env_file:
+      - ./.env/.env-prod.dev
+    depends_on:
+      - rabbitmq
+      - db
+
+  flower:
+    build:
+      context: .
+      dockerfile: ./compose/local/django/Dockerfile
+    command: /start-flower
+    restart: always
+    hostname: flower
+    volumes:
+      - staticfiles:/hcs_hr/static
+      - mediafiles:/hcs_hr/media
+      - certs:/etc/nginx/certs
+      - flower_db:/hcs_hr/flower_db
+    env_file:
+      - ./.env/.env-prod.dev
+    ports:
+      - 5555:5555
+    links:
+      - rabbitmq
+      - celery_worker
+      - celery_beat
+    depends_on:
+      - rabbitmq
+      - db
+    networks:
+      - net
+
+  telegrambot:
+    build:
+      context: .
+      dockerfile: ./compose/local/django/Dockerfile
+    image: telegrambot
+    command: /entrybot
+    volumes:
+      - .:/hcs_hr
+    env_file:
+      - ./.env/.env-prod.dev
+    depends_on:
+      - rabbitmq
+      - db
+      - app
+
+volumes:
+  postgres_data:
+  staticfiles:
+  mediafiles:
+  flower_db:
+  certs:
+  html:
+  vhost:
+  acme:
+
+networks:
+  net:
+    external: true
