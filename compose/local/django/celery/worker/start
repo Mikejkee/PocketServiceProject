@@ -3,4 +3,4 @@
 set -o errexit
 set -o nounset
 
-celery -A hcs_hr worker -l INFO
+celery -A mainmodule worker -l INFO

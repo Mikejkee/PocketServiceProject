@@ -6,9 +6,8 @@ services:
     build: ./compose/production/nginx
     restart: always
     volumes:
-      - staticfiles:/hcs_hr/static
-      - mediafiles:/hcs_hr/media
-      - certs:/etc/nginx/certs
+      - staticfiles:/mainmodule/static
+      - mediafiles:/mainmodule/media
       - html:/usr/share/nginx/html
       - vhost:/etc/nginx/vhost.d
       - /var/run/docker.sock:/tmp/docker.sock:ro
@@ -25,15 +24,15 @@ services:
   app:
     build:
       context: .
-      dockerfile: ./compose/local/django/Dockerfile
+      dockerfile: ./compose/production/django/Dockerfile
     # '/start' is the shell script used to run the service
     command: /start
     restart: always
     ports:
       - 8000:8000
     volumes:
-      - staticfiles:/hcs_hr/static
-      - mediafiles:/hcs_hr/media
+      - staticfiles:/mainmodule/static
+      - mediafiles:/mainmodule/media
     env_file:
       - ./.env/.env-prod.dev
     depends_on:
@@ -52,7 +51,7 @@ services:
     environment:
       - POSTGRES_USER=Mikejkeee
       - POSTGRES_PASSWORD=119988
-      - POSTGRES_DB=hr_system
+      - POSTGRES_DB=PocketServiceApp
     networks:
       - net
       -
@@ -67,21 +66,20 @@ services:
       - 5672
     volumes:
       - /etc/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-      - staticfiles:/hcs_hr/static
-      - mediafiles:/hcs_hr/media
-      - certs:/etc/nginx/certs
+      - staticfiles:/mainmodule/static
+      - mediafiles:/mainmodule/media
     networks:
       - net
 
   celery_worker:
     build:
       context: .
-      dockerfile: ./compose/local/django/Dockerfile
+      dockerfile: ./compose/production/django/Dockerfile
     command: /start-celeryworker
     restart: always
     volumes:
-      - staticfiles:/hcs_hr/static
-      - mediafiles:/hcs_hr/media
+      - staticfiles:/mainmodule/static
+      - mediafiles:/mainmodule/media
     env_file:
       - ./.env/.env-prod.dev
     depends_on:
@@ -93,12 +91,12 @@ services:
   celery_beat:
     build:
       context: .
-      dockerfile: ./compose/local/django/Dockerfile
+      dockerfile: ./compose/production/django/Dockerfile
     command: /start-celerybeat
     restart: always
     volumes:
-      - staticfiles:/hcs_hr/static
-      - mediafiles:/hcs_hr/media
+      - staticfiles:/mainmodule/static
+      - mediafiles:/mainmodule/media
     env_file:
       - ./.env/.env-prod.dev
     depends_on:
@@ -108,15 +106,14 @@ services:
   flower:
     build:
       context: .
-      dockerfile: ./compose/local/django/Dockerfile
+      dockerfile: ./compose/production/django/Dockerfile
     command: /start-flower
     restart: always
     hostname: flower
     volumes:
-      - staticfiles:/hcs_hr/static
-      - mediafiles:/hcs_hr/media
-      - certs:/etc/nginx/certs
-      - flower_db:/hcs_hr/flower_db
+      - staticfiles:/mainmodule/static
+      - mediafiles:/mainmodule/media
+      - flower_db:/mainmodule/flower_db
     env_file:
       - ./.env/.env-prod.dev
     ports:
@@ -134,11 +131,11 @@ services:
   telegrambot:
     build:
       context: .
-      dockerfile: ./compose/local/django/Dockerfile
+      dockerfile: ./compose/production/django/Dockerfile
     image: telegrambot
     command: /entrybot
     volumes:
-      - .:/hcs_hr
+      - .:/mainmodule
     env_file:
       - ./.env/.env-prod.dev
     depends_on:
@@ -151,7 +148,6 @@ volumes:
   staticfiles:
   mediafiles:
   flower_db:
-  certs:
   html:
   vhost:
   acme:

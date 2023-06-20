@@ -10,7 +10,7 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - .:/hcs_hr
+      - .:/PocketServiceProject
     env_file:
       - ./.env/.env.dev
     depends_on:
@@ -25,7 +25,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin
-      - POSTGRES_DB=hr_system
+      - POSTGRES_DB=PocketServiceDB
     ports:
       - 5433:5432
 
@@ -38,7 +38,7 @@ services:
       dockerfile: ./compose/local/django/Dockerfile
     command: /start-celeryworker
     volumes:
-      - .:/hcs_hr
+      - .:/PocketServiceProject
     env_file:
       - ./.env/.env.dev
     depends_on:
@@ -51,7 +51,7 @@ services:
       dockerfile: ./compose/local/django/Dockerfile
     command: /start-celerybeat
     volumes:
-      - .:/hcs_hr
+      - .:/PocketServiceProject
     env_file:
       - ./.env/.env.dev
     depends_on:
@@ -64,7 +64,7 @@ services:
       dockerfile: ./compose/local/django/Dockerfile
     command: /start-flower
     volumes:
-      - .:/hcs_hr
+      - .:/PocketServiceProject
     env_file:
       - ./.env/.env.dev
     ports:
@@ -80,7 +80,7 @@ services:
     image: telegrambot
     command: /entrybot
     volumes:
-      - .:/hcs_hr
+      - .:/PocketServiceProject
     env_file:
       - ./.env/.env.dev
     depends_on:

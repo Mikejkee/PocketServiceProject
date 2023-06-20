@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block link %}
+<style>
+@import "//fonts.fontstorage.com/import/beermoney.css";
+header {
+	width: 100%;
+	background: url({% static 'img/header_showcase_repairflat_logo.jpg' %}) no-repeat;
+    background-size: cover;
+    background-position: center;
+	height: 180px;
+}
+
+header > p {
+	color: rgba(136,139,141,1);
+	font-family: 'Beer money';
+	font-size: 35px;
+	font-weight: 400;
+	line-height: 1em;
+	text-shadow: -2px 2px 1px rgba(0,0,0,1);
+	margin: 0px 0px 20px 0px;
+    padding: 130px 0px 0px 102px;
+	width: 700px;
+}
+
+.my_icons {
+    width: 17%;
+    float: left;
+}
+
+</style>
+{% endblock link %}
+
+{% block title %} Ремонт квартиры {% endblock title %}
+
+{% block header %}
+
+    <p>Наши услуги </p>
+
+{% endblock header %}
+
+{% block content %}
+<div class="row py-2">
+    <div class="col">
+        <div class="card text-center border-warning mb-3" >
+            <div class="card-body">
+                <div>
+                    <img src="{% static 'img/fix_repair.png' %}" class="my_icons">
+                    <p class="card-title" style="font-size: 30px; font-weight: 400; font-family: 'Beer money';">  Ремонт квартиры</p>
+                </div>
+                <p class="card-text">Делаем ремонт с изначально обговоренной и высчитанной суммой.</p>
+                <a href="#" class="btn btn-primary">Перейти к рассчетам</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <div class="card text-center border-warning mb-3" style="width: 18rem;">
+          <div class="card-body">
+             <div>
+                    <img src="{% static 'img/smeta.png' %}" class="my_icons">
+                    <p class="card-title" style="font-size: 30px; font-weight: 400; font-family: 'Beer money';"> Рассчитать смету</p>
+                </div>
+            <p class="card-text">Рассчитываем смету по заданным парамметрам вашего жилья и типом ремонта.</p>
+            <a href="#" class="btn btn-primary">Перейти к рассчетам</a>
+          </div>
+        </div>
+    </div>
+</div>
+
+    <!-- content -->
+{% endblock content %}
+
+{% block scripts %}
+
+<script>
+
+
+</script>
+
+{% endblock scripts %}

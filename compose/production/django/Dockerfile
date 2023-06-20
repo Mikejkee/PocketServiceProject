@@ -50,14 +50,14 @@ RUN sed -i 's/\r$//g' /entrybot
 RUN chmod +x /entrybot
 RUN chown django /entrybot
 
-RUN mkdir /hcs_hr
-RUN mkdir /hcs_hr/static
-RUN mkdir /hcs_hr/media
-RUN mkdir /hcs_hr/flower_db
-WORKDIR /hcs_hr
+RUN mkdir /mainmodule
+RUN mkdir /mainmodule/static
+RUN mkdir /mainmodule/media
+RUN mkdir /mainmodule/flower_db
+WORKDIR /PocketServiceApp
 COPY . .
 
-RUN chown -R django:django /hcs_hr
+RUN chown -R django:django /mainmodule
 
 USER django
 

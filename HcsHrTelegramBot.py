@@ -7,7 +7,7 @@ from aiogram.filters import Text
 from aiogram.filters.command import Command
 from aiogram.types.web_app_info import WebAppInfo
 
-from hr_system.telegram_tasks import save_client_task, create_product_order_task, tg_message_task, \
+from PocketServiceApp.telegram_tasks import save_client_task, create_product_order_task, tg_message_task, \
     update_product_order_task
 
 # Логирование

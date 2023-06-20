@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block link %}
+<style>
+@import "//fonts.fontstorage.com/import/beermoney.css";
+header {
+	width: 100%;
+	background: url({% static 'img/header_profile_logo2.jpg' %}) no-repeat;
+    background-size: cover;
+    background-position: center;
+	height: 180px;
+}
+
+header > p {
+	color: rgba(136,139,141,1);
+	font-family: 'Beer money';
+	font-size: 27px;
+	font-weight: 400;
+	line-height: 1em;
+	text-shadow: -2px 2px 1px rgba(0,0,0,1);
+	margin: 0px 0px 20px 0px;
+    padding: 145px 0px 0px 115px;
+	width: 700px;
+}
+
+.my_icons {
+    width: 17%;
+    float: left;
+}
+
+.required {
+    color: red;
+}
+
+small {
+    float: left;
+    margin-bottom: 2px;
+}
+
+</style>
+{% endblock link %}
+
+{% block title %} Личный кабинет {% endblock title %}
+
+{% block header %}
+
+    <p>Личный кабинет </p>
+
+{% endblock header %}
+
+{% block content %}
+<div class="row py-2">
+    <div class="col">
+        <div class="card text-center border-warning mb-3" >
+            <div class="card mb-4 mt-2 box-shadow">
+                <h5 class="card-header bg-secondary text-white", style="font-size: 20px; font-weight: 400; font-family: 'Beer money';"> Персональные данные</h5>
+                <div class="card-body">
+
+                    <small class="text-muted">Telegram:</small>
+                    <div class="input-group input-group-sm mb-3">
+                        <span class="input-group-text" id="">@</span>
+                        <input type="text" class="form-control" placeholder="Username">
+                    </div>
+
+                    <small class="text-muted">ФИО<span class="required">*</span>:</small>
+                    <div class="input-group input-group-sm mb-3">
+                        <input type="text" class="form-control" placeholder="Фамилия Имя Отчество">
+                    </div>
+
+                    <small class="text-muted">Телефон<span class="required">*</span>:</small>
+                    <div class="input-group input-group-sm mb-3">
+                        <input type="text" class="form-control" placeholder="Телефонный номер">
+                    </div>
+
+                    <small class="text-muted">Дата рождения<span class="required">*</span>:</small>
+                    <div class="input-group input-group-sm mb-3">
+                        <input type="text" class="form-control" placeholder="">
+                    </div>
+
+                    <small class="text-muted">Электронная почта<span class="required">*</span>:</small>
+                    <div class="input-group input-group-sm mb-3">
+                      <input type="text" class="form-control" placeholder="Username" aria-label="Username">
+                      <span class="input-group-text">@</span>
+                      <input type="text" class="form-control" placeholder="Server" aria-label="Server">
+                    </div>
+                    <a href="#" class="btn btn-primary">Сохранить</a>
+        </div>
+    </div>
+</div>
+
+
+    <!-- content -->
+{% endblock content %}
+
+{% block scripts %}
+
+<script>
+
+
+</script>
+
+{% endblock scripts %}
