@@ -148,19 +148,19 @@ async def showcase(message: Message):
 
     if not webapp_data:
         webApp_flat_repair = WebAppInfo(
-            url=f'{CREW_URL}/PocketServiceApp/showcase/?TelegramId={client_id}&ShowcaseType=0')
+            url=f'https://{CREW_URL}/PocketServiceApp/showcase/?TelegramId={client_id}&ShowcaseType=0')
         button_0 = KeyboardButton(text='Ремонт квартиры', web_app=webApp_flat_repair)
 
         webApp_technique_repair = WebAppInfo(
-            url=f'{CREW_URL}/PocketServiceApp/showcase/?TelegramId={client_id}&ShowcaseType=1')
+            url=f'https://{CREW_URL}/PocketServiceApp/showcase/?TelegramId={client_id}&ShowcaseType=1')
         button_1 = KeyboardButton(text='Ремонт техники', web_app=webApp_technique_repair)
 
         webApp_furniture_repair = WebAppInfo(
-            url=f'{CREW_URL}/PocketServiceApp/showcase/?TelegramId={client_id}&ShowcaseType=2')
+            url=f'https://{CREW_URL}/PocketServiceApp/showcase/?TelegramId={client_id}&ShowcaseType=2')
         button_2 = KeyboardButton(text='Ремонт мебели', web_app=webApp_furniture_repair)
 
         webApp_beauty_services = WebAppInfo(
-            url=f'{CREW_URL}/PocketServiceApp/showcase/?TelegramId={client_id}&ShowcaseType=2')
+            url=f'https://{CREW_URL}/PocketServiceApp/showcase/?TelegramId={client_id}&ShowcaseType=2')
         button_3 = KeyboardButton(text='Услуги красоты', web_app=webApp_beauty_services)
 
         button_back = KeyboardButton(text='🔙 Главное меню')

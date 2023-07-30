@@ -9,4 +9,4 @@ python manage.py migrate
 python manage.py collectstatic --noinput
 python manage.py init_admin
 
-/usr/local/bin/gunicorn mainmodule.asgi:application --bind 0.0.0.0:8000 --chdir=/PocketServiceApp
+/usr/local/bin/gunicorn mainmodule.asgi:application  -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 --chdir=/PocketServiceApp
