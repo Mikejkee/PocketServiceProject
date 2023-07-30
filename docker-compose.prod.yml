@@ -3,7 +3,9 @@ version: "3.8"
 services:
   nginx-proxy:
     container_name: nginx-proxy
-    build: ./compose/production/nginx
+    build:
+      context: .
+      dockerfile: ./compose/production/nginx/Dockerfile
     restart: always
     volumes:
       - staticfiles:/mainmodule/static
@@ -11,13 +13,14 @@ services:
       - html:/usr/share/nginx/html
       - vhost:/etc/nginx/vhost.d
       - /var/run/docker.sock:/tmp/docker.sock:ro
-    ports:
-      - 80:80
-      - 443:443
-      - 15672:15672
+    expose:
+      - 80
+      - 443
+      - 15672
     depends_on:
       - app
       - flower
+      - redis
     networks:
       - net
 
@@ -28,8 +31,8 @@ services:
     # '/start' is the shell script used to run the service
     command: /start
     restart: always
-    ports:
-      - 8000:8000
+    expose:
+      - 8000
     volumes:
       - staticfiles:/mainmodule/static
       - mediafiles:/mainmodule/media
@@ -54,7 +57,13 @@ services:
       - POSTGRES_DB=PocketServiceApp
     networks:
       - net
-      -
+
+  redis:
+    image: redis:6-alpine
+    restart: always
+    networks:
+      - net
+
   rabbitmq:
     image: rabbitmq:latest
     restart: always
@@ -84,7 +93,6 @@ services:
       - ./.env/.env-prod.dev
     depends_on:
       - rabbitmq
-      - db
     networks:
       - net
 
@@ -101,7 +109,8 @@ services:
       - ./.env/.env-prod.dev
     depends_on:
       - rabbitmq
-      - db
+    networks:
+      - net
 
   flower:
     build:
@@ -116,15 +125,14 @@ services:
       - flower_db:/mainmodule/flower_db
     env_file:
       - ./.env/.env-prod.dev
-    ports:
-      - 5555:5555
+    expose:
+      - 5555
     links:
       - rabbitmq
       - celery_worker
       - celery_beat
     depends_on:
       - rabbitmq
-      - db
     networks:
       - net
 
@@ -140,8 +148,10 @@ services:
       - ./.env/.env-prod.dev
     depends_on:
       - rabbitmq
-      - db
       - app
+      - redis
+    networks:
+      - net
 
 volumes:
   postgres_data:
@@ -150,7 +160,6 @@ volumes:
   flower_db:
   html:
   vhost:
-  acme:
 
 networks:
   net:

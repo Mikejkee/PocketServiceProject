@@ -6,6 +6,8 @@ ENV PYTHONDONTWRITEBYTECODE 1
 RUN apt-get update \
   # dependencies for building Python packages
   && apt-get install -y build-essential \
+  # nc
+  && apt-get install -y netcat \
   # psycopg2 dependencies
   && apt-get install -y libpq-dev \
   # Translations dependencies
@@ -21,43 +23,44 @@ RUN addgroup --system django \
 COPY ./requirements.txt /requirements.txt
 RUN pip install -r /requirements.txt
 
-COPY ./compose/local/django/entrypoint /entrypoint
+COPY ./compose/production/django/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint
 RUN chmod +x /entrypoint
 RUN chown django /entrypoint
 
-COPY ./compose/local/django/start /start
+COPY ./compose/production/django/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
 RUN chown django /start
 
-COPY ./compose/local/django/celery/worker/start /start-celeryworker
+COPY ./compose/production/django/celery/worker/start /start-celeryworker
 RUN sed -i 's/\r$//g' /start-celeryworker
 RUN chmod +x /start-celeryworker
-RUN chown django /start-celerybeat
+RUN chown django /start-celeryworker
 
-COPY ./compose/local/django/celery/beat/start /start-celerybeat
+COPY ./compose/production/django/celery/beat/start /start-celerybeat
 RUN sed -i 's/\r$//g' /start-celerybeat
 RUN chmod +x /start-celerybeat
+RUN chown django /start-celerybeat
 
-COPY ./compose/local/django/celery/flower/start /start-flower
+COPY ./compose/production/django/celery/flower/start /start-flower
 RUN sed -i 's/\r$//g' /start-flower
 RUN chmod +x /start-flower
 RUN chown django /start-flower
 
-COPY ./compose/local/django/entrybot /entrybot
+COPY ./compose/production/django/entrybot /entrybot
 RUN sed -i 's/\r$//g' /entrybot
 RUN chmod +x /entrybot
 RUN chown django /entrybot
 
-RUN mkdir /mainmodule
-RUN mkdir /mainmodule/static
-RUN mkdir /mainmodule/media
-RUN mkdir /mainmodule/flower_db
+RUN mkdir /PocketServiceApp
+RUN mkdir /PocketServiceApp/static
+RUN mkdir /PocketServiceApp/media
+RUN mkdir /PocketServiceApp/flower_db
 WORKDIR /PocketServiceApp
 COPY . .
 
-RUN chown -R django:django /mainmodule
+RUN chown -R django:django /PocketServiceApp
 
 USER django
 
