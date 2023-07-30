@@ -13,10 +13,10 @@ services:
       - html:/usr/share/nginx/html
       - vhost:/etc/nginx/vhost.d
       - /var/run/docker.sock:/tmp/docker.sock:ro
-    expose:
-      - 80
-      - 443
-      - 15672
+    ports:
+      - 6000:6000
+      - 443:443
+      - 15672:15672
     depends_on:
       - app
       - flower
@@ -31,8 +31,6 @@ services:
     # '/start' is the shell script used to run the service
     command: /start
     restart: always
-    expose:
-      - 8000
     volumes:
       - staticfiles:/mainmodule/static
       - mediafiles:/mainmodule/media
