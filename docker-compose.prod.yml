@@ -116,6 +116,7 @@ services:
     build:
       context: .
       dockerfile: ./compose/production/django/Dockerfile
+    image: mher/flower:latest
     command: /start-flower
     restart: always
     hostname: flower
@@ -125,14 +126,13 @@ services:
       - flower_db:/mainmodule/flower_db
     env_file:
       - ./.env/.env-prod.dev
-    expose:
-      - 5555
     links:
       - rabbitmq
       - celery_worker
       - celery_beat
     depends_on:
       - rabbitmq
+      - db
     networks:
       - net
 
