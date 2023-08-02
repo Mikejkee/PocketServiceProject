@@ -14,7 +14,7 @@ from PocketServiceApp.telegram_tasks import save_client_task, create_product_ord
 logging.basicConfig(level=logging.INFO)
 
 # Объект бота TODO: вынести в отдельный файл env-ы
-TOKEN = "6138821594:AAEatK-fHgdQoHqNT-tSBX-DMk2T-MCRB14"
+TOKEN = "6472063150:AAEcMFr-8fmRxVjp6qN4FoZx9p87WFkh2yw"
 # CREW_URL = 'https://127.0.0.1:8000'
 CREW_URL = 'web.pocket-service.ru'
 
