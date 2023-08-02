@@ -4,7 +4,7 @@ import time
 import asyncio
 
 from mainmodule.celery import BaseTask
-# from HcsHrTelegramBot import TOKEN
+# from PocketServiceTelegramBot import TOKEN
 
 
 @shared_task(base=BaseTask)

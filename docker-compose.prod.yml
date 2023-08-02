@@ -8,8 +8,8 @@ services:
       dockerfile: ./compose/production/nginx/Dockerfile
     restart: always
     volumes:
-      - staticfiles:/mainmodule/static
-      - mediafiles:/mainmodule/media
+      - staticfiles:/PocketServiceProject/static
+      - mediafiles:/PocketServiceProject/media
       - html:/usr/share/nginx/html
       - vhost:/etc/nginx/vhost.d
       - /var/run/docker.sock:/tmp/docker.sock:ro
@@ -32,8 +32,8 @@ services:
     command: /start
     restart: always
     volumes:
-      - staticfiles:/mainmodule/static
-      - mediafiles:/mainmodule/media
+      - staticfiles:/PocketServiceProject/static
+      - mediafiles:/PocketServiceProject/media
     env_file:
       - ./.env/.env-prod.dev
     depends_on:
@@ -73,8 +73,8 @@ services:
       - 5672
     volumes:
       - /etc/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-      - staticfiles:/mainmodule/static
-      - mediafiles:/mainmodule/media
+      - staticfiles:/PocketServiceProject/static
+      - mediafiles:/PocketServiceProject/media
     networks:
       - net
 
@@ -85,8 +85,8 @@ services:
     command: /start-celeryworker
     restart: always
     volumes:
-      - staticfiles:/mainmodule/static
-      - mediafiles:/mainmodule/media
+      - staticfiles:/PocketServiceProject/static
+      - mediafiles:/PocketServiceProject/media
     env_file:
       - ./.env/.env-prod.dev
     depends_on:
@@ -101,8 +101,8 @@ services:
     command: /start-celerybeat
     restart: always
     volumes:
-      - staticfiles:/mainmodule/static
-      - mediafiles:/mainmodule/media
+      - staticfiles:/PocketServiceProject/static
+      - mediafiles:/PocketServiceProject/media
     env_file:
       - ./.env/.env-prod.dev
     depends_on:
@@ -119,9 +119,9 @@ services:
     restart: always
     hostname: flower
     volumes:
-      - staticfiles:/mainmodule/static
-      - mediafiles:/mainmodule/media
-      - flower_db:/mainmodule/flower_db
+      - staticfiles:/PocketServiceProject/static
+      - mediafiles:/PocketServiceProject/media
+      - flower_db:/PocketServiceProject/flower_db
     env_file:
       - ./.env/.env-prod.dev
     links:
@@ -141,7 +141,7 @@ services:
     image: telegrambot
     command: /entrybot
     volumes:
-      - .:/mainmodule
+      - .:/PocketServiceProject
     env_file:
       - ./.env/.env-prod.dev
     depends_on:

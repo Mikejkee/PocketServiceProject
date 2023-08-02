@@ -1,8 +1,8 @@
 location /static/ {
-    alias /hsc_hr/static/;
+    alias /PocketServiceProject/static/;
     add_header Access-Control-Allow-Origin *;
 }
 location /media/ {
-    alias /hsc_hr/media/;
+    alias /PocketServiceProject/media/;
     add_header Access-Control-Allow-Origin *;
 }

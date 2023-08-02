@@ -42,7 +42,7 @@ COPY ./compose/local/django/entrybot /entrybot
 RUN sed -i 's/\r$//g' /entrybot
 RUN chmod +x /entrybot
 
-WORKDIR /PocketServiceApp
+WORKDIR /PocketServiceProject
 COPY . .
 
 ENTRYPOINT ["/entrypoint"]
