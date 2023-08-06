@@ -1,4 +1,6 @@
 import asyncio
+import os
+import django
 from asgiref.sync import sync_to_async
 import logging
 from aiogram import F, Bot, Dispatcher, types
@@ -7,8 +9,14 @@ from aiogram.filters import Text
 from aiogram.filters.command import Command
 from aiogram.types.web_app_info import WebAppInfo
 
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mainmodule.settings")
+django.setup()
+
 from PocketServiceApp.telegram_tasks import save_client_task, create_product_order_task, tg_message_task, \
     update_product_order_task
+from PocketServiceApp.models import Client, Role
+
+
 
 # Логирование
 logging.basicConfig(level=logging.INFO)
@@ -20,18 +28,6 @@ CREW_URL = 'web.pocket-service.ru'
 
 # Диспетчер
 dp = Dispatcher()
-
-start_buttons = [
-    [
-        KeyboardButton(text='Личный кабинет 💼'),
-        KeyboardButton(text='Витрина услуг 📜️'),
-    ]
-]
-
-keyboard_start = ReplyKeyboardMarkup(
-    keyboard=start_buttons,
-    resize_keyboard=True
-)
 
 
 @sync_to_async
@@ -88,6 +84,50 @@ def create_product_order(phone_number, telegram_chat_id, client_id, email,
     print('TASK CREATES - update order', update_order_task.task_id)
 
 
+@sync_to_async
+def user_check_status(telegram_id):
+    clients = Client.objects.filter(telegram_id=str(telegram_id))
+    if clients.count() > 0:
+        user = Client.objects.filter(telegram_id=str(telegram_id)).last()
+    role = user.role.last().role_type
+    return role
+
+@sync_to_async
+def menu_by_role(role, telegram_id):
+    webApp_lc_client = WebAppInfo(url=f'https://{CREW_URL}/PocketServiceApp/profile/?TelegramId={telegram_id}')
+    webApp_lc_admin = WebAppInfo(url=f'https://{CREW_URL}/PocketServiceApp/profile/?TelegramId={telegram_id}')
+    webApp_lc_agent = WebAppInfo(url=f'https://{CREW_URL}/PocketServiceApp/profile/?TelegramId={telegram_id}')
+
+    if "агент" in role:
+       buttons = [
+           [
+               KeyboardButton(text='Личный кабинет пользователя💼', web_app=webApp_lc_client),
+               KeyboardButton(text='Личный кабинет агента💼', web_app=webApp_lc_agent),
+           ],
+           [
+               KeyboardButton(text='Витрина услуг 📜️'),
+           ]
+        ]
+    elif "администратор" in role:
+        buttons = [
+            [
+                KeyboardButton(text='Личный кабинет пользователя💼', web_app=webApp_lc_client),
+                KeyboardButton(text='Личный кабинет администратора💼', web_app=webApp_lc_admin),
+            ],
+            [
+                KeyboardButton(text='Витрина услуг 📜️'),
+            ]
+        ]
+    else:
+        buttons = [
+            [
+                KeyboardButton(text='Личный кабинет пользователя💼', web_app=webApp_lc_client),
+                KeyboardButton(text='Витрина услуг 📜️'),
+            ]
+        ]
+    return ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
+
+
 # Хэндлер на команду /start
 @dp.message(Command("start"))
 async def cmd_start(message: Message):
@@ -113,20 +153,28 @@ async def cmd_start(message: Message):
                                  telegram_name=telegram_name, telegram_surname=telegram_surname,
                                  telegram_username=telegram_username)
 
+    role = await user_check_status(telegram_id)
+    keyboard = await menu_by_role(role, telegram_id)
+
     await message.answer(f'{hello}\n\n'
                          'У тебя что-то сломалось? Тебе надо сделать ремонт? Ищешь мастера? \n\n'
                          '<b>Личный кабинет</b> 💼 - для просмотра информации о своем объекте.\n'
                          '<b>Витрина услуг </b> 📜 - здесь можно заказать ремонт квартиры, сантехники, '
                          'найти мастера по маникюру, бровям.\n'
                          '',
-                         reply_markup=keyboard_start,
+                         reply_markup=keyboard,
                          parse_mode='HTML')
 
 
 @dp.message(Text('🔙 Главное меню'))
-async def flat_repair(message: Message):
+async def head_menu(message: Message):
+    from_user = message.from_user
+    telegram_id = from_user.id
+    role = await user_check_status(telegram_id)
+    keyboard = await menu_by_role(role, telegram_id)
+
     await message.answer('Выберите необходимое',
-                         reply_markup=keyboard_start,
+                         reply_markup=keyboard,
                          parse_mode='HTML')
 
 
