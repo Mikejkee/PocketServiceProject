@@ -24,6 +24,7 @@ def save_user(role_type=None, name=None, surname=None, patronymic=None, date_of_
                            telegram_name=telegram_name, telegram_surname=telegram_surname,
                            email=email, background_image=background_image, address=address,
                            addition_information=addition_information, object_information=object_information)
+            print("User updated")
             return True
         else:
             role = Role.objects.filter(role_type=str(role_type)).last()
@@ -38,6 +39,7 @@ def save_user(role_type=None, name=None, surname=None, patronymic=None, date_of_
                                                  object_information=object_information)
                 new_user.save()
                 new_user.role.add(role)
+                print("User created")
                 return True
             except Exception as e:
                 print(e)

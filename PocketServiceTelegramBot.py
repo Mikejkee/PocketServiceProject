@@ -93,38 +93,14 @@ def user_check_status(telegram_id):
     return role
 
 @sync_to_async
-def menu_by_role(role, telegram_id):
-    webApp_lc_client = WebAppInfo(url=f'https://{CREW_URL}/PocketServiceApp/profile/?TelegramId={telegram_id}')
-    webApp_lc_admin = WebAppInfo(url=f'https://{CREW_URL}/PocketServiceApp/profile/?TelegramId={telegram_id}')
-    webApp_lc_agent = WebAppInfo(url=f'https://{CREW_URL}/PocketServiceApp/profile/?TelegramId={telegram_id}')
-
-    if "агент" in role:
-       buttons = [
-           [
-               KeyboardButton(text='Личный кабинет пользователя💼', web_app=webApp_lc_client),
-               KeyboardButton(text='Личный кабинет агента💼', web_app=webApp_lc_agent),
-           ],
-           [
-               KeyboardButton(text='Витрина услуг 📜️'),
-           ]
+def start_menu_buttons(telegram_id):
+    webApp_lc_user= WebAppInfo(url=f'https://{CREW_URL}/PocketServiceApp/profile/?TelegramId={telegram_id}')
+    buttons = [
+        [
+            KeyboardButton(text='Личный кабинет 💼', web_app=webApp_lc_user),
+            KeyboardButton(text='Витрина услуг 📜️'),
         ]
-    elif "администратор" in role:
-        buttons = [
-            [
-                KeyboardButton(text='Личный кабинет пользователя💼', web_app=webApp_lc_client),
-                KeyboardButton(text='Личный кабинет администратора💼', web_app=webApp_lc_admin),
-            ],
-            [
-                KeyboardButton(text='Витрина услуг 📜️'),
-            ]
-        ]
-    else:
-        buttons = [
-            [
-                KeyboardButton(text='Личный кабинет пользователя💼', web_app=webApp_lc_client),
-                KeyboardButton(text='Витрина услуг 📜️'),
-            ]
-        ]
+    ]
     return ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
 
 
@@ -153,8 +129,7 @@ async def cmd_start(message: Message):
                                  telegram_name=telegram_name, telegram_surname=telegram_surname,
                                  telegram_username=telegram_username)
 
-    role = await user_check_status(telegram_id)
-    keyboard = await menu_by_role(role, telegram_id)
+    keyboard = await start_menu_buttons(telegram_id)
 
     await message.answer(f'{hello}\n\n'
                          'У тебя что-то сломалось? Тебе надо сделать ремонт? Ищешь мастера? \n\n'
@@ -170,8 +145,7 @@ async def cmd_start(message: Message):
 async def head_menu(message: Message):
     from_user = message.from_user
     telegram_id = from_user.id
-    role = await user_check_status(telegram_id)
-    keyboard = await menu_by_role(role, telegram_id)
+    keyboard = await start_menu_buttons(telegram_id)
 
     await message.answer('Выберите необходимое',
                          reply_markup=keyboard,
