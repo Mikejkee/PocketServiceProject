@@ -7,18 +7,20 @@ function loadInfo() {
     let TelegramId = $('#telegram_id').val();
     let currentUrl = window.location.href;
     let processUrl = currentUrl.split('/profile')[0];
-    let targetUrl = processUrl + '/api/profile/info?TelegramId=' + TelegramId
+    let targetUrl = processUrl + '/api/person/info?TelegramId=' + TelegramId
     $.get(targetUrl).done(function(answer) {
         let data = answer.data;
         console.log(data);
 
         let $photo = $('#userPhoto');
-        $('#person_id').val(data.user_id);
+        $('#person_id').val(data.person_id);
         $('#telegram_username').val(data.telegram_username);
         $('#fio').val(data.person_fio);
         $('#phone_number').val(data.phone_number);
-        $('#email_username').val(data.email.split('@')[0]);
-        $('#email_server').val(data.email.split('@')[1]);
+        if (data.email != null){
+            $('#email_username').val(data.email.split('@')[0]);
+            $('#email_server').val(data.email.split('@')[1]);
+        }
         $('#date_of_birth').val(data.person_date_of_birth);
 
     }).fail(function(err) {
@@ -27,8 +29,11 @@ function loadInfo() {
 }
 
 $(document).ready(function(){
+    loadInfo();
+
     // SAVE EDITION
-    window.Telegram.WebApp.onEvent('mainButtonClicked', function() {
+    // window.Telegram.WebApp.onEvent('mainButtonClicked', function() {
+    $(document).on('click','#save_info', function(){
         let validationPerson = $('#personForm').valid();
 
         let telegram_id = $('#telegram_id').val();
@@ -36,7 +41,7 @@ $(document).ready(function(){
         let person_fio = $('#fio').val();
         let phone_number = $('#phone_number').val();
         let person_date_of_birth = $('#date_of_birth').val();
-        let email = $('#email_username').val() + $('#email_server').val();
+        let email = $('#email_username').val() +'@'+ $('#email_server').val();
 
         let currentUrl = window.location.href;
         let processUrl = currentUrl.split('/profile')[0];
@@ -75,6 +80,8 @@ $(document).ready(function(){
             $('.alert').show();
         }
     });
+
+
 
     // WEBSOCKET
     const ws_url = `/ws/task_status/`;

@@ -31,7 +31,6 @@ urlpatterns += [
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     # Person
     path('api/person/info', api.APIPersonInfoByTelegramID.as_view(), name='person_info'),
-    # path('api/person/edit_info', api.APIPersonEditByTelegramID.as_view(), name='person_info'),
 
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('main/', IndexView.as_view(), name='main'),
