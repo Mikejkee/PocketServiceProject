@@ -38,6 +38,7 @@ small {
 }
 
 </style>
+
 {% endblock link %}
 
 {% block title %} Личный кабинет {% endblock title %}
@@ -52,39 +53,62 @@ small {
 <div class="row py-2">
     <div class="col">
         <div class="card text-center border-warning mb-3" >
-            <div class="card mb-4 mt-2 box-shadow">
-                <h5 class="card-header bg-secondary text-white", style="font-size: 20px; font-weight: 400; font-family: 'Beer money';"> Персональные данные</h5>
-                <div class="card-body">
+            <h5 class="card-header bg-secondary text-white", style="margin-bottom: 3px; font-size: 20px; font-weight: 400; font-family: 'Beer money';" onclick="openDiv('personalityForm')"> Персональные данные</h5>
+            <div class="card mb-4 mt-2 box-shadow collapse" id="personalityForm">
+                <form id="personForm">
+                    {% csrf_token %}
+                    <div class="card-body">
+                        <small class="text-muted">Telegram:</small>
+                        <div class="input-group input-group-sm mb-3">
+                            <input type="number" name="telegram_id" id="telegram_id" class="form-control mb-0" value="{{ telegram_id }}" hidden>
+                            <span class="input-group-text">@</span>
+                            <input type="text" class="form-control" placeholder="Username" id="telegram_username" disabled>
+                        </div>
 
-                    <small class="text-muted">Telegram:</small>
+                        <small class="text-muted">ФИО<span class="required">*</span>:</small>
+                        <div class="input-group input-group-sm mb-3">
+                            <input type="text" class="form-control" placeholder="ФИО" id="fio">
+                        </div>
+
+                        <small class="text-muted">Телефон<span class="required">*</span>:</small>
+                        <div class="input-group input-group-sm mb-3">
+                            <input type="text" class="form-control" placeholder="Телефонный номер" id="phone_number">
+                        </div>
+
+                        <small class="text-muted">Дата рождения<span class="required">*</span>:</small>
+                        <div class="input-group input-group-sm mb-3">
+                            <input type="text" class="form-control" placeholder="00.00.0000" id="date_of_birth">
+                        </div>
+
+                        <small class="text-muted">Электронная почта<span class="required">*</span>:</small>
+                        <div class="input-group input-group-sm mb-3">
+                          <input type="text" class="form-control" placeholder="Username" aria-label="Username" id="email_username">
+                          <span class="input-group-text">@</span>
+                          <input type="text" class="form-control" placeholder="Server" aria-label="Server" id="email_server">
+                        </div>
+                        <a href="#" class="btn btn-primary" id="save_info">Сохранить</a>
+                    </div>
+                </form>
+            </div>
+            <h5 class="card-header bg-secondary text-white", style="margin-bottom: 3px; font-size: 20px; font-weight: 400; font-family: 'Beer money';" onclick="openDiv('agentAnalitics')"> Аналитические данные</h5>
+            <div class="card mb-4 mt-2 box-shadow collapse" id="agentAnalitics">
+                <div class="card-body">
+                    <small class="text-muted">Большая аналитиика:</small>
                     <div class="input-group input-group-sm mb-3">
                         <span class="input-group-text" id="">@</span>
-                        <input type="text" class="form-control" placeholder="Username">
-                    </div>
-
-                    <small class="text-muted">ФИО<span class="required">*</span>:</small>
+                        <input type="text" class="form-control" placeholder="Вбей аналИтику">
+                </div>
+            </div>
+    </div>
+            <h5 class="card-header bg-secondary text-white", style="margin-bottom: 3px; font-size: 20px; font-weight: 400; font-family: 'Beer money';" onclick="openDiv('agentProducts')"> Заказы</h5>
+            <div class="card mb-4 mt-2 box-shadow collapse" id="agentProducts">
+                <div class="card-body">
+                    <small class="text-muted">Большие заказы:</small>
                     <div class="input-group input-group-sm mb-3">
-                        <input type="text" class="form-control" placeholder="Фамилия Имя Отчество">
-                    </div>
-
-                    <small class="text-muted">Телефон<span class="required">*</span>:</small>
-                    <div class="input-group input-group-sm mb-3">
-                        <input type="text" class="form-control" placeholder="Телефонный номер">
-                    </div>
-
-                    <small class="text-muted">Дата рождения<span class="required">*</span>:</small>
-                    <div class="input-group input-group-sm mb-3">
-                        <input type="text" class="form-control" placeholder="">
-                    </div>
-
-                    <small class="text-muted">Электронная почта<span class="required">*</span>:</small>
-                    <div class="input-group input-group-sm mb-3">
-                      <input type="text" class="form-control" placeholder="Username" aria-label="Username">
-                      <span class="input-group-text">@</span>
-                      <input type="text" class="form-control" placeholder="Server" aria-label="Server">
-                    </div>
-                    <a href="#" class="btn btn-primary">Сохранить</a>
-        </div>
+                        <span class="input-group-text" id="">@</span>
+                        <input type="text" class="form-control" placeholder="Таблица Заказов">
+                </div>
+            </div>
     </div>
 </div>
 
@@ -93,8 +117,19 @@ small {
 {% endblock content %}
 
 {% block scripts %}
-
+<script src="{% static 'js/profile.js' %}"></script>
 <script>
+
+function openDiv(elem_id_to_open) {
+    formOpened = $(`#${ elem_id_to_open }`)
+    if (formOpened.hasClass('show')) {
+        formOpened.removeClass('show', 2000);
+    }
+    else {
+        formOpened.addClass('show', 2000);
+    }
+
+}
 
 
 </script>

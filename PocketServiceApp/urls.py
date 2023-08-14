@@ -18,16 +18,21 @@ schema_view = get_schema_view(
 
 
 router = routers.DefaultRouter()
-router.register('admins', api.AdminsViewSet, basename="Administrator")
-router.register('clients', api.ClientViewSet, basename="Client")
-router.register('products', api.ProductViewSet, basename="Product")
-router.register('orders', api.OrderViewSet, basename="Order")
+# router.register('/api/admins', api.AdminsViewSet, basename="Administrator")
+router.register('api/person', api.PersonViewSet, basename="Person")
+router.register('api/clients', api.ClientViewSet, basename="Client")
+router.register('api/products', api.ProductViewSet, basename="Product")
+router.register('api/orders', api.OrderViewSet, basename="Order")
 
 urlpatterns = router.urls
 
 urlpatterns += [
     re_path(r'^swagger(?P<id>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    # Person
+    path('api/person/info', api.APIPersonInfoByTelegramID.as_view(), name='person_info'),
+    # path('api/person/edit_info', api.APIPersonEditByTelegramID.as_view(), name='person_info'),
+
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('main/', IndexView.as_view(), name='main'),
     path('showcase/', ShowcaseView.as_view(), name='showcase'),

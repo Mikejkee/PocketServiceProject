@@ -6,6 +6,7 @@ class ClientAdmin(admin.ModelAdmin):
     list_display = ("telegram_id", )
 
 admin.site.register(Role)
+admin.site.register(Person)
 admin.site.register(Area)
 admin.site.register(ImageObject)
 admin.site.register(FileObject)

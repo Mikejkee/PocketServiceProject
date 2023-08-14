@@ -8,6 +8,12 @@ class RoleSerializer(serializers.ModelSerializer):
         model = Role
         fields = ['role_type']
 
+class PersonSerializer(serializers.ModelSerializer):
+    role = RoleSerializer(many=True)
+
+    class Meta:
+        model = Person
+        fields = '__all__'
 
 class AdministratorSerializer(serializers.ModelSerializer):
     role = RoleSerializer(many=True)
