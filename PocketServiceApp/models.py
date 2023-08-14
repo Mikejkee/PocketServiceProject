@@ -56,6 +56,7 @@ class Person(Registrator):
     surname = models.CharField("Фамилия", max_length=20, null=True, blank=True)
     patronymic = models.CharField("Отчество", max_length=20, null=True, blank=True)
     date_of_birth = models.DateField("Дата рождения", null=True, blank=True)
+    person_fio = models.CharField("ФИО",  max_length=200, null=True, blank=True)
     phone_number = models.CharField("Номер телефона", max_length=12, null=True, blank=True)
     telegram_chat_id = models.CharField('ID Чата', max_length=255, null=True, blank=True)
     username = models.CharField("Имя пользователя", max_length=20, null=True, blank=True)
