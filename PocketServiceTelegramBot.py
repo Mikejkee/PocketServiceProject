@@ -31,12 +31,12 @@ dp = Dispatcher()
 
 
 @sync_to_async
-def save_client(name=None, surname=None, patronymic=None,
+def save_client(name=None, surname=None, patronymic=None, person_fio=None,
                 date_of_birth=None, phone_number=None, username=None, telegram_chat_id=None,
                 telegram_id=None, telegram_username=None, telegram_name=None,
                 telegram_surname=None, email=None, background_image=None, address=None,
                 addition_information=None, object_information=None):
-    task = save_client_task.delay(name, surname, patronymic, date_of_birth, phone_number, username,
+    task = save_client_task.delay(name, surname, patronymic, person_fio, date_of_birth, phone_number, username,
                                   telegram_chat_id, telegram_id, telegram_username, telegram_name,
                                   telegram_surname, email, background_image, address,
                                   addition_information, object_information)

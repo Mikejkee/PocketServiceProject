@@ -8,13 +8,13 @@ from mainmodule.celery import BaseTask
 
 
 @shared_task(base=BaseTask)
-def save_client_task(name, surname, patronymic,date_of_birth, phone_number, username, telegram_chat_id,
+def save_client_task(name, surname, patronymic, person_fio, date_of_birth, phone_number, username, telegram_chat_id,
                      telegram_id, telegram_username, telegram_name, telegram_surname, email,
                      background_image, address, addition_information, object_information):
 
     from .controllers.bot_services import save_user
     print('Start delay')
-    save_user('Обычный клиент', name, surname, patronymic, date_of_birth, phone_number, username,
+    save_user('Обычный клиент', name, surname, patronymic, person_fio, date_of_birth, phone_number, username,
               telegram_chat_id, telegram_id, telegram_username, telegram_name, telegram_surname,
               email, background_image, address, addition_information, object_information)
 

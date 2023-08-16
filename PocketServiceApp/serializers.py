@@ -2,43 +2,48 @@ from rest_framework import serializers
 from .models import *
 
 
-class RoleSerializer(serializers.ModelSerializer):
+class PatchModelSerializer(serializers.ModelSerializer):
+    def __init__(self, *args, **kwargs):
+        kwargs['partial'] = True
+        super(PatchModelSerializer, self).__init__(*args, **kwargs)
+
+class RoleSerializer(PatchModelSerializer):
 
     class Meta:
         model = Role
         fields = ['role_type']
 
-class PersonSerializer(serializers.ModelSerializer):
-    role = RoleSerializer(many=True)
+class PersonSerializer(PatchModelSerializer):
+    role = RoleSerializer(many=True, read_only=True)
 
     class Meta:
         model = Person
         fields = '__all__'
 
-class AdministratorSerializer(serializers.ModelSerializer):
-    role = RoleSerializer(many=True)
+class AdministratorSerializer(PatchModelSerializer):
+    role = RoleSerializer(many=True, read_only=True)
 
     class Meta:
         model = Administrator
         fields = '__all__'
 
 
-class ClientSerializer(serializers.ModelSerializer):
-    role = RoleSerializer(many=True)
+class ClientSerializer(PatchModelSerializer):
+    role = RoleSerializer(many=True, read_only=True)
 
     class Meta:
         model = Client
         fields = '__all__'
 
 
-class ProductSerializer(serializers.ModelSerializer):
+class ProductSerializer(PatchModelSerializer):
 
     class Meta:
         model = Product
         fields = '__all__'
 
 
-class OrderSerializer(serializers.ModelSerializer):
+class OrderSerializer(PatchModelSerializer):
 
     class Meta:
         model = Order
