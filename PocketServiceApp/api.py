@@ -51,6 +51,45 @@ class APIPersonInfoByTelegramID(APIView):
             return Response({'error': 'User not found'}, status=400)
         return Response({'error': 'Telegram user not found'}, status=400)
 
+class APICompanyInfoByTelegramID(APIView):
+    @swagger_auto_schema(
+        tags=["company"],
+        operation_description='Получает информацию о компании по Telegram ID управляющего ',
+        manual_parameters=[TELEGRAM_ID_QUERY],
+    )
+    def get(self, request):
+        params = request.query_params
+        telegram_id = params.get('TelegramId')
+        if telegram_id:
+            agent = Agent.objects.filter(telegram_id=str(telegram_id)).last()
+            if agent:
+                roles = agent.role
+                if roles.filter(role_type='Управляющий организации').last():
+                    company_id = agent.company_id
+                    company = Company.objects.filter(id=str(company_id)).last()
+                    if company:
+                        result_dict = {
+                            'company_name': company.name,
+                            'company_description': company.description,
+                            'company_legal_address': company.legal_address,
+                            'company_mail_address': company.mail_address,
+                            'company_inn': company.inn,
+                            'company_kpp': company.kpp,
+                            'company_ogrnip': company.ogrnip,
+                            'company_payment_account': company.payment_account,
+                            'company_bank': company.bank,
+                            'company_bik': company.bik,
+                            'company_okpo': company.okpo,
+                            'company_contact_phone': company.contact_phone,
+                            'company_email': company.email,
+                        }
+
+                        return Response({'data': result_dict}, status=200)
+                    return Response({'error': 'Company is not found'}, status=400)
+                return Response({'error': 'User is not head of company'}, status=400)
+            return Response({'error': 'User not found'}, status=400)
+        return Response({'error': 'Telegram user not found'}, status=400)
+
 class PersonViewSet(viewsets.ModelViewSet):
     queryset = Person.objects.all()
     serializer_class = PersonSerializer
@@ -65,6 +104,9 @@ class ClientViewSet(viewsets.ModelViewSet):
     serializer_class = ClientSerializer
 
 
+class CompanyViewSet(viewsets.ModelViewSet):
+    queryset = Company.objects.all()
+    serializer_class = CompanySerializer
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()

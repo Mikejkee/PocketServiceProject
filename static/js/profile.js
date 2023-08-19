@@ -1,5 +1,7 @@
 window.Telegram.WebApp.ready();
 let tg = window.Telegram.WebApp;
+tg.MainButton.text = 'Сохранить';
+tg.MainButton.show();
 
 let csrftoken = $.cookie('csrftoken');
 
@@ -28,13 +30,45 @@ function loadInfo() {
     });
 }
 
+function loadCompanyInfo() {
+    let TelegramId = $('#telegram_id').val();
+    let currentUrl = window.location.href;
+    let processUrl = currentUrl.split('/profile')[0];
+    let targetUrl = processUrl + '/api/company_by_user/info?TelegramId=' + TelegramId
+    $.get(targetUrl).done(function(answer) {
+        let data = answer.data;
+        console.log(data);
+
+        $('#company_name').val(data.company_name);
+        $('#legal_address').val(data.company_legal_address);
+        $('#mail_address').val(data.company_mail_address);
+        $('#email_address').val(data.company_email);
+        $('#contact_phone').val(data.company_contact_phone);
+        $('#inn').val(data.company_inn);
+        $('#kpp').val(data.company_kpp);
+        $('#ogrnip').val(data.company_ogrnip);
+        $('#payment_account').val(data.company_payment_account);
+        $('#bank').val(data.company_bank);
+        $('#bik').val(data.company_bik);
+        $('#okpo').val(data.company_okpo);
+        $('#description').val(data.company_description);
+
+
+    }).fail(function(err) {
+        console.log(err);
+    });
+}
 $(document).ready(function(){
     loadInfo();
 
+    if ($('#company_form').length) {
+        loadCompanyInfo();
+    }
+
     // SAVE EDITION
-    // window.Telegram.WebApp.onEvent('mainButtonClicked', function() {
-    $(document).on('click','#save_info', function(){
-        let validationPerson = $('#personForm').valid();
+    Telegram.WebApp.onEvent('mainButtonClicked', function() {
+    // $(document).on('click','#save_info', function(){
+        let validationPerson = $('#person_form').valid();
 
         let telegram_id = $('#telegram_id').val();
         let person_id = $('#person_id').val();
@@ -84,12 +118,12 @@ $(document).ready(function(){
 
 
     // WEBSOCKET
-    const ws_url = `/ws/task_status/`;
-    const WS = new WebSocket((location.protocol === 'https:' ? 'wss' : 'ws') + '://' + window.location.host + ws_url);
-
-    WS.onmessage = function(e) {
-            let data = JSON.parse(e.data);
-            console.log(data)
-    };
+    // const ws_url = `/ws/task_status/`;
+    // const WS = new WebSocket((location.protocol === 'https:' ? 'wss' : 'ws') + '://' + window.location.host + ws_url);
+    //
+    // WS.onmessage = function(e) {
+    //         let data = JSON.parse(e.data);
+    //         console.log(data)
+    // };
 
 });

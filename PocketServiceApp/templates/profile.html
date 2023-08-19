@@ -1,138 +1,242 @@
-{% extends 'base.html' %}
-{% load static %}
-{% block link %}
+{% extends 'base.html' %} {% load static %} {% block link %}
 <style>
-@import "//fonts.fontstorage.com/import/beermoney.css";
-header {
-	width: 100%;
-	background: url({% static 'img/header_profile_logo.jpg' %}) no-repeat;
-    background-size: cover;
-    background-position: center;
-	height: 180px;
-}
+	@import "//fonts.fontstorage.com/import/beermoney.css";
+	header {
+		width: 100%;
+		background: url({% static 'img/header_profile_logo.jpg' %}) no-repeat;
+	    background-size: cover;
+	    background-position: center;
+		height: 180px;
+	}
 
-header > p {
-	color: rgba(136,139,141,1);
-	font-family: 'Beer money';
-	font-size: 27px;
-	font-weight: 400;
-	line-height: 1em;
-	text-shadow: -2px 2px 1px rgba(0,0,0,1);
-	margin: 0px 0px 20px 0px;
-    padding: 145px 0px 0px 115px;
-	width: 700px;
-}
+	header > p {
+		color: rgba(136,139,141,1);
+		font-family: 'Beer money';
+		font-size: 27px;
+		font-weight: 400;
+		line-height: 1em;
+		text-shadow: -2px 2px 1px rgba(0,0,0,1);
+		margin: 0px 0px 20px 0px;
+	    padding: 145px 0px 0px 115px;
+		width: 700px;
+	}
 
-.my_icons {
-    width: 17%;
-    float: left;
-}
+	.my_icons {
+	    width: 17%;
+	    float: left;
+	}
 
-.required {
-    color: red;
-}
+	.required {
+	    color: red;
+	}
 
-small {
-    float: left;
-    margin-bottom: 2px;
-}
+	small {
+	    float: left;
+	    margin-bottom: 2px;
+	}
 
+	[class*="sticker"] {
+	 position: relative;
+	 margin: 15px 0;
+	 padding: 33px 15px 15px;
+	 background: #fff;
+	 border-radius: 6px;
+	 box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, .64)
+	}
+	[class*="sticker"]:after {
+	 content: attr(data-sticker);
+	 position: absolute;
+	 top: 0;
+	 padding: 3px 7px;
+	 font-size: 12px;
+	 font-weight: bold;
+	 background: #999;
+	 color: #fff
+	}
+	.sticker-left {
+	 border-top-left-radius: 6px;
+	 margin-top: 5px;
+	 padding-right: 15px;
+	 margin-bottom: 5px;
+	 margin-right: 5px;
+	 margin-left: 5px;
+	 padding-top: 35px;
+	}
+
+	.sticker-right {
+	 border-top-right-radius: 6px
+	}
+	.sticker-left:after {
+	 left: 0;
+	 border-radius: 6px 0 6px 0
+	}
+	.sticker-right:after {
+	 right: 0;
+	 border-radius: 0 6px 0 6px
+	}
+	.sticker-danger:after {
+	 background: #d9534f
+	}
+	.sticker-warning:after {
+	 background: #f0ad4e
+	}
+	.sticker-success:after {
+	 background: #5cb85c
+	}
+	.sticker-info:after {
+	 background: #5bc0de
+	}
+	.sticker-inverse:after {
+	 background: #222
+	}
 </style>
 
-{% endblock link %}
+{% endblock link %} {% block title %} Личный кабинет {% endblock title %} {% block header %}
 
-{% block title %} Личный кабинет {% endblock title %}
+<p>Личный кабинет</p>
 
-{% block header %}
-
-    <p>Личный кабинет </p>
-
-{% endblock header %}
-
-{% block content %}
+{% endblock header %} {% block content %}
 <div class="row py-2">
-    <div class="col">
-        <div class="card text-center border-warning mb-3" >
-            <h5 class="card-header bg-secondary text-white", style="margin-bottom: 3px; font-size: 20px; font-weight: 400; font-family: 'Beer money';" onclick="openDiv('personalityForm')"> Персональные данные</h5>
-            <div class="card mb-4 mt-2 box-shadow collapse" id="personalityForm">
-                <form id="personForm">
-                    {% csrf_token %}
-                    <div class="card-body">
-                        <small class="text-muted">Telegram:</small>
-                        <div class="input-group input-group-sm mb-3">
-                            <input type="number" name="telegram_id" id="telegram_id" class="form-control mb-0" value="{{ telegram_id }}" hidden>
-                            <input type="number" name="person_id" id="person_id" class="form-control mb-0" hidden>
-                            <span class="input-group-text">@</span>
-                            <input type="text" class="form-control" placeholder="Username" id="telegram_username" disabled>
-                        </div>
+	<div class="col">
+		<div class="card text-center border-warning mb-3">
+			<h5 class="card-header bg-secondary text-white" , style="margin-bottom: 3px; font-size: 20px; font-weight: 400; font-family: 'Beer money';" onclick="openDiv('personalityForm')">Персональные данные</h5>
+			<div class="card mb-4 mt-2 box-shadow collapse" id="personalityForm">
+				<div class="sticker-left">
 
-                        <small class="text-muted">ФИО<span class="required">*</span>:</small>
-                        <div class="input-group input-group-sm mb-3">
-                            <input type="text" class="form-control" placeholder="ФИО" id="fio">
-                        </div>
+					<form id="person_form">
+						{% csrf_token %}
+						<div class="card-body">
+							<small class="text-muted">Telegram:</small>
+							<div class="input-group input-group-sm mb-3">
+								<input type="number" name="telegram_id" id="telegram_id" class="form-control mb-0" value="{{ telegram_id }}" hidden />
+								<input type="number" name="person_id" id="person_id" class="form-control mb-0" hidden />
+								<span class="input-group-text">@</span>
+								<input type="text" class="form-control" placeholder="Username" id="telegram_username" disabled />
+							</div>
 
-                        <small class="text-muted">Телефон<span class="required">*</span>:</small>
-                        <div class="input-group input-group-sm mb-3">
-                            <input type="text" class="form-control" placeholder="Телефонный номер" id="phone_number">
-                        </div>
+							<small class="text-muted">ФИО<span class="required">*</span>:</small>
+							<div class="input-group input-group-sm mb-3">
+								<input type="text" class="form-control" placeholder="ФИО" id="fio" />
+							</div>
 
-                        <small class="text-muted">Дата рождения<span class="required">*</span>:</small>
-                        <div class="input-group input-group-sm mb-3">
-                            <input type="text" class="form-control" placeholder="00.00.0000" id="date_of_birth">
-                        </div>
+							<small class="text-muted">Телефон<span class="required">*</span>:</small>
+							<div class="input-group input-group-sm mb-3">
+								<input type="text" class="form-control" placeholder="Телефонный номер" id="phone_number" />
+							</div>
 
-                        <small class="text-muted">Электронная почта<span class="required">*</span>:</small>
-                        <div class="input-group input-group-sm mb-3">
-                          <input type="text" class="form-control" placeholder="Username" aria-label="Username" id="email_username">
-                          <span class="input-group-text">@</span>
-                          <input type="text" class="form-control" placeholder="Server" aria-label="Server" id="email_server">
-                        </div>
-                        <a href="#" class="btn btn-primary" id="save_info">Сохранить</a>
+							<small class="text-muted">Дата рождения<span class="required">*</span>:</small>
+							<div class="input-group input-group-sm mb-3">
+								<input type="text" class="form-control" placeholder="00.00.0000" id="date_of_birth" />
+							</div>
+
+							<small class="text-muted">Электронная почта<span class="required">*</span>:</small>
+							<div class="input-group input-group-sm mb-3">
+								<input type="text" class="form-control" placeholder="Username" aria-label="Username" id="email_username" />
+								<span class="input-group-text">@</span>
+								<input type="text" class="form-control" placeholder="Server" aria-label="Server" id="email_server" />
+							</div>
+{#							<a href="#" class="btn btn-primary" id="save_info">Сохранить</a>#}
+						</div>
+					</form>
+
+					{% if role_type_head_agent %}
+					<div class="sticker-left sticker-success text-center" data-sticker="Информация о Вашей компании">
+                        <form id="company_form">
+                            {% csrf_token %}
+                            <small class="text-muted">Название компании<span class="required">*</span>:</small>
+                            <div class="input-group input-group-sm mb-3">
+                                <input type="text" class="form-control" placeholder="Название" id="company_name"/>
+                            </div>
+                            <small class="text-muted">Юридический адрес<span class="required">*</span>:</small>
+                            <div class="input-group input-group-sm mb-3">
+                                <input type="text" class="form-control" placeholder="Адрес" id="legal_address"/>
+                            </div>
+                            <small class="text-muted">Почтовый адрес<span class="required">*</span>:</small>
+                            <div class="input-group input-group-sm mb-3">
+                                <input type="text" class="form-control" placeholder="Адрес" id="mail_address"/>
+                            </div>
+                            <small class="text-muted">Электронная почта<span class="required">*</span>:</small>
+                            <div class="input-group input-group-sm mb-3">
+                                <input type="text" class="form-control" placeholder="Почта" id="email_address"/>
+                            </div>
+                            <small class="text-muted">Контактный телефон<span class="required">*</span>:</small>
+                            <div class="input-group input-group-sm mb-3">
+                                <input type="text" class="form-control" placeholder="Телефон" id="contact_phone"/>
+                            </div>
+                            <small class="text-muted">ИНН<span class="required">*</span>:</small>
+                            <div class="input-group input-group-sm mb-3">
+                                <input type="text" class="form-control" placeholder="ИНН" id="inn"/>
+                            </div>
+                            <small class="text-muted">КПП<span class="required">*</span>:</small>
+                            <div class="input-group input-group-sm mb-3">
+                                <input type="text" class="form-control" placeholder="КПП" id="kpp"/>
+                            </div>
+                            <small class="text-muted">ОГРНИП<span class="required">*</span>:</small>
+                            <div class="input-group input-group-sm mb-3">
+                                <input type="text" class="form-control" placeholder="ОГРНИП" id="ogrnip"/>
+                            </div>
+                            <small class="text-muted">Рассчетный счет<span class="required">*</span>:</small>
+                            <div class="input-group input-group-sm mb-3">
+                                <input type="text" class="form-control" placeholder="Счет" id="payment_account"/>
+                            </div>
+                            <small class="text-muted">Название банка<span class="required">*</span>:</small>
+                            <div class="input-group input-group-sm mb-3">
+                                <input type="text" class="form-control" placeholder="Банк" id="bank"/>
+                            </div>
+                            <small class="text-muted">БИК<span class="required">*</span>:</small>
+                            <div class="input-group input-group-sm mb-3">
+                                <input type="text" class="form-control" placeholder="БИК" id="bik"/>
+                            </div>
+                            <small class="text-muted">ОКПО<span class="required">*</span>:</small>
+                            <div class="input-group input-group-sm mb-3">
+                                <input type="text" class="form-control" placeholder="ОКПО" id="okpo"/>
+                            </div>
+                            <small class="text-muted">Дополнительное описание:</small>
+                            <div class="input-group input-group-sm mb-3">
+                                <input type="text" class="form-control" placeholder="Описание" id="description"/>
+                            </div>
+
+                        </form>
                     </div>
-                </form>
-            </div>
-            <h5 class="card-header bg-secondary text-white", style="margin-bottom: 3px; font-size: 20px; font-weight: 400; font-family: 'Beer money';" onclick="openDiv('agentAnalitics')"> Аналитические данные</h5>
-            <div class="card mb-4 mt-2 box-shadow collapse" id="agentAnalitics">
-                <div class="card-body">
-                    <small class="text-muted">Большая аналитиика:</small>
-                    <div class="input-group input-group-sm mb-3">
-                        <span class="input-group-text" id="">@</span>
-                        <input type="text" class="form-control" placeholder="Вбей аналИтику">
-                </div>
-            </div>
-    </div>
-            <h5 class="card-header bg-secondary text-white", style="margin-bottom: 3px; font-size: 20px; font-weight: 400; font-family: 'Beer money';" onclick="openDiv('agentProducts')"> Заказы</h5>
-            <div class="card mb-4 mt-2 box-shadow collapse" id="agentProducts">
-                <div class="card-body">
-                    <small class="text-muted">Большие заказы:</small>
-                    <div class="input-group input-group-sm mb-3">
-                        <span class="input-group-text" id="">@</span>
-                        <input type="text" class="form-control" placeholder="Таблица Заказов">
-                </div>
-            </div>
-    </div>
+					{% endif %}
+				</div>
+			</div>
+
+			<h5 class="card-header bg-secondary text-white" , style="margin-bottom: 3px; font-size: 20px; font-weight: 400; font-family: 'Beer money';" onclick="openDiv('agentAnalitics')">Аналитические данные</h5>
+			<div class="card mb-4 mt-2 box-shadow collapse" id="agentAnalitics">
+				<div class="sticker-left sticker-success text-center" {% if role_type_agent %} data-sticker="{{company_name}}" {% endif %}></div>
+
+			</div>
+
+			<h5 class="card-header bg-secondary text-white" , style="margin-bottom: 3px; font-size: 20px; font-weight: 400; font-family: 'Beer money';" onclick="openDiv('agentProducts')">Заказы</h5>
+			<div class="card mb-4 mt-2 box-shadow collapse" id="agentProducts">
+				<div class="card-body">
+					<small class="text-muted">Большие заказы:</small>
+					<div class="input-group input-group-sm mb-3">
+						<span class="input-group-text" id="">@</span>
+						<input type="text" class="form-control" placeholder="Таблица Заказов" />
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- content -->
+		{% endblock content %} {% block scripts %}
+		<script src="{% static 'js/profile.js' %}"></script>
+		<script>
+
+			function openDiv(elem_id_to_open) {
+			    formOpened = $(`#${ elem_id_to_open }`)
+			    if (formOpened.hasClass('show')) {
+			        formOpened.removeClass('show', 2000);
+			    }
+			    else {
+			        formOpened.addClass('show', 2000);
+			    }
+
+			}
+		</script>
+
+		{% endblock scripts %}
+	</div>
 </div>
-
-
-    <!-- content -->
-{% endblock content %}
-
-{% block scripts %}
-<script src="{% static 'js/profile.js' %}"></script>
-<script>
-
-function openDiv(elem_id_to_open) {
-    formOpened = $(`#${ elem_id_to_open }`)
-    if (formOpened.hasClass('show')) {
-        formOpened.removeClass('show', 2000);
-    }
-    else {
-        formOpened.addClass('show', 2000);
-    }
-
-}
-
-
-</script>
-
-{% endblock scripts %}

@@ -14,7 +14,7 @@ django.setup()
 
 from PocketServiceApp.telegram_tasks import save_client_task, create_product_order_task, tg_message_task, \
     update_product_order_task
-from PocketServiceApp.models import Client, Role
+from PocketServiceApp.models import Client, Role, Person
 
 
 
@@ -86,11 +86,12 @@ def create_product_order(phone_number, telegram_chat_id, client_id, email,
 
 @sync_to_async
 def user_check_status(telegram_id):
-    clients = Client.objects.filter(telegram_id=str(telegram_id))
-    if clients.count() > 0:
-        user = Client.objects.filter(telegram_id=str(telegram_id)).last()
-    role = user.role.last().role_type
-    return role
+    user = Person.objects.filter(telegram_id=str(telegram_id))
+    if user.count() > 0:
+        return user.role.last().role_type
+    else:
+        return False
+
 
 @sync_to_async
 def start_menu_buttons(telegram_id):

@@ -27,6 +27,11 @@ class AdministratorSerializer(PatchModelSerializer):
         model = Administrator
         fields = '__all__'
 
+class CompanySerializer(PatchModelSerializer):
+    class Meta:
+        model = Company
+        fields = '__all__'
+
 
 class ClientSerializer(PatchModelSerializer):
     role = RoleSerializer(many=True, read_only=True)

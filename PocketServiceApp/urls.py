@@ -23,6 +23,7 @@ router.register('api/person', api.PersonViewSet, basename="Person")
 router.register('api/clients', api.ClientViewSet, basename="Client")
 router.register('api/products', api.ProductViewSet, basename="Product")
 router.register('api/orders', api.OrderViewSet, basename="Order")
+router.register('api/company', api.CompanyViewSet, basename="Order")
 
 urlpatterns = router.urls
 
@@ -31,6 +32,10 @@ urlpatterns += [
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     # Person
     path('api/person/info', api.APIPersonInfoByTelegramID.as_view(), name='person_info'),
+
+    # Company
+    path('api/company_by_user/info', api.APICompanyInfoByTelegramID.as_view(), name='company_info'),
+
 
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('main/', IndexView.as_view(), name='main'),

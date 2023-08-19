@@ -83,6 +83,28 @@ class Person(Registrator):
                   ] + Registrator.Meta.indexes
 
 
+class Company(Registrator):
+    name = models.CharField(verbose_name="Название", max_length=255, null=True, blank=True)
+    description = models.TextField(verbose_name="Описание", null=True, blank=True)
+    legal_address = models.CharField(verbose_name="Юридический адрес", max_length=255, null=True, blank=True)
+    mail_address = models.CharField(verbose_name="Почтовый адрес", max_length=255, null=True, blank=True)
+    inn = models.CharField(verbose_name="ИНН", max_length=255, null=True, blank=True)
+    kpp = models.CharField(verbose_name="КПП", max_length=255, null=True, blank=True)
+    ogrnip = models.CharField(verbose_name="ОГРНИП", max_length=255, null=True, blank=True)
+    payment_account = models.CharField(verbose_name="Рассчетный счет", max_length=255, null=True, blank=True)
+    bank = models.CharField(verbose_name="Банк", max_length=255, null=True, blank=True)
+    bik = models.CharField(verbose_name="БИК", max_length=255, null=True, blank=True)
+    okpo = models.CharField(verbose_name="ОКПО", max_length=255, null=True, blank=True)
+    contact_phone = models.CharField(verbose_name="Контактный номер", max_length=255, null=True, blank=True)
+    email = models.EmailField(verbose_name="Электронная почта", null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = 'company'
+
+
 class Agent(Person):
     agent_description = models.TextField(verbose_name="Описание агента", null=True, blank=True)
     education_description = models.TextField(verbose_name="Образование", null=True, blank=True)
@@ -94,8 +116,8 @@ class Agent(Person):
     services_prices = models.TextField(verbose_name="Услуги и цены", null=True, blank=True)
 
     area = models.ManyToManyField(Area, blank=True, related_name='area_agents', verbose_name="Районы")
-
-    # comment = models.TextField(verbose_name="Образование")
+    company = models.ForeignKey(Company, on_delete=models.SET_NULL, related_name='agent_company',
+                                null=True, blank=True, verbose_name="Компания")
 
     def __str__(self):
         return self.username
