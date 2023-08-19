@@ -69,6 +69,7 @@ class APICompanyInfoByTelegramID(APIView):
                     company = Company.objects.filter(id=str(company_id)).last()
                     if company:
                         result_dict = {
+                            'company_id': company_id,
                             'company_name': company.name,
                             'company_description': company.description,
                             'company_legal_address': company.legal_address,

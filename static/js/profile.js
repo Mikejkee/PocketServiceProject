@@ -39,6 +39,7 @@ function loadCompanyInfo() {
         let data = answer.data;
         console.log(data);
 
+        $('#company_id').val(data.company_id);
         $('#company_name').val(data.company_name);
         $('#legal_address').val(data.company_legal_address);
         $('#mail_address').val(data.company_mail_address);
@@ -66,36 +67,37 @@ $(document).ready(function(){
     }
 
     // SAVE EDITION
-    Telegram.WebApp.onEvent('mainButtonClicked', function() {
-    // $(document).on('click','#save_info', function(){
+    // Telegram.WebApp.onEvent('mainButtonClicked', function() {
+    $(document).on('click','#save_info', function(){
         let validationPerson = $('#person_form').valid();
+        let validationCompany = $('#company_form').valid();
 
-        let telegram_id = $('#telegram_id').val();
-        let person_id = $('#person_id').val();
-        let person_fio = $('#fio').val();
-        let phone_number = $('#phone_number').val();
-        let person_date_of_birth = $('#date_of_birth').val();
+        let telegramId = $('#telegram_id').val();
+        let personId = $('#person_id').val();
+        let personFio = $('#fio').val();
+        let phoneNumber = $('#phone_number').val();
+        let personDateBirth = $('#date_of_birth').val();
         let email = $('#email_username').val() +'@'+ $('#email_server').val();
 
         let currentUrl = window.location.href;
         let processUrl = currentUrl.split('/profile')[0];
-        let targetUrl = processUrl + '/api/person/' + person_id + '/';
+        let targetPersonUrl = processUrl + '/api/person/' + personId + '/';
 
         if(validationPerson) {
             $('.alert').hide();
             $.ajax({
-                url: targetUrl,
+                url: targetPersonUrl,
                 type: "PATCH",
                 dataType: "json",
                 headers: {
                     'X-CSRFToken': csrftoken,
-                    'Authorization': 'Telegram ' + telegram_id
+                    'Authorization': 'Telegram ' + telegramId
                 },
                 traditional: true,
                 data: {
-                    'person_fio': person_fio,
-                    'phone_number': phone_number,
-                    'date_of_birth': person_date_of_birth,
+                    'person_fio': personFio,
+                    'phone_number': phoneNumber,
+                    'date_of_birth': personDateBirth,
                     'email': email,
                 },
                 success: function (response) {
@@ -113,6 +115,65 @@ $(document).ready(function(){
         } else {
             $('.alert').show();
         }
+
+        let companyId = $('#company_id').val();
+        let companyName =  $('#company_name').val();
+        let legalAddress =  $('#legal_address').val();
+        let mailAddress =  $('#mail_address').val();
+        let emailAddress =  $('#email_address').val();
+        let contactPhone =  $('#contact_phone').val();
+        let inn =  $('#inn').val();
+        let kpp =  $('#kpp').val();
+        let ogrnip =  $('#ogrnip').val();
+        let paymentAccount =  $('#payment_account').val();
+        let bank =  $('#bank').val();
+        let bik =  $('#bik').val();
+        let okpo =  $('#okpo').val();
+        let description =  $('#description').val();
+        let targetCompanyUrl = processUrl + '/api/company/' + companyId + '/';
+
+        if(validationCompany) {
+            $('.alert').hide();
+            $.ajax({
+                url: targetCompanyUrl,
+                type: "PATCH",
+                dataType: "json",
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Authorization': 'Telegram ' + telegram_id
+                },
+                traditional: true,
+                data: {
+                    'name': companyName,
+                    'description': description,
+                    'legal_address': legalAddress,
+                    'mail_address': mailAddress,
+                    'inn': inn,
+                    'kpp': kpp,
+                    'ogrnip': ogrnip,
+                    'payment_account': paymentAccount,
+                    'bank': bank,
+                    'bik': bik,
+                    'okpo': okpo,
+                    'contact_phone': contactPhone,
+                    'email': emailAddress,
+                },
+                success: function (response) {
+                    console.log(response);
+                    let result = {
+                        'Save': 1,
+                    };
+                    tg.sendData(JSON.stringify(result));
+                    tg.close();
+                },
+                error: function (response) {
+                    console.log(response);
+                }
+            });
+        } else {
+            $('.alert').show();
+        }
+
     });
 
 

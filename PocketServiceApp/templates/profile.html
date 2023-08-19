@@ -135,7 +135,6 @@
 								<span class="input-group-text">@</span>
 								<input type="text" class="form-control" placeholder="Server" aria-label="Server" id="email_server" />
 							</div>
-{#							<a href="#" class="btn btn-primary" id="save_info">Сохранить</a>#}
 						</div>
 					</form>
 
@@ -145,6 +144,7 @@
                             {% csrf_token %}
                             <small class="text-muted">Название компании<span class="required">*</span>:</small>
                             <div class="input-group input-group-sm mb-3">
+                                <input type="number" name="company_id" id="company_id" class="form-control mb-0" hidden />
                                 <input type="text" class="form-control" placeholder="Название" id="company_name"/>
                             </div>
                             <small class="text-muted">Юридический адрес<span class="required">*</span>:</small>
@@ -199,6 +199,7 @@
                         </form>
                     </div>
 					{% endif %}
+                    <a href="#" class="btn btn-primary" id="save_info">Сохранить</a>
 				</div>
 			</div>
 
