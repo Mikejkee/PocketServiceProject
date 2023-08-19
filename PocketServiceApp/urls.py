@@ -16,22 +16,27 @@ schema_view = get_schema_view(
    permission_classes=(permissions.AllowAny,),
 )
 
-
 router = routers.DefaultRouter()
 # router.register('/api/admins', api.AdminsViewSet, basename="Administrator")
 router.register('api/person', api.PersonViewSet, basename="Person")
-router.register('api/clients', api.ClientViewSet, basename="Client")
-router.register('api/products', api.ProductViewSet, basename="Product")
-router.register('api/orders', api.OrderViewSet, basename="Order")
+router.register('api/client', api.ClientViewSet, basename="Client")
+router.register('api/product', api.ProductViewSet, basename="Product")
+router.register('api/order', api.OrderViewSet, basename="Order")
 router.register('api/company', api.CompanyViewSet, basename="Order")
+router.register('api/agent', api.AgentViewSet, basename="Agent")
 
 urlpatterns = router.urls
-
 urlpatterns += [
     re_path(r'^swagger(?P<id>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     # Person
     path('api/person/info', api.APIPersonInfoByTelegramID.as_view(), name='person_info'),
+
+    # Client
+    path('api/client/info', api.APIClientInfoByTelegramID.as_view(), name='client_info'),
+
+    # Agent
+    path('api/agent/info', api.APIAgentInfoByTelegramID.as_view(), name='agent_info'),
 
     # Company
     path('api/company_by_user/info', api.APICompanyInfoByTelegramID.as_view(), name='company_info'),

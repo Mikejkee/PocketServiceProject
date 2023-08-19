@@ -13,6 +13,18 @@ class RoleSerializer(PatchModelSerializer):
         model = Role
         fields = ['role_type']
 
+class ProductSerializer(PatchModelSerializer):
+
+    class Meta:
+        model = Product
+        fields = '__all__'
+
+class AreaSerializer(PatchModelSerializer):
+
+    class Meta:
+        model = Area
+        fields = '__all__'
+
 class PersonSerializer(PatchModelSerializer):
     role = RoleSerializer(many=True, read_only=True)
 
@@ -40,11 +52,13 @@ class ClientSerializer(PatchModelSerializer):
         model = Client
         fields = '__all__'
 
-
-class ProductSerializer(PatchModelSerializer):
+class AgentSerializer(PatchModelSerializer):
+    role = RoleSerializer(many=True, read_only=True)
+    product = ProductSerializer(many=True, read_only=True)
+    area = AreaSerializer(many=True, read_only=True)
 
     class Meta:
-        model = Product
+        model = Agent
         fields = '__all__'
 
 

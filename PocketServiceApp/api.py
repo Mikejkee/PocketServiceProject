@@ -51,6 +51,87 @@ class APIPersonInfoByTelegramID(APIView):
             return Response({'error': 'User not found'}, status=400)
         return Response({'error': 'Telegram user not found'}, status=400)
 
+class APIClientInfoByTelegramID(APIView):
+    @swagger_auto_schema(
+        tags=["client"],
+        operation_description='Получает информацию о клиенте по Telegram ID ',
+        manual_parameters=[TELEGRAM_ID_QUERY],
+    )
+    def get(self, request):
+        params = request.query_params
+        telegram_id = params.get('TelegramId')
+        if telegram_id:
+            client = Client.objects.filter(telegram_id=str(telegram_id)).last()
+            if client:
+                user_id = client.pk
+
+                user_photo = None
+                if client.background_image:
+                    user_photo = client.background_image.url
+
+                fio = client.person_fio
+                if not fio:
+                    fio = client.name
+
+                result_dict = {
+                    'person_id': user_id,
+                    'person_photo': user_photo,
+                    'telegram_username': client.telegram_username,
+                    'person_fio': fio,
+                    'phone_number': client.phone_number,
+                    'person_date_of_birth': client.date_of_birth,
+                    'email': client.email,
+                    'client_address': client.address,
+                    'addition_information': client.addition_information,
+                }
+
+                return Response({'data': result_dict}, status=200)
+            return Response({'error': 'Client not found'}, status=400)
+        return Response({'error': 'Telegram user not found'}, status=400)
+
+class APIAgentInfoByTelegramID(APIView):
+    @swagger_auto_schema(
+        tags=["agent"],
+        operation_description='Получает информацию о клиенте по Telegram ID ',
+        manual_parameters=[TELEGRAM_ID_QUERY],
+    )
+    def get(self, request):
+        params = request.query_params
+        telegram_id = params.get('TelegramId')
+        if telegram_id:
+            agent = Agent.objects.filter(telegram_id=str(telegram_id)).last()
+            if agent:
+                user_id = agent.pk
+
+                user_photo = None
+                if agent.background_image:
+                    user_photo = agent.background_image.url
+
+                fio = agent.person_fio
+                if not fio:
+                    fio = agent.name
+
+                result_dict = {
+                    'person_id': user_id,
+                    'person_photo': user_photo,
+                    'telegram_username': agent.telegram_username,
+                    'person_fio': fio,
+                    'phone_number': agent.phone_number,
+                    'person_date_of_birth': agent.date_of_birth,
+                    'email': agent.email,
+                    'agent_description': agent.agent_description,
+                    'education_description': agent.education_description,
+                    'work_experience': agent.work_experience,
+                    'command_work': agent.command_work,
+                    'passport_check': agent.passport_check,
+                    'contract_work': agent.contract_work,
+                    'guarantee_period': agent.guarantee_period,
+                }
+
+                return Response({'data': result_dict}, status=200)
+            return Response({'error': 'Client not found'}, status=400)
+        return Response({'error': 'Telegram user not found'}, status=400)
+
 class APICompanyInfoByTelegramID(APIView):
     @swagger_auto_schema(
         tags=["company"],
@@ -99,11 +180,13 @@ class AdminsViewSet(viewsets.ModelViewSet):
     queryset = Administrator.objects.all()
     serializer_class = AdministratorSerializer
 
-
 class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
 
+class AgentViewSet(viewsets.ModelViewSet):
+    queryset = Agent.objects.all()
+    serializer_class = AgentSerializer
 
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()
