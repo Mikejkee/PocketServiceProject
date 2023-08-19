@@ -166,6 +166,7 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+
 </style>
 
 {% endblock link %} {% block title %} Личный кабинет {% endblock title %} {% block header %}
@@ -324,7 +325,48 @@ input:checked + .slider:before {
 
             <h5 class="card-header bg-secondary text-white" , style="margin-bottom: 3px; font-size: 20px; font-weight: 400; font-family: 'Beer money';" onclick="openDiv('agentProducts')">Заказы и заявки</h5>
 			<div class="card mb-4 mt-2 box-shadow collapse" id="agentProducts">
-				<div class="sticker-left sticker-success text-center" {% if role_type_agent %} data-sticker="{{company_name}}" {% endif %}></div>
+				<div class="sticker-left sticker-success text-center" {% if role_type_agent %} data-sticker="{{company_name}}" {% endif %}>
+                    <div class="row">
+                        <section class="content">
+                            <div class="col-md-8 col-md-offset-2">
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        <div class="pull-right">
+                                            <div class="btn-group-sm" role="group">
+                                                <button type="button" class="btn btn-secondary" data-target="all" style="font-size: 0.7em;">Все</button>
+                                                <button type="button" class="btn btn-danger" data-target="cancelado" style="font-size: 0.7em;">Новые</button>
+                                                <button type="button" class="btn btn-warning" data-target="pendiente" style="font-size: 0.7em;">В работе</button>
+                                                <button type="button" class="btn btn-success" data-target="pagado" style="font-size: 0.7em;">Завершенные</button>
+                                            </div>
+                                        </div>
+<!—     - Все - галочки есть, подсвечиваются цветом кнопок в зависимости от статуса
+        - В новых - галочка, внизу кнопка подтвердить,
+        - В работе - более полная информация, без галочек, с возможностью выйти в личку с заказчиком
+        - Завершенные Заказчик, дата начала, дата конца, сумма
+—>
+
+                           <div class="table-container">
+							<table class="table table-filter">
+								<tbody>
+									<tr data-status="">
+										<td>
+
+										</td>
+										<td>
+
+										</td>
+										<td>
+
+										</td>
+									</tr>
+                                </tbody>
+                                </table>
+                                </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
 			</div>
 
 			<h5 class="card-header bg-secondary text-white" , style="margin-bottom: 3px; font-size: 20px; font-weight: 400; font-family: 'Beer money';" onclick="openDiv('agentAnalitics')">Аналитические данные</h5>
