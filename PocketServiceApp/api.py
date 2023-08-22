@@ -1,3 +1,4 @@
+import json
 from django.http import JsonResponse
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -13,6 +14,12 @@ from .serializers import *
 TELEGRAM_ID_QUERY = openapi.Parameter('TelegramId', in_=openapi.IN_QUERY,
                                       type=openapi.TYPE_STRING, required=True,
                                       description='Телеграмм ID')
+status_dict = {
+    0: 'Не в работе',
+    1: 'В работе',
+    2: 'Приостановлена',
+    3: 'Выполнена',
+}
 
 
 class APIPersonInfoByTelegramID(APIView):
@@ -169,6 +176,46 @@ class APICompanyInfoByTelegramID(APIView):
                         return Response({'data': result_dict}, status=200)
                     return Response({'error': 'Company is not found'}, status=400)
                 return Response({'error': 'User is not head of company'}, status=400)
+            return Response({'error': 'User not found'}, status=400)
+        return Response({'error': 'Telegram user not found'}, status=400)
+
+class APIPOrdersInfoByAgentTelegramID(APIView):
+    @swagger_auto_schema(
+        tags=["order"],
+        operation_description='Получает информацию о заявках по Telegram ID агента',
+        manual_parameters=[TELEGRAM_ID_QUERY],
+    )
+    def get(self, request):
+        params = request.query_params
+        telegram_id = params.get('TelegramId')
+        if telegram_id:
+            agent= Agent.objects.filter(telegram_id=str(telegram_id)).last()
+            if agent:
+                orders = Order.objects.filter(agent_id=agent.id)
+                if orders:
+                    orders_list = []
+                    for order in orders:
+                        product = Product.objects.filter(id=order.product_id).last()
+                        client = Client.objects.filter(id=order.client_id).last()
+                        orders_list.append(
+                            {
+                                'order_id': order.id,
+                                'order_name': order.name,
+                                'order_price': order.price,
+                                'order_deadline': order.deadline,
+                                'order_info': order.addition_information,
+                                'order_control': order.control_flag,
+                                'order_status': order.status_flag,
+                                'order_product_type': status_dict[int(product.product_type)],
+                                'order_product_info': product.addition_information,
+                                'order_client_tg': client.telegram_id,
+
+                            }
+                        )
+                    result_json = json.dumps(orders_list, indent=4, ensure_ascii=False, default=str)
+
+                    return Response({'data': result_json}, status=200)
+                return Response({'error': 'Orders not found'}, status=400)
             return Response({'error': 'User not found'}, status=400)
         return Response({'error': 'Telegram user not found'}, status=400)
 

@@ -19,6 +19,13 @@ PRODUCT_TYPES_CHOICE = [
     (BEAUTI, 'Услуги красоты'),
 ]
 
+STATUS_TYPES_CHOICE = [
+    (0, 'Не в работе'),
+    (1, 'В работе'),
+    (2, 'Приостановлена'),
+    (3, 'Выполнена'),
+]
+
 class Registrator(models.Model):
     creation_datetime = models.DateTimeField("Время создания", auto_now_add=True)
     update_datetime = models.DateTimeField("Время обновления", auto_now_add=True)
@@ -186,6 +193,8 @@ class Order(Registrator):
     addition_information = models.TextField("Дополнительная информация", null=True, blank=True)
     reminder_status = models.BooleanField("Статус напоминания", default=0)
     control_flag = models.BooleanField("Флаг новизны", default=0)
+    status_flag = models.PositiveSmallIntegerField('Статус выполнения', choices=STATUS_TYPES_CHOICE,
+                                                   blank=True, null=True, default=0)
 
     client = models.ForeignKey(Client, on_delete=models.SET_NULL, related_name='client_orders', null=True, blank=True,
                                verbose_name="Клиент")

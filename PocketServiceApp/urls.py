@@ -41,6 +41,8 @@ urlpatterns += [
     # Company
     path('api/company_by_user/info', api.APICompanyInfoByTelegramID.as_view(), name='company_info'),
 
+    #Order
+    path('api/orders_by_agent/info', api.APIPOrdersInfoByAgentTelegramID.as_view(), name='orders_by_agent_info'),
 
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('main/', IndexView.as_view(), name='main'),

@@ -5,10 +5,18 @@ tg.MainButton.show();
 
 let csrftoken = $.cookie('csrftoken');
 
-function loadClientInfo() {
-    let TelegramId = $('#telegram_id').val();
-    let currentUrl = window.location.href;
-    let processUrl = currentUrl.split('/profile')[0];
+function openDiv(elem_id_to_open) {
+    formOpened = $(`#${ elem_id_to_open }`)
+    if (formOpened.hasClass('show')) {
+        formOpened.removeClass('show', 2000);
+    }
+    else {
+        formOpened.addClass('show', 2000);
+    }
+
+};
+
+function loadClientInfo(TelegramId, currentUrl, processUrl) {
     let targetUrl = processUrl + '/api/client/info?TelegramId=' + TelegramId
     $.get(targetUrl).done(function(answer) {
         let data = answer.data;
@@ -32,10 +40,7 @@ function loadClientInfo() {
     });
 }
 
-function loadAgentInfo() {
-    let TelegramId = $('#telegram_id').val();
-    let currentUrl = window.location.href;
-    let processUrl = currentUrl.split('/profile')[0];
+function loadAgentInfo(TelegramId, currentUrl, processUrl) {
     let targetUrl = processUrl + '/api/agent/info?TelegramId=' + TelegramId
     $.get(targetUrl).done(function(answer) {
         let data = answer.data;
@@ -64,10 +69,7 @@ function loadAgentInfo() {
     });
 }
 
-function loadCompanyInfo() {
-    let TelegramId = $('#telegram_id').val();
-    let currentUrl = window.location.href;
-    let processUrl = currentUrl.split('/profile')[0];
+function loadCompanyInfo(TelegramId, currentUrl, processUrl) {
     let targetUrl = processUrl + '/api/company_by_user/info?TelegramId=' + TelegramId
     $.get(targetUrl).done(function(answer) {
         let data = answer.data;
@@ -94,21 +96,49 @@ function loadCompanyInfo() {
     });
 }
 
+function loadOrderInfo(TelegramId, currentUrl, processUrl) {
+    let targetUrl = processUrl + '/api/orders_by_agent/info?TelegramId=' + TelegramId
+    $.get(targetUrl).done(function(answer) {
+        let data = JSON.parse(answer.data);
+        console.log(data);
+
+        $('#company_id').val(data.company_id);
+
+
+    }).fail(function(err) {
+        console.log(err);
+    });
+}
+
 $(document).ready(function(){
+    let TelegramId = $('#telegram_id').val();
+    let currentUrl = window.location.href;
+    let processUrl = currentUrl.split('/profile')[0];
+
+    $('.btn-filter').on('click', function () {
+          let $target = $(this).data('target');
+          if ($target !== 'all') {
+            $('.table tr').css('display', 'none');
+            $('.table tr[data-status="' + $target + '"]').fadeIn('slow');
+          } else {
+            $('.table tr').css('display', 'none').fadeIn('slow');
+          }
+        });
 
     if ($('#agent_form').length) {
-        loadAgentInfo();
+        loadAgentInfo(TelegramId, currentUrl, processUrl);
+        loadOrderInfo(TelegramId, currentUrl, processUrl)
     }
     else {
-        loadClientInfo();
+        loadClientInfo(TelegramId, currentUrl, processUrl);
     }
 
     if ($('#company_form').length) {
-        loadCompanyInfo();
+        loadCompanyInfo(TelegramId, currentUrl, processUrl);
     }
 
 
-    // SAVE EDITION
+    // SAVE INFO
     // Telegram.WebApp.onEvent('mainButtonClicked', function() {
     $(document).on('click','#save_info', function(){
         let validationPerson = $('#person_form').valid();
