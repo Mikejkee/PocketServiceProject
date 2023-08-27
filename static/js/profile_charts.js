@@ -56,7 +56,7 @@ function typedStatusChart(statusArr, ordersData) {
                     text: 'Статистика заявок',
                     position: 'top',
                     fontSize: 16,
-                    padding: 20,
+                    padding: 10,
                     fontColor: 'rgba(0, 0, 0, 0)'
                 },
             },

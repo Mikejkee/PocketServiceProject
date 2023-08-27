@@ -409,8 +409,8 @@ input:checked + .slider:before {
 			<h5 class="card-header bg-secondary text-white" , style="margin-bottom: 3px; font-size: 20px; font-weight: 400; font-family: 'Beer money';" onclick="openDiv('analitics')">Аналитические данные</h5>
 			<div class="card mb-4 mt-2 box-shadow collapse" id="analitics">
 				<div class="sticker-left sticker-success text-center" {% if role_type_agent %} data-sticker="{{company_name}}" {% endif %}>
-                    <div class="container">
-                        <canvas id="typed_status_chart" width="250" height="350"></canvas>
+                    <div class="container" style="height: 350px">
+                        <canvas id="typed_status_chart"></canvas>
                     </div>
 
                     <div class="container">

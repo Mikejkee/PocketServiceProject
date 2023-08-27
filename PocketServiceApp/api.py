@@ -217,7 +217,7 @@ class APIPOrdersInfoByAgentTelegramID(APIView):
                                 'order_status': order.status_flag,
                                 'order_product_type': product_types[int(product.product_type)],
                                 'order_product_info': product.addition_information,
-                                'order_contact_tg': client.telegram_id,
+                                'order_contact_tg': client.telegram_username,
 
                             }
                         )
@@ -260,8 +260,8 @@ class APIPOrdersInfoByClientTelegramID(APIView):
                                 'order_status': order.status_flag,
                                 'order_product_type': product_types[int(product.product_type)],
                                 'order_product_info': product.addition_information,
-                                'order_contact_tg': agent.telegram_id,
-
+                                'order_contact_tg': agent.telegram_username,
+                                'order_contact_phone': agent.phone_number,
                             }
                         )
                     result_json = json.dumps(orders_list, indent=4, ensure_ascii=False, default=str)

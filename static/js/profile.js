@@ -96,6 +96,7 @@ function loadCompanyInfo(TelegramId, currentUrl, processUrl) {
 }
 
 function loadOrderInfo(targetUrl, statusArr) {
+    // TODO: Сделать контактную возможность не только в тг, а еслит нет юзернейма у пользователя, то по телефону
     $.get(targetUrl).done(function(answer) {
         let listData = JSON.parse(answer.data);
         console.log(listData);
@@ -143,7 +144,7 @@ function loadOrderInfo(targetUrl, statusArr) {
                         `</td>` +
                         `<td>` +
                             `<p class="text-center table-lc-p">` +
-                                `<a href="tg://user?id=${value.order_contact_tg}"> <img class="tg_icon" src="${srcTgIcon}"></a>` +
+                                `<a href="https://t.me/${value.order_contact_tg}"> <img class="tg_icon" src="${srcTgIcon}"></a>` +
                             `</p>` +
                         `</td>` +
                         `<td>` +
@@ -164,7 +165,7 @@ function loadOrderInfo(targetUrl, statusArr) {
                         `</td>` +
                         `<td>` +
                             `<p class="text-center table-lc-p">` +
-                                `<a href="tg://user?id=${value.order_contact_tg}"> <img class="tg_icon" src="${srcTgIcon}"></a>` +
+                                `<a href="https://t.me/${value.order_contact_tg}"> <img class="tg_icon" src="${srcTgIcon}"></a>` +
                             `</p>` +
                         `</td>` +
                         `<td>` +
@@ -206,7 +207,7 @@ function loadOrderInfo(targetUrl, statusArr) {
                     `</td>` +
                     `<td>` +
                         `<p class="text-center table-lc-p">` +
-                            `<a href="tg://user?id=${value.order_contact_tg}"> <img class="tg_icon" src="${srcTgIcon}"></a>` +
+                            `<a href="https://t.me/${value.order_contact_tg}"> <img class="tg_icon" src="${srcTgIcon}"></a>` +
                         `</p>` +
                     `</td>` +
                     `<td>` +
@@ -223,6 +224,13 @@ function loadOrderInfo(targetUrl, statusArr) {
         console.log(err);
     });
 }
+
+$(document).on("click", "a", function(){
+    let href = $(this).attr('href');
+    if (href.indexOf('tg') === 0) {
+        tg.openTelegramLink(href);
+    }
+});
 
 $(document).ready(function(){
     let TelegramId = $('#telegram_id').val();
@@ -260,8 +268,8 @@ $(document).ready(function(){
 
 
     // SAVE INFO
-    // Telegram.WebApp.onEvent('mainButtonClicked', function() {
-    $(document).on('click','#save_info', function(){
+    Telegram.WebApp.onEvent('mainButtonClicked', function() {
+    // $(document).on('click','#save_info', function(){
         let validationPerson = $('#person_form').valid();
 
         let currentUrl = window.location.href;
