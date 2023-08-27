@@ -21,6 +21,13 @@ status_dict = {
     3: 'Выполнена',
 }
 
+product_types = {
+    0: 'Ремонт квартиры',
+    1: 'Ремонт сантехники',
+    2: 'Ремонт мебели',
+    3: 'Уборка',
+    4: 'Услуги красоты',
+}
 
 class APIPersonInfoByTelegramID(APIView):
     @swagger_auto_schema(
@@ -203,10 +210,12 @@ class APIPOrdersInfoByAgentTelegramID(APIView):
                                 'order_name': order.name,
                                 'order_price': order.price,
                                 'order_deadline': order.deadline,
+                                'order_start_time': order.start_time,
+                                'order_end_time': order.end_time,
                                 'order_info': order.addition_information,
                                 'order_control': order.control_flag,
                                 'order_status': order.status_flag,
-                                'order_product_type': status_dict[int(product.product_type)],
+                                'order_product_type': product_types[int(product.product_type)],
                                 'order_product_info': product.addition_information,
                                 'order_client_tg': client.telegram_id,
 

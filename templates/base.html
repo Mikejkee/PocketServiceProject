@@ -31,8 +31,32 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js" integrity="sha512-3j3VU6WC5rPQB4Ld1jnLV7Kd5xr+cq9avvhwqzbH/taCRNURoeEpoPBK9pDyeukwSxwRPJ8fDgvYXd6SkaZ2TA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.min.js" integrity="sha512-B4skI5FiLurS86aioJx9VfozI1wjqrn6aTdJH+YQUmCZum/ZibPBTX55k5d9XM6EsKePDInkLVrN7vPmJxc1qA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
 
 <script src="{% static 'vendor/telegram/telegram-web-app.js' %}"></script>
+<script src="{% static 'vendor/moment.js' %}"></script>
+<script>
+    /* Локализация datepicker */
+    $.datepicker.regional['ru'] = {
+        closeText: 'Закрыть',
+        prevText: 'Предыдущий',
+        nextText: 'Следующий',
+        currentText: 'Сегодня',
+        monthNames: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
+        monthNamesShort: ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'],
+        dayNames: ['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'],
+        dayNamesShort: ['вск','пнд','втр','срд','чтв','птн','сбт'],
+        dayNamesMin: ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],
+        weekHeader: 'Не',
+        dateFormat: 'dd.mm.yy',
+        firstDay: 1,
+        isRTL: false,
+        showMonthAfterYear: false,
+        yearSuffix: ''
+    };
+    $.datepicker.setDefaults($.datepicker.regional['ru']);
+    let srcTgIcon = "{% static 'img/tg.ico' %}";
+</script>
 {% block scripts %}
 {% endblock scripts %}
 </body>

@@ -189,12 +189,14 @@ class Order(Registrator):
     # Заявка
     name = models.CharField("Имя", max_length=255, null=True, blank=True)
     price = models.DecimalField("Цена", max_digits=10, decimal_places=2, blank=True, null=True)
-    deadline = models.DateTimeField("Срок конца работы", blank=True, null=True)
+    deadline = models.DateTimeField("Запланированный срок конца работы", blank=True, null=True)
     addition_information = models.TextField("Дополнительная информация", null=True, blank=True)
     reminder_status = models.BooleanField("Статус напоминания", default=0)
     control_flag = models.BooleanField("Флаг новизны", default=0)
     status_flag = models.PositiveSmallIntegerField('Статус выполнения', choices=STATUS_TYPES_CHOICE,
                                                    blank=True, null=True, default=0)
+    start_time = models.DateTimeField("Срок начала работы", blank=True, null=True)
+    end_time = models.DateTimeField("Срок конца работы", blank=True, null=True)
 
     client = models.ForeignKey(Client, on_delete=models.SET_NULL, related_name='client_orders', null=True, blank=True,
                                verbose_name="Клиент")
