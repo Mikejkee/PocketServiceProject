@@ -8,13 +8,12 @@ let csrftoken = $.cookie('csrftoken');
 function openDiv(elem_id_to_open) {
     formOpened = $(`#${ elem_id_to_open }`)
     if (formOpened.hasClass('show')) {
-        formOpened.removeClass('show', 2000);
+        formOpened.removeClass('show');
     }
     else {
-        formOpened.addClass('show', 2000);
+        formOpened.addClass('show');
     }
-
-};
+}
 
 function loadClientInfo(TelegramId, currentUrl, processUrl) {
     let targetUrl = processUrl + '/api/client/info?TelegramId=' + TelegramId
@@ -96,22 +95,14 @@ function loadCompanyInfo(TelegramId, currentUrl, processUrl) {
     });
 }
 
-function loadOrderInfo(TelegramId, currentUrl, processUrl) {
-    let targetUrl = processUrl + '/api/orders_by_agent/info?TelegramId=' + TelegramId
+function loadOrderInfo(targetUrl, statusArr) {
     $.get(targetUrl).done(function(answer) {
         let listData = JSON.parse(answer.data);
         console.log(listData);
 
-        let statusArr = {
-                0: 'Не в работе',
-                1: 'В работе',
-                2: 'Приостановлена',
-                3: 'Выполнена',
-        }
         let countStrAll = 1;
         $.each(listData,function(key,value) {
-            console.log(value);
-            // Новые заявки
+            // Заявки по типам
             let table = $('#analytic_table')
             if (value.order_status === 0) {
                 let checkedValue = (value.order_control) ? "checked" : "";
@@ -152,7 +143,7 @@ function loadOrderInfo(TelegramId, currentUrl, processUrl) {
                         `</td>` +
                         `<td>` +
                             `<p class="text-center table-lc-p">` +
-                                `<a href="tg://user?id=${value.order_client_tg}""> <img class="tg_icon" src="${srcTgIcon}"></a>` +
+                                `<a href="tg://user?id=${value.order_contact_tg}"> <img class="tg_icon" src="${srcTgIcon}"></a>` +
                             `</p>` +
                         `</td>` +
                         `<td>` +
@@ -173,7 +164,7 @@ function loadOrderInfo(TelegramId, currentUrl, processUrl) {
                         `</td>` +
                         `<td>` +
                             `<p class="text-center table-lc-p">` +
-                                `<a href="tg://user?id=${value.order_client_tg}""> <img class="tg_icon" src="${srcTgIcon}"></a>` +
+                                `<a href="tg://user?id=${value.order_contact_tg}"> <img class="tg_icon" src="${srcTgIcon}"></a>` +
                             `</p>` +
                         `</td>` +
                         `<td>` +
@@ -183,7 +174,7 @@ function loadOrderInfo(TelegramId, currentUrl, processUrl) {
                  );
             }
             else {
-                let countStr=$('table tr[data-status=pause]').length + 1;
+                let countStr=$('table tr[data-status=done]').length + 1;
                 let start_time = moment(new Date(value.order_start_time)).format('hh:mm - DD.MM.YY');
                 let end_time = moment(new Date(value.order_end_time)).format('hh:mm - DD.MM.YY');
                 table.append(
@@ -215,7 +206,7 @@ function loadOrderInfo(TelegramId, currentUrl, processUrl) {
                     `</td>` +
                     `<td>` +
                         `<p class="text-center table-lc-p">` +
-                            `<a href="tg://user?id=${value.order_client_tg}""> <img class="tg_icon" src="${srcTgIcon}"></a>` +
+                            `<a href="tg://user?id=${value.order_contact_tg}"> <img class="tg_icon" src="${srcTgIcon}"></a>` +
                         `</p>` +
                     `</td>` +
                     `<td>` +
@@ -225,19 +216,8 @@ function loadOrderInfo(TelegramId, currentUrl, processUrl) {
             );
             countStrAll += 1;
         });
-        //  'order_id'
-        // 'order_name'
-        // 'order_price'
-        // 'order_deadline'
-        // 'order_info'
-        // 'order_control'
-        // 'order_status'
-        // 'order_product_type'
-        // 'order_product_info'
-        // 'order_client_tg'
 
-        // $('#company_id').val(data.company_id);
-
+    typedStatusChart(statusArr, listData);
 
     }).fail(function(err) {
         console.log(err);
@@ -257,12 +237,21 @@ $(document).ready(function(){
           $('.table thead[data-status="' + $target + '"]').fadeIn('slow');
         });
 
+    let statusArr = {
+            0: 'Не в работе',
+            1: 'В работе',
+            2: 'Приостановлена',
+            3: 'Выполнена',
+    }
     if ($('#agent_form').length) {
         loadAgentInfo(TelegramId, currentUrl, processUrl);
-        loadOrderInfo(TelegramId, currentUrl, processUrl)
+        let targetUrl = processUrl + '/api/orders_by_agent/info?TelegramId=' + TelegramId
+        loadOrderInfo(targetUrl, statusArr);
     }
     else {
         loadClientInfo(TelegramId, currentUrl, processUrl);
+        let targetUrl = processUrl + '/api/orders_by_client/info?TelegramId=' + TelegramId
+        loadOrderInfo(targetUrl, statusArr);
     }
 
     if ($('#company_form').length) {
@@ -401,8 +390,6 @@ $(document).ready(function(){
                 $('.alert').show();
             }
         }
-
-
     });
 
 
