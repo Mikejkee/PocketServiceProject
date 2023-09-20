@@ -181,258 +181,257 @@ input:checked + .slider:before {
 }
 
 </style>
+{% endblock link %}
 
-{% endblock link %} {% block title %} Личный кабинет {% endblock title %} {% block header %}
+{% block title %}
+    Личный кабинет
+{% endblock title %}
 
-<p>Личный кабинет</p>
+{% block header %}
+    <p>Личный кабинет</p>
+{% endblock header %}
 
-{% endblock header %} {% block content %}
-<div class="row py-2">
-	<div class="col">
-		<div class="card text-center border-warning mb-3">
-			<h5 class="card-header bg-secondary text-white" , style="margin-bottom: 3px; font-size: 20px; font-weight: 400; font-family: 'Beer money';" onclick="openDiv('personalityForm')">Персональные данные</h5>
-			<div class="card mb-4 mt-2 box-shadow collapse" id="personalityForm">
-				<div class="sticker-left">
-					<form id="person_form">
-						{% csrf_token %}
-						<div class="card-body">
-							<small class="text-muted">Telegram:</small>
-							<div class="input-group input-group-sm mb-3">
-								<input type="number" name="telegram_id" id="telegram_id" class="form-control mb-0" value="{{ telegram_id }}" hidden />
-								<input type="number" name="person_id" id="person_id" class="form-control mb-0" hidden />
-								<span class="input-group-text">@</span>
-								<input type="text" class="form-control" placeholder="Username" id="telegram_username" disabled />
-							</div>
+{% block content %}
+    <div class="row py-2">
+        <div class="col">
+            <div class="card text-center border-warning mb-3">
+                <h5 class="card-header bg-secondary text-white" , style="margin-bottom: 3px; font-size: 20px; font-weight: 400; font-family: 'Beer money';" onclick="openDiv('personalityForm')">Персональные данные</h5>
+                <div class="card mb-4 mt-2 box-shadow collapse" id="personalityForm">
+                    <div class="sticker-left">
+                        <form id="person_form">
+                            {% csrf_token %}
+                            <div class="card-body">
+                                <small class="text-muted">Telegram:</small>
+                                <div class="input-group input-group-sm mb-3">
+                                    <input type="number" name="telegram_id" id="telegram_id" class="form-control mb-0" value="{{ telegram_id }}" hidden />
+                                    <input type="number" name="person_id" id="person_id" class="form-control mb-0" hidden />
+                                    <span class="input-group-text">@</span>
+                                    <input type="text" class="form-control" placeholder="Username" id="telegram_username" disabled />
+                                </div>
 
-							<small class="text-muted">ФИО<span class="required">*</span>:</small>
-							<div class="input-group input-group-sm mb-3">
-								<input type="text" class="form-control" placeholder="ФИО" id="fio" />
-							</div>
+                                <small class="text-muted">ФИО<span class="required">*</span>:</small>
+                                <div class="input-group input-group-sm mb-3">
+                                    <input type="text" class="form-control" placeholder="ФИО" id="fio" />
+                                </div>
 
-							<small class="text-muted">Телефон<span class="required">*</span>:</small>
-							<div class="input-group input-group-sm mb-3">
-								<input type="text" class="form-control" placeholder="Телефонный номер" id="phone_number" />
-							</div>
+                                <small class="text-muted">Телефон<span class="required">*</span>:</small>
+                                <div class="input-group input-group-sm mb-3">
+                                    <input type="text" class="form-control" placeholder="Телефонный номер" id="phone_number" />
+                                </div>
 
-							<small class="text-muted">Дата рождения<span class="required">*</span>:</small>
-							<div class="input-group input-group-sm mb-3">
-								<input type="text" class="form-control" placeholder="00.00.0000" id="date_of_birth" />
-							</div>
+                                <small class="text-muted">Дата рождения<span class="required">*</span>:</small>
+                                <div class="input-group input-group-sm mb-3">
+                                    <input type="text" class="form-control" placeholder="00.00.0000" id="date_of_birth" />
+                                </div>
 
-							<small class="text-muted">Электронная почта<span class="required">*</span>:</small>
-							<div class="input-group input-group-sm mb-3">
-								<input type="text" class="form-control" placeholder="Username" aria-label="Username" id="email_username" />
-								<span class="input-group-text">@</span>
-								<input type="text" class="form-control" placeholder="Server" aria-label="Server" id="email_server" />
-							</div>
-							{% if role_type_agent == None %}
-							<small class="text-muted">Адрес проживания</span>:</small>
+                                <small class="text-muted">Электронная почта<span class="required">*</span>:</small>
+                                <div class="input-group input-group-sm mb-3">
+                                    <input type="text" class="form-control" placeholder="Username" aria-label="Username" id="email_username" />
+                                    <span class="input-group-text">@</span>
+                                    <input type="text" class="form-control" placeholder="Server" aria-label="Server" id="email_server" />
+                                </div>
+                                {% if role_type_agent == None %}
+                                <small class="text-muted">Адрес проживания</span>:</small>
+                                <div class="input-group input-group-sm mb-3">
+                                    <input type="text" class="form-control" placeholder="Ваш адрес" id="client_address" />
+                                </div>
+                                <small class="text-muted">Дополнительная информация</span>:</small>
+                                <div class="input-group input-group-sm mb-3">
+                                    <input type="text" class="form-control" placeholder="О Вас" id="client_description" />
+                                </div>
+                                {% endif %}
+                            </div>
+                        </form>
+
+                        {% if role_type_agent %}
+                        <form id="agent_form">
+                            <small class="text-muted">Образование</span>:</small>
                             <div class="input-group input-group-sm mb-3">
-                                <input type="text" class="form-control" placeholder="Ваш адрес" id="client_address" />
+                                <input type="text" class="form-control" placeholder="Ваше образование" id="education_description" />
+                            </div>
+                            <small class="text-muted">Опыт работы</span>:</small>
+                            <div class="input-group input-group-sm mb-3">
+                                <input type="text" class="form-control" placeholder="Ваш опыт" id="work_experience" />
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="command_work">
+                                <label class="form-check-label" for="command_work" style="padding-right: 95px; font-size: .899em;">Работа в команде</label>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="contract_work">
+                                <label class="form-check-label" for="contract_work" style="padding-right: 82px; font-size: .899em;">Работа по договору</label>
+                            </div>
+                            <small class="text-muted">Гарантийный период</span>:</small>
+                            <div class="input-group input-group-sm mb-3">
+                                <input type="text" class="form-control" placeholder="Ваши гарантини" id="guarantee_period" />
                             </div>
                             <small class="text-muted">Дополнительная информация</span>:</small>
                             <div class="input-group input-group-sm mb-3">
-                                <input type="text" class="form-control" placeholder="О Вас" id="client_description" />
+                                <input type="text" class="form-control" placeholder="О Вас" id="agent_description" />
                             </div>
-							{% endif %}
-						</div>
-					</form>
-
-                    {% if role_type_agent %}
-                    <form id="agent_form">
-                        <small class="text-muted">Образование</span>:</small>
-                        <div class="input-group input-group-sm mb-3">
-                            <input type="text" class="form-control" placeholder="Ваше образование" id="education_description" />
-                        </div>
-                        <small class="text-muted">Опыт работы</span>:</small>
-                        <div class="input-group input-group-sm mb-3">
-                            <input type="text" class="form-control" placeholder="Ваш опыт" id="work_experience" />
-                        </div>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="command_work">
-                            <label class="form-check-label" for="command_work" style="padding-right: 95px; font-size: .899em;">Работа в команде</label>
-                        </div>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="contract_work">
-                            <label class="form-check-label" for="contract_work" style="padding-right: 82px; font-size: .899em;">Работа по договору</label>
-                        </div>
-                        <small class="text-muted">Гарантийный период</span>:</small>
-                        <div class="input-group input-group-sm mb-3">
-                            <input type="text" class="form-control" placeholder="Ваши гарантини" id="guarantee_period" />
-                        </div>
-                        <small class="text-muted">Дополнительная информация</span>:</small>
-                        <div class="input-group input-group-sm mb-3">
-                            <input type="text" class="form-control" placeholder="О Вас" id="agent_description" />
-                        </div>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="passport_check" disabled>
-                            <label class="form-check-label" for="contract_work" style="padding-right: 23px; font-size: .899em;">Подтверждение документов</label>
-                        </div>
-                    </form>
-                    {% endif %}
-
-					{% if role_type_head_agent %}
-					<div class="sticker-left sticker-success text-center" data-sticker="Информация о Вашей компании">
-                        <form id="company_form">
-                            {% csrf_token %}
-                            <small class="text-muted">Название компании<span class="required">*</span>:</small>
-                            <div class="input-group input-group-sm mb-3">
-                                <input type="number" name="company_id" id="company_id" class="form-control mb-0" hidden />
-                                <input type="text" class="form-control" placeholder="Название" id="company_name"/>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="passport_check" disabled>
+                                <label class="form-check-label" for="contract_work" style="padding-right: 23px; font-size: .899em;">Подтверждение документов</label>
                             </div>
-                            <small class="text-muted">Юридический адрес<span class="required">*</span>:</small>
-                            <div class="input-group input-group-sm mb-3">
-                                <input type="text" class="form-control" placeholder="Адрес" id="legal_address"/>
-                            </div>
-                            <small class="text-muted">Почтовый адрес<span class="required">*</span>:</small>
-                            <div class="input-group input-group-sm mb-3">
-                                <input type="text" class="form-control" placeholder="Адрес" id="mail_address"/>
-                            </div>
-                            <small class="text-muted">Электронная почта<span class="required">*</span>:</small>
-                            <div class="input-group input-group-sm mb-3">
-                                <input type="text" class="form-control" placeholder="Почта" id="email_address"/>
-                            </div>
-                            <small class="text-muted">Контактный телефон<span class="required">*</span>:</small>
-                            <div class="input-group input-group-sm mb-3">
-                                <input type="text" class="form-control" placeholder="Телефон" id="contact_phone"/>
-                            </div>
-                            <small class="text-muted">ИНН<span class="required">*</span>:</small>
-                            <div class="input-group input-group-sm mb-3">
-                                <input type="text" class="form-control" placeholder="ИНН" id="inn"/>
-                            </div>
-                            <small class="text-muted">КПП<span class="required">*</span>:</small>
-                            <div class="input-group input-group-sm mb-3">
-                                <input type="text" class="form-control" placeholder="КПП" id="kpp"/>
-                            </div>
-                            <small class="text-muted">ОГРНИП<span class="required">*</span>:</small>
-                            <div class="input-group input-group-sm mb-3">
-                                <input type="text" class="form-control" placeholder="ОГРНИП" id="ogrnip"/>
-                            </div>
-                            <small class="text-muted">Рассчетный счет<span class="required">*</span>:</small>
-                            <div class="input-group input-group-sm mb-3">
-                                <input type="text" class="form-control" placeholder="Счет" id="payment_account"/>
-                            </div>
-                            <small class="text-muted">Название банка<span class="required">*</span>:</small>
-                            <div class="input-group input-group-sm mb-3">
-                                <input type="text" class="form-control" placeholder="Банк" id="bank"/>
-                            </div>
-                            <small class="text-muted">БИК<span class="required">*</span>:</small>
-                            <div class="input-group input-group-sm mb-3">
-                                <input type="text" class="form-control" placeholder="БИК" id="bik"/>
-                            </div>
-                            <small class="text-muted">ОКПО<span class="required">*</span>:</small>
-                            <div class="input-group input-group-sm mb-3">
-                                <input type="text" class="form-control" placeholder="ОКПО" id="okpo"/>
-                            </div>
-                            <small class="text-muted">Дополнительное описание:</small>
-                            <div class="input-group input-group-sm mb-3">
-                                <input type="text" class="form-control" placeholder="Описание" id="description"/>
-                            </div>
-
                         </form>
+                        {% endif %}
+
+                        {% if role_type_head_agent %}
+                        <div class="sticker-left sticker-success text-center" data-sticker="Информация о Вашей компании">
+                            <form id="company_form">
+                                {% csrf_token %}
+                                <small class="text-muted">Название компании<span class="required">*</span>:</small>
+                                <div class="input-group input-group-sm mb-3">
+                                    <input type="number" name="company_id" id="company_id" class="form-control mb-0" hidden />
+                                    <input type="text" class="form-control" placeholder="Название" id="company_name"/>
+                                </div>
+                                <small class="text-muted">Юридический адрес<span class="required">*</span>:</small>
+                                <div class="input-group input-group-sm mb-3">
+                                    <input type="text" class="form-control" placeholder="Адрес" id="legal_address"/>
+                                </div>
+                                <small class="text-muted">Почтовый адрес<span class="required">*</span>:</small>
+                                <div class="input-group input-group-sm mb-3">
+                                    <input type="text" class="form-control" placeholder="Адрес" id="mail_address"/>
+                                </div>
+                                <small class="text-muted">Электронная почта<span class="required">*</span>:</small>
+                                <div class="input-group input-group-sm mb-3">
+                                    <input type="text" class="form-control" placeholder="Почта" id="email_address"/>
+                                </div>
+                                <small class="text-muted">Контактный телефон<span class="required">*</span>:</small>
+                                <div class="input-group input-group-sm mb-3">
+                                    <input type="text" class="form-control" placeholder="Телефон" id="contact_phone"/>
+                                </div>
+                                <small class="text-muted">ИНН<span class="required">*</span>:</small>
+                                <div class="input-group input-group-sm mb-3">
+                                    <input type="text" class="form-control" placeholder="ИНН" id="inn"/>
+                                </div>
+                                <small class="text-muted">КПП<span class="required">*</span>:</small>
+                                <div class="input-group input-group-sm mb-3">
+                                    <input type="text" class="form-control" placeholder="КПП" id="kpp"/>
+                                </div>
+                                <small class="text-muted">ОГРНИП<span class="required">*</span>:</small>
+                                <div class="input-group input-group-sm mb-3">
+                                    <input type="text" class="form-control" placeholder="ОГРНИП" id="ogrnip"/>
+                                </div>
+                                <small class="text-muted">Рассчетный счет<span class="required">*</span>:</small>
+                                <div class="input-group input-group-sm mb-3">
+                                    <input type="text" class="form-control" placeholder="Счет" id="payment_account"/>
+                                </div>
+                                <small class="text-muted">Название банка<span class="required">*</span>:</small>
+                                <div class="input-group input-group-sm mb-3">
+                                    <input type="text" class="form-control" placeholder="Банк" id="bank"/>
+                                </div>
+                                <small class="text-muted">БИК<span class="required">*</span>:</small>
+                                <div class="input-group input-group-sm mb-3">
+                                    <input type="text" class="form-control" placeholder="БИК" id="bik"/>
+                                </div>
+                                <small class="text-muted">ОКПО<span class="required">*</span>:</small>
+                                <div class="input-group input-group-sm mb-3">
+                                    <input type="text" class="form-control" placeholder="ОКПО" id="okpo"/>
+                                </div>
+                                <small class="text-muted">Дополнительное описание:</small>
+                                <div class="input-group input-group-sm mb-3">
+                                    <input type="text" class="form-control" placeholder="Описание" id="description"/>
+                                </div>
+
+                            </form>
+                        </div>
+                        {% endif %}
+                        <a href="#" class="btn btn-primary" id="save_info">Сохранить</a>
                     </div>
-					{% endif %}
-                    <a href="#" class="btn btn-primary" id="save_info">Сохранить</a>
-				</div>
-			</div>
+                </div>
 
-            <h5 class="card-header bg-secondary text-white" , style="margin-bottom: 3px; font-size: 20px; font-weight: 400; font-family: 'Beer money';" onclick="openDiv('products')">Заказы и заявки</h5>
-			<div class="card mb-4 mt-2 box-shadow collapse" id="products">
-				<div class="sticker-left sticker-success text-center" {% if role_type_agent %} data-sticker="{{company_name}}" {% endif %}>
-                    <div class="row">
-                        <section class="content">
-                            <div class="col-md-8 col-md-offset-2">
-                                <div class="panel panel-default">
-                                    <div class="panel-body">
-                                        <div class="pull-right">
-                                            <div class="btn-group-sm" role="group">
-                                                <button type="button" class="btn btn-secondary btn-filter" data-target="all" style="font-size: 0.5em;">Все</button>
-                                                <button type="button" class="btn btn-danger btn-filter" data-target="new" style="font-size: 0.5em;">Новые</button>
-                                                <button type="button" class="btn btn-warning btn-filter" data-target="in_work" style="font-size: 0.5em;">В работе</button>
-                                                <button type="button" class="btn btn-primary btn-filter" data-target="pause" style="font-size: 0.5em;">Пауза</button>
-                                                <button type="button" class="btn btn-success btn-filter" data-target="done" style="font-size: 0.5em;">Завершенные</button>
+                <h5 class="card-header bg-secondary text-white" , style="margin-bottom: 3px; font-size: 20px; font-weight: 400; font-family: 'Beer money';" onclick="openDiv('products')">Заказы и заявки</h5>
+                <div class="card mb-4 mt-2 box-shadow collapse" id="products">
+                    <div class="sticker-left sticker-success text-center" {% if role_type_agent %} data-sticker="{{company_name}}" {% endif %}>
+                        <div class="row">
+                            <section class="content">
+                                <div class="col-md-8 col-md-offset-2">
+                                    <div class="panel panel-default">
+                                        <div class="panel-body">
+                                            <div class="pull-right">
+                                                <div class="btn-group-sm" role="group">
+                                                    <button type="button" class="btn btn-secondary btn-filter" data-target="all" style="font-size: 0.5em;">Все</button>
+                                                    <button type="button" class="btn btn-danger btn-filter" data-target="new" style="font-size: 0.5em;">Новые</button>
+                                                    <button type="button" class="btn btn-warning btn-filter" data-target="in_work" style="font-size: 0.5em;">В работе</button>
+                                                    <button type="button" class="btn btn-primary btn-filter" data-target="pause" style="font-size: 0.5em;">Пауза</button>
+                                                    <button type="button" class="btn btn-success btn-filter" data-target="done" style="font-size: 0.5em;">Завершенные</button>
+                                                </div>
                                             </div>
+                                        <table class="table table-striped table-hover table-sm align-middle">
+                                            <thead class="" data-status="all">
+                                                <tr>
+                                                    <th class="col-xs-1" scope="col" style="font-size: 0.55em;">№</th>
+                                                    <th class="col-xs-8" scope="col" style="font-size: 0.6em;">Тип/цена</th>
+                                                    <th class="col-xs-1" scope="col" style="font-size: 0.6em;">{% if role_type_agent %} Клиент {% else %} Агент {% endif %}</th>
+                                                    <th class="col-xs-2" scope="col" style="font-size: 0.6em;">Статус</th>
+                                                </tr>
+                                            </thead>
+                                            <thead class="" data-status="new" style="display: none;">
+                                                <tr>
+                                                    <th class="col-xs-1 " style="font-size: 0.55em;">№</th>
+                                                    <th class="col-xs-8" style="font-size: 0.6em;">Тип/цена</th>
+                                                    <th class="col-xs-1" style="font-size: 0.6em;">Заявка</th>
+                                                    <th class="col-xs-2" style="font-size: 0.6em;"> {% if role_type_agent %} Подтвердить {% else %} Подтверждено {% endif %}</th>
+                                                </tr>
+                                            </thead>
+                                            <thead class="" data-status="in_work" style="display: none;">
+                                                <tr>
+                                                    <th class="col-xs-1 " style="font-size: 0.55em;">№</th>
+                                                    <th class="col-xs-8" style="font-size: 0.6em;">Заявка</th>
+                                                    <th class="col-xs-1" style="font-size: 0.6em;">{% if role_type_agent %} Клиент {% else %} Агент {% endif %}</th>
+                                                    <th class="col-xs-2" style="font-size: 0.6em;">Время окончания</th>
+                                                </tr>
+                                            </thead>
+                                            <thead class="" data-status="pause" style="display: none;">
+                                                <tr>
+                                                    <th class="col-xs-1 " style="font-size: 0.55em;">№</th>
+                                                    <th class="col-xs-8" style="font-size: 0.6em;">Тип/цена</th>
+                                                    <th class="col-xs-1" style="font-size: 0.6em;">{% if role_type_agent %} Клиент {% else %} Агент {% endif %}</th>
+                                                    <th class="col-xs-2" style="font-size: 0.6em;">Статус</th>
+                                                </tr>
+                                            </thead>
+                                            <thead class="" data-status="done" style="display: none;">
+                                                <tr>
+                                                    <th class="col-xs-1 " style="font-size: 0.55em;">№</th>
+                                                    <th class="col-xs-8" style="font-size: 0.6em;">Дата старта/конца</th>
+                                                    <th class="col-xs-1" style="font-size: 0.6em;">Тип/Цена</th>
+                                                    <th class="col-xs-2" style="font-size: 0.6em;">Заявка</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody class="table-lc" id="analytic_table"> </tbody>
+                                        </table>
+
                                         </div>
-                                    <table class="table table-striped table-hover table-sm align-middle">
-                                        <thead class="" data-status="all">
-                                            <tr>
-                                                <th class="col-xs-1" scope="col" style="font-size: 0.55em;">№</th>
-                                                <th class="col-xs-8" scope="col" style="font-size: 0.6em;">Тип/цена</th>
-                                                <th class="col-xs-1" scope="col" style="font-size: 0.6em;">{% if role_type_agent %} Клиент {% else %} Агент {% endif %}</th>
-                                                <th class="col-xs-2" scope="col" style="font-size: 0.6em;">Статус</th>
-                                            </tr>
-                                        </thead>
-                                        <thead class="" data-status="new" style="display: none;">
-                                            <tr>
-                                                <th class="col-xs-1 " style="font-size: 0.55em;">№</th>
-                                                <th class="col-xs-8" style="font-size: 0.6em;">Тип/цена</th>
-                                                <th class="col-xs-1" style="font-size: 0.6em;">Заявка</th>
-                                                <th class="col-xs-2" style="font-size: 0.6em;"> {% if role_type_agent %} Подтвердить {% else %} Подтверждено {% endif %}</th>
-                                            </tr>
-                                        </thead>
-                                        <thead class="" data-status="in_work" style="display: none;">
-                                            <tr>
-                                                <th class="col-xs-1 " style="font-size: 0.55em;">№</th>
-                                                <th class="col-xs-8" style="font-size: 0.6em;">Заявка</th>
-                                                <th class="col-xs-1" style="font-size: 0.6em;">{% if role_type_agent %} Клиент {% else %} Агент {% endif %}</th>
-                                                <th class="col-xs-2" style="font-size: 0.6em;">Время окончания</th>
-                                            </tr>
-                                        </thead>
-                                        <thead class="" data-status="pause" style="display: none;">
-                                            <tr>
-                                                <th class="col-xs-1 " style="font-size: 0.55em;">№</th>
-                                                <th class="col-xs-8" style="font-size: 0.6em;">Тип/цена</th>
-                                                <th class="col-xs-1" style="font-size: 0.6em;">{% if role_type_agent %} Клиент {% else %} Агент {% endif %}</th>
-                                                <th class="col-xs-2" style="font-size: 0.6em;">Статус</th>
-                                            </tr>
-                                        </thead>
-                                        <thead class="" data-status="done" style="display: none;">
-                                            <tr>
-                                                <th class="col-xs-1 " style="font-size: 0.55em;">№</th>
-                                                <th class="col-xs-8" style="font-size: 0.6em;">Дата старта/конца</th>
-                                                <th class="col-xs-1" style="font-size: 0.6em;">Тип/Цена</th>
-                                                <th class="col-xs-2" style="font-size: 0.6em;">Заявка</th>
-                                            </tr>
-                                        </thead>
-
-                                        <tbody class="table-lc" id="analytic_table"> </tbody>
-                                    </table>
-
                                     </div>
                                 </div>
-                            </div>
-                        </section>
+                            </section>
+                        </div>
                     </div>
                 </div>
-			</div>
 
-			<h5 class="card-header bg-secondary text-white" , style="margin-bottom: 3px; font-size: 20px; font-weight: 400; font-family: 'Beer money';" onclick="openDiv('analitics')">Аналитические данные</h5>
-			<div class="card mb-4 mt-2 box-shadow collapse" id="analitics">
-				<div class="sticker-left sticker-success text-center" {% if role_type_agent %} data-sticker="{{company_name}}" {% endif %}>
-                    <div class="container" style="height: 350px">
-                        <canvas id="typed_status_chart"></canvas>
-                    </div>
+                <h5 class="card-header bg-secondary text-white" , style="margin-bottom: 3px; font-size: 20px; font-weight: 400; font-family: 'Beer money';" onclick="openDiv('analitics')">Аналитические данные</h5>
+                <div class="card mb-4 mt-2 box-shadow collapse" id="analitics">
+                    <div class="sticker-left sticker-success text-center" {% if role_type_agent %} data-sticker="{{company_name}}" {% endif %}>
+                        <div class="container" style="height: 350px">
+                            <canvas id="typed_status_chart"></canvas>
+                        </div>
 
-                    <div class="container">
+                        <div class="container">
+
+                        </div>
 
                     </div>
 
                 </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
 
-			</div>
-		</div>
-
-		<!-- content -->
-		{% endblock content %} {% block scripts %}
-		<script src="{% static 'js/profile.js' %}"></script>
-		<script src="{% static 'js/profile_charts.js' %}"></script>
-		<script>
-
-            $(document).ready(function () {
-
-            })
-		</script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-		{% endblock scripts %}
-	</div>
-</div>
+{% block scripts %}
+    <script src="{% static 'js/profile.js' %}"></script>
+    <script src="{% static 'js/profile_charts.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock scripts %}

@@ -9,14 +9,14 @@ SMETA_TYPES_CHOICE = [
 FLAT_REPAIR = 0
 PLUBMING_REPAIR = 1
 FURNITURE_REPAIR = 2
-CLEANING = 3
-BEAUTI = 4
+BEAUTI = 3
+CLEANING = 4
 PRODUCT_TYPES_CHOICE = [
     (FLAT_REPAIR, 'Ремонт квартиры'),
-    (PLUBMING_REPAIR, 'Ремонт сантехники'),
+    (PLUBMING_REPAIR, 'Ремонт техники'),
     (FURNITURE_REPAIR, 'Ремонт мебели'),
-    (CLEANING, 'Уборка'),
     (BEAUTI, 'Услуги красоты'),
+    (CLEANING, 'Уборка'),
 ]
 
 STATUS_TYPES_CHOICE = [
@@ -79,9 +79,8 @@ class Person(Registrator):
     person_fio = models.CharField("ФИО",  max_length=200, null=True, blank=True)
     phone_number = models.CharField("Номер телефона", max_length=12, null=True, blank=True)
     telegram_chat_id = models.CharField('ID Чата', max_length=255, null=True, blank=True)
-    username = models.CharField("Имя пользователя", max_length=20, null=True, blank=True)
     telegram_id = models.CharField("ID Телеграмм", max_length=20, null=True, blank=True)
-    telegram_username = models.CharField("Пользователь Телеграмм", max_length=20, null=True, blank=True)
+    telegram_username = models.CharField("Username аккаунта Телеграмм", max_length=20, null=True, blank=True)
     telegram_name = models.CharField("Имя пользователя Телеграмм", max_length=20, null=True, blank=True)
     telegram_surname = models.CharField("Фамилия пользователя Телеграмм", max_length=20, null=True, blank=True)
     email = models.EmailField("Электронная почта", null=True, blank=True)
@@ -90,6 +89,12 @@ class Person(Registrator):
                                          blank=True)
 
     role = models.ManyToManyField(Role, blank=True, related_name='roles', verbose_name="Роли")
+
+    def __str__(self):
+        if self.telegram_username:
+            return self.telegram_username
+        else:
+            return self.telegram_id
 
     class Meta:
         db_table = 'person'
@@ -130,7 +135,10 @@ class Administrator(Person):
     addition_information = models.TextField("Дополнительная информация", null=True, blank=True)
 
     def __str__(self):
-        return self.username
+        if self.telegram_username:
+            return self.telegram_username
+        else:
+            return self.telegram_id
 
     class Meta:
         db_table = 'administrator'
@@ -143,6 +151,7 @@ class Product(Registrator):
     product_image = models.ImageField('Картинка услуг', upload_to='./postgres_data/objects/products/images/', null=True,
                                       blank=True)
 
+
     def __str__(self):
         return self.addition_information
 
@@ -152,6 +161,7 @@ class Product(Registrator):
                       models.Index(fields=['product_type'],
                                    name='index_name_product'),
                   ] + Registrator.Meta.indexes
+
 
 class Agent(Person):
     agent_description = models.TextField(verbose_name="Описание агента", null=True, blank=True)
@@ -169,10 +179,40 @@ class Agent(Person):
     products = models.ManyToManyField(Product, blank=True, related_name='products_agent', verbose_name="Услуги")
 
     def __str__(self):
-        return self.username
+        if self.telegram_username:
+            return self.telegram_username
+        else:
+            return self.telegram_id
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        clients = Client.objects.filter(telegram_id=str(self.telegram_id))
+
+        if clients.count() > 0:
+            clients.last().delete()
 
     class Meta:
         db_table = 'agent'
+
+
+class Price(Registrator):
+    price_value = models.CharField("Цена", max_length=30, null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, related_name='product_price',
+                                null=True, blank=True, verbose_name="Услуга")
+    agent = models.ForeignKey(Agent, on_delete=models.SET_NULL, related_name='agent_product_price',
+                                null=True, blank=True, verbose_name="Агент")
+
+    def save(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        print(self.agent)
+        agent_products = self.agent.products
+        if self.product.addition_information in agent_products:
+            super(Price, self).save(*args, **kwargs)
+        else:
+            raise ValueError("У агента нет такой услуги")
+
+    class Meta:
+        db_table = 'price'
 
 
 class Client(Person):
@@ -180,7 +220,10 @@ class Client(Person):
     addition_information = models.TextField("Дополнительная информация", null=True, blank=True)
 
     def __str__(self):
-        return self.telegram_id
+        if self.telegram_username:
+            return self.telegram_username
+        else:
+            return self.telegram_id
 
     class Meta:
         db_table = 'client'

@@ -5,10 +5,10 @@ from PocketServiceApp.models import Person, Agent, Client
 
 
 showcase_dict = {
-    0: 'Найти бригаду для ремонта квартиры',
-    1: 'Найти рабочего для ремонта техники',
-    2: 'Найти рабочего для ремонта мебели',
-    3: 'Найти мастера для услуг красоты',
+    0: 'Ремонт квартиры',
+    1: 'Ремонт техники',
+    2: 'Ремонт мебели',
+    3: 'Услуги красоты',
 }
 
 
@@ -44,8 +44,9 @@ class ShowcaseView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ShowcaseView, self).get_context_data(**kwargs)
-        context['telegram_id'] = self.request.GET.get('TelegramId')
         showcase_type = int(self.request.GET.get('ShowcaseType'))
+
+        context['telegram_id'] = self.request.GET.get('TelegramId')
         context['showcase_message'] = showcase_dict[showcase_type]
-        context['showcase_type'] = showcase_type
+
         return context

@@ -2,6 +2,7 @@ import json
 from django.http import JsonResponse
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework.status import HTTP_202_ACCEPTED
 from rest_framework.views import APIView
 from celery.result import AsyncResult
 from drf_yasg.utils import swagger_auto_schema
@@ -9,11 +10,53 @@ from drf_yasg import openapi
 
 from .models import *
 from .serializers import *
+from .telegram_tasks import *
+from PocketServiceTelegramBot import TOKEN
 
 
 TELEGRAM_ID_QUERY = openapi.Parameter('TelegramId', in_=openapi.IN_QUERY,
                                       type=openapi.TYPE_STRING, required=True,
                                       description='Телеграмм ID')
+CLIENT_ID = openapi.Parameter('ClientId', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_STRING, required=True,
+                              description='Телеграмм ID клиента')
+CLIENT_PHONE = openapi.Parameter('ClientPhone', in_=openapi.IN_QUERY,
+                                 type=openapi.TYPE_STRING, required=True,
+                                 description='Телефон клиента')
+CLIENT_EMAIL = openapi.Parameter('ClientEmail', in_=openapi.IN_QUERY,
+                                 type=openapi.TYPE_STRING, required=True,
+                                 description='Email клиента')
+CLIENT_ADDRESS = openapi.Parameter('ClientAddress', in_=openapi.IN_QUERY,
+                                   type=openapi.TYPE_STRING, required=True,
+                                   description='Адрес клиента')
+CLIENT_ADDITIONAL_INFO = openapi.Parameter('ClientInfo', in_=openapi.IN_QUERY,
+                                           type=openapi.TYPE_STRING, required=True,
+                                           description='Дополнительная информация клиента')
+AGENT_ID = openapi.Parameter('AgentId', in_=openapi.IN_QUERY,
+                             type=openapi.TYPE_STRING, required=True,
+                             description='Телеграмм ID агента')
+PRODUCT_ID = openapi.Parameter('ProductId', in_=openapi.IN_QUERY,
+                               type=openapi.TYPE_STRING, required=True,
+                               description='ID услуги')
+PRODUCT_INFO = openapi.Parameter('ProductInfo', in_=openapi.IN_QUERY,
+                               type=openapi.TYPE_STRING, required=True,
+                               description='Информация об услуге')
+ORDER_NAME = openapi.Parameter('OrderName', in_=openapi.IN_QUERY,
+                               type=openapi.TYPE_STRING, required=True,
+                               description='Имя заявки')
+ORDER_PRICE = openapi.Parameter('OrderPrice', in_=openapi.IN_QUERY,
+                                type=openapi.TYPE_STRING, required=True,
+                                description='Цена заявки')
+ORDER_START = openapi.Parameter('OrderStart', in_=openapi.IN_QUERY,
+                                type=openapi.TYPE_STRING, required=True,
+                                description='Время начала работ')
+ORDER_END = openapi.Parameter('OrderEnd', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_STRING, required=True,
+                              description='Время конца работа')
+ORDER_ADDITIONAL_INFO = openapi.Parameter('OrderInfo', in_=openapi.IN_QUERY,
+                                          type=openapi.TYPE_STRING, required=True,
+                                          description='Дополнительная информация заявки')
+
 status_dict = {
     0: 'Не в работе',
     1: 'В работе',
@@ -28,6 +71,14 @@ product_types = {
     3: 'Уборка',
     4: 'Услуги красоты',
 }
+
+
+def tg_reminder(telegram_id, message, time=0):
+    task = tg_message_task.apply_async(kwargs={'telegram_id': telegram_id, 'message': message, 'token': TOKEN},
+                                       countdown=time)
+    print('TASK CREATES - tg reminder done', task.task_id)
+    return task.task_id
+
 
 class APIPersonInfoByTelegramID(APIView):
     @swagger_auto_schema(
@@ -271,6 +322,67 @@ class APIPOrdersInfoByClientTelegramID(APIView):
             return Response({'error': 'User not found'}, status=400)
         return Response({'error': 'Telegram user not found'}, status=400)
 
+
+class APIPOrdersCreateByClient(APIView):
+    @swagger_auto_schema(
+        tags=["order"],
+        operation_description='Создание заявки клиента',
+        manual_parameters=[CLIENT_ID,
+                           CLIENT_PHONE,
+                           CLIENT_EMAIL,
+                           CLIENT_ADDRESS,
+                           CLIENT_ADDITIONAL_INFO,
+                           AGENT_ID,
+                           PRODUCT_ID,
+                           PRODUCT_INFO,
+                           ORDER_NAME,
+                           ORDER_PRICE,
+                           ORDER_START,
+                           ORDER_END,
+                           ORDER_ADDITIONAL_INFO,
+        ]
+    )
+    def post(self, request):
+        data = request.query_params
+        client_id = data.get('ClientId')
+        agent_id = data.get('AgentId')
+        product_info = data.get('ProductInfo')
+        client_phone = data.get('ClientPhone')
+        client_email = data.get('ClientEmail')
+
+        order_task = create_product_order_task.delay(client_phone, client_id, client_id, client_email,
+                                                     data.get('ClientAddress'), data.get('ClientInfo'), agent_id,
+                                                     data.get('ProductId'), data.get('OrderName'),
+                                                     data.get('OrderPrice'), data.get('OrderStart'),
+                                                     data.get('OrderEnd'), data.get('OrderInfo'))
+        print('TASK CREATES - create order ', order_task.task_id)
+
+        client_remind_task = tg_reminder(client_id, "Вы зарегистрировали заявку на <b>{}</b>. \n"
+                                                    "Ожидайте, как с вами свяжется исполнитель!"
+                                         .format(product_info))
+        print('TASK CREATES - client remind ', client_remind_task)
+
+        agent_remind_task = tg_reminder(agent_id, "Вам пришла заявка на <b>{}</b>.\n"
+                                                  "Свяжитесь с заказчиком. \n"
+                                                  "Телефон: <b>{}</b> \n"
+                                                  "Электронная почта: <b>{}</b>"
+                                        .format(product_info, client_phone, client_email))
+        print('TASK CREATES - agent remind ', agent_remind_task)
+
+        agent_remind_task = tg_reminder(agent_id, "Напоминанем, что вам пришла заявка на <b>{}</b>.\n"
+                                                  "Свяжитесь с заказчиком и отметьте в личном "
+                                                  "кабинете информацию о принятии заказа. \n"
+                                                  "Телефон: <b>{}</b> \n"
+                                                  "Электронная почта: <b>{}</b>"
+                                        .format(product_info, client_phone, client_email),
+                                        time=10)
+        print('TASK CREATES - agent remind 3h ', agent_remind_task)
+
+        update_order_task = update_product_order_task.delay(order_id=order_task.get(), reminder_status=1)
+        print('TASK CREATES - update order', update_order_task.task_id)
+
+        return Response({'Result': 'Order Created'}, status=200)
+
 class PersonViewSet(viewsets.ModelViewSet):
     queryset = Person.objects.all()
     serializer_class = PersonSerializer
@@ -299,17 +411,6 @@ class ProductViewSet(viewsets.ModelViewSet):
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-
-    # def create(self, request, *args, **kwargs):
-    #     serializer = self.get_serializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     self.perform_create(serializer)
-    #
-    #     # Задача в celery
-    #     task = api_tasks.create_order.delay(serializer.data)
-    #
-    #     headers = self.get_success_headers(serializer.data)
-    #     return Response(serializer.data, status=status.HTTP_202_ACCEPTED, headers=headers)
 
 
 def task_status(request):

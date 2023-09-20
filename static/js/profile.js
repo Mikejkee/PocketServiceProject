@@ -281,6 +281,9 @@ $(document).ready(function(){
         let phoneNumber = $('#phone_number').val();
         let personDateBirth = $('#date_of_birth').val();
         let email = $('#email_username').val() +'@'+ $('#email_server').val();
+        if (email === '@') {
+            email = '';
+        }
         let personData = {
             'person_fio': personFio,
             'phone_number': phoneNumber,

@@ -8,32 +8,31 @@ from mainmodule.celery import BaseTask
 
 
 @shared_task(base=BaseTask)
-def save_client_task(name, surname, patronymic, person_fio, date_of_birth, phone_number, username, telegram_chat_id,
+def save_client_task(name, surname, patronymic, person_fio, date_of_birth, phone_number, telegram_chat_id,
                      telegram_id, telegram_username, telegram_name, telegram_surname, email,
-                     background_image, address, addition_information, object_information):
+                     background_image, address, addition_information):
 
     from .controllers.bot_services import save_user
     print('Start delay')
-    save_user('Обычный клиент', name, surname, patronymic, person_fio, date_of_birth, phone_number, username,
+    save_user('Клиент', name, surname, patronymic, person_fio, date_of_birth, phone_number,
               telegram_chat_id, telegram_id, telegram_username, telegram_name, telegram_surname,
-              email, background_image, address, addition_information, object_information)
+              email, background_image, address, addition_information)
 
     return True
 
 
 @shared_task(base=BaseTask)
-def create_product_order_task(phone_number, telegram_chat_id, client_id, email,
-                              address, addition_information, object_information,
-                              agent_id, product_type, product_addition_information,
-                              order_name, order_price, order_deadline, order_information):
+def create_product_order_task(phone_number, telegram_chat_id, client_id, email, address, addition_information,
+                              agent_id, product_id, order_name, order_price, order_start_time, order_deadline,
+                              order_information):
 
     from .controllers.bot_services import save_user, create_order
     save_user(phone_number=phone_number, telegram_chat_id=telegram_chat_id,
               telegram_id=client_id, email=email, address=address,
-              addition_information=addition_information, object_information=object_information)
+              addition_information=addition_information)
 
-    order_id = create_order(client_id, agent_id, product_type, product_addition_information,
-                            order_name, order_price, order_deadline, order_information)
+    order_id = create_order(client_id, agent_id, product_id, order_name, order_price, order_start_time,
+                            order_deadline, order_information)
 
     return order_id
 

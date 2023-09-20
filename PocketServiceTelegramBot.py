@@ -32,14 +32,14 @@ dp = Dispatcher()
 
 @sync_to_async
 def save_client(name=None, surname=None, patronymic=None, person_fio=None,
-                date_of_birth=None, phone_number=None, username=None, telegram_chat_id=None,
+                date_of_birth=None, phone_number=None, telegram_chat_id=None,
                 telegram_id=None, telegram_username=None, telegram_name=None,
                 telegram_surname=None, email=None, background_image=None, address=None,
-                addition_information=None, object_information=None):
-    task = save_client_task.delay(name, surname, patronymic, person_fio, date_of_birth, phone_number, username,
+                addition_information=None):
+    task = save_client_task.delay(name, surname, patronymic, person_fio, date_of_birth, phone_number,
                                   telegram_chat_id, telegram_id, telegram_username, telegram_name,
                                   telegram_surname, email, background_image, address,
-                                  addition_information, object_information)
+                                  addition_information)
     print('TASK CREATES - SAVE CLIENT ', task.task_id)
 
 
@@ -52,12 +52,12 @@ def tg_reminder(telegram_id, message, time=0):
 
 @sync_to_async
 def create_product_order(phone_number, telegram_chat_id, client_id, email,
-                         address, addition_information, object_information,
+                         address, addition_information,
                          agent_id, product_type, product_addition_information,
                          order_name, order_price,
                          order_deadline, order_information):
     order_task = create_product_order_task.delay(phone_number, telegram_chat_id, client_id, email,
-                                                 address, addition_information, object_information,
+                                                 address, addition_information,
                                                  agent_id, product_type, product_addition_information,
                                                  order_name, order_price, order_deadline, order_information)
     print('TASK CREATES - create order ', order_task.task_id)
@@ -100,6 +100,9 @@ def start_menu_buttons(telegram_id):
         [
             KeyboardButton(text='Личный кабинет 💼', web_app=webApp_lc_user),
             KeyboardButton(text='Витрина услуг 📜️'),
+        ],
+        [
+            KeyboardButton(text='Выставить свои услуги 📞'),
         ]
     ]
     return ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
@@ -137,6 +140,8 @@ async def cmd_start(message: Message):
                          '<b>Личный кабинет</b> 💼 - для просмотра информации о своем объекте.\n'
                          '<b>Витрина услуг </b> 📜 - здесь можно заказать ремонт квартиры, сантехники, '
                          'найти мастера по маникюру, бровям.\n'
+                          '<b>Связаться с нами </b> 📞 - если хочешь стать агентом, сотрудничать с нами или нашел '
+                         'баги там ты найдешь наши контакты\n'
                          '',
                          reply_markup=keyboard,
                          parse_mode='HTML')
@@ -163,7 +168,7 @@ async def showcase(message: Message):
 
     # Пример работы заказа сметчика
     # await create_product_order('8802553535', telegram_chat_id, client_id, 'maikl.kurpatov@yandex.ru',
-    #                            'address', 'addition_information', 'object_information',
+    #                            'address', 'addition_information',
     #                            '5721238199', 0, 'Заказать сметчика',
     #                            'Первый заказ тест', '50000', '2023-07-07', 'Первый заказ сметчика')
 
@@ -212,6 +217,28 @@ async def showcase(message: Message):
                              f'',
                              reply_markup=keyboard_showcase,
                              parse_mode='HTML')
+
+
+@dp.message(Text('Выставить свои услуги 📞'))
+async def contact_menu(message: Message):
+    from_user = message.from_user
+    telegram_id = from_user.id
+    keyboard = await start_menu_buttons(telegram_id)
+
+    await message.answer(f'Наши контакты:\n\n'
+                         f'agent@web.pocket-service.ru - пиши, если хочешь стать новым агентом, в заявке обязательно '
+                         f'нужно указать имя пользователя телеграмм @telegram_username или id, основную информацию '
+                         f'о себе, название компании на которую вы работаете (если вы управляющий - укажите это). При '
+                         f'этом если вы новая компания, которая хочет работать с нами - дополнительно предоставьте '
+                         f'информацию о ней (ИНН, ОГРНИП, юридический адрес). Приложите все удостоверяющие личность '
+                         f'и компанию документы, примеры ваших работ (профиль в профи.ру), информацию о заказах, '
+                         f'отзывы и все, что вы считаете необходимым, чтоб было в вашем профиле. \n\n'
+                         f'company@web.pocket-service.ru - пишите, если хотите зарегистировать вашу компанию у нас '
+                         f'и сотрудничать, приложите описанные выше документы и информацию.\n\n'
+                         f'bug@web.pocket-service.ru - пишите, заметите ошибки и баги в работе бота.\n\n'
+                         f'Мы обязательно свяжемся с  вами! Ваш, Pocket Service.',
+                         reply_markup=keyboard,
+                         parse_mode='HTML')
 
 
 # Запуск процесса поллинга новых апдейтов
