@@ -67,3 +67,12 @@ class OrderSerializer(PatchModelSerializer):
     class Meta:
         model = Order
         fields = '__all__'
+
+class PriceSerializer(PatchModelSerializer):
+    product = ProductSerializer(many=True, read_only=True)
+    agent = AgentSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Price
+        fields = '__all__'
+

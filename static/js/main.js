@@ -1,23 +1,3 @@
-// custom javascript
-
-$(document).ready(() => {
-  console.log('Sanity Check!');
-});
-
-$('.button').on('click', function() {
-  $.ajax({
-    url: '/tasks/',
-    data: { type: $(this).data('type') },
-    method: 'POST',
-  })
-  .done((res) => {
-    getStatus(res.task_id);
-  })
-  .fail((err) => {
-    console.log(err);
-  });
-});
-
 function getStatus(taskID) {
   $.ajax({
     url: `/tasks/${taskID}/`,
@@ -42,4 +22,28 @@ function getStatus(taskID) {
   .fail((err) => {
     console.log(err)
   });
+}
+
+function loadClientInfo(TelegramId, currentUrl, processUrl) {
+    let targetUrl = processUrl + '/api/client/info?TelegramId=' + TelegramId
+    $.get(targetUrl).done(function(answer) {
+        let data = answer.data;
+        console.log(data);
+
+        let $photo = $('#userPhoto');
+        $('#person_id').val(data.person_id);
+        $('#telegram_username').val(data.telegram_username);
+        $('#fio').val(data.person_fio);
+        $('#phone_number').val(data.phone_number);
+        if (data.email != null){
+            $('#email_username').val(data.email.split('@')[0]);
+            $('#email_server').val(data.email.split('@')[1]);
+        }
+        $('#date_of_birth').val(data.person_date_of_birth);
+        $('#client_address').val(data.client_address);
+        $('#addition_information').val(data.addition_information);
+
+    }).fail(function(err) {
+        console.log(err);
+    });
 }

@@ -4,6 +4,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.status import HTTP_202_ACCEPTED
 from rest_framework.views import APIView
+from django.http import QueryDict
 from celery.result import AsyncResult
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -20,6 +21,9 @@ TELEGRAM_ID_QUERY = openapi.Parameter('TelegramId', in_=openapi.IN_QUERY,
 CLIENT_ID = openapi.Parameter('ClientId', in_=openapi.IN_QUERY,
                               type=openapi.TYPE_STRING, required=True,
                               description='Телеграмм ID клиента')
+CLIENT_FIO = openapi.Parameter('ClientFIO', in_=openapi.IN_QUERY,
+                                 type=openapi.TYPE_STRING, required=True,
+                                 description='ФИО клиента')
 CLIENT_PHONE = openapi.Parameter('ClientPhone', in_=openapi.IN_QUERY,
                                  type=openapi.TYPE_STRING, required=True,
                                  description='Телефон клиента')
@@ -33,6 +37,9 @@ CLIENT_ADDITIONAL_INFO = openapi.Parameter('ClientInfo', in_=openapi.IN_QUERY,
                                            type=openapi.TYPE_STRING, required=True,
                                            description='Дополнительная информация клиента')
 AGENT_ID = openapi.Parameter('AgentId', in_=openapi.IN_QUERY,
+                             type=openapi.TYPE_STRING, required=True,
+                             description='ID агента')
+AGENT_TELEGRAM_ID = openapi.Parameter('AgentTelegramId', in_=openapi.IN_QUERY,
                              type=openapi.TYPE_STRING, required=True,
                              description='Телеграмм ID агента')
 PRODUCT_ID = openapi.Parameter('ProductId', in_=openapi.IN_QUERY,
@@ -64,7 +71,7 @@ status_dict = {
     3: 'Выполнена',
 }
 
-product_types = {
+PRODUCT_TYPES = {
     0: 'Ремонт квартиры',
     1: 'Ремонт сантехники',
     2: 'Ремонт мебели',
@@ -266,7 +273,7 @@ class APIPOrdersInfoByAgentTelegramID(APIView):
                                 'order_info': order.addition_information,
                                 'order_control': order.control_flag,
                                 'order_status': order.status_flag,
-                                'order_product_type': product_types[int(product.product_type)],
+                                'order_product_type': PRODUCT_TYPES[int(product.product_type)],
                                 'order_product_info': product.addition_information,
                                 'order_contact_tg': client.telegram_username,
 
@@ -309,7 +316,7 @@ class APIPOrdersInfoByClientTelegramID(APIView):
                                 'order_info': order.addition_information,
                                 'order_control': order.control_flag,
                                 'order_status': order.status_flag,
-                                'order_product_type': product_types[int(product.product_type)],
+                                'order_product_type': PRODUCT_TYPES[int(product.product_type)],
                                 'order_product_info': product.addition_information,
                                 'order_contact_tg': agent.telegram_username,
                                 'order_contact_phone': agent.phone_number,
@@ -329,10 +336,10 @@ class APIPOrdersCreateByClient(APIView):
         operation_description='Создание заявки клиента',
         manual_parameters=[CLIENT_ID,
                            CLIENT_PHONE,
+                           CLIENT_FIO,
                            CLIENT_EMAIL,
                            CLIENT_ADDRESS,
-                           CLIENT_ADDITIONAL_INFO,
-                           AGENT_ID,
+                           AGENT_TELEGRAM_ID,
                            PRODUCT_ID,
                            PRODUCT_INFO,
                            ORDER_NAME,
@@ -340,19 +347,27 @@ class APIPOrdersCreateByClient(APIView):
                            ORDER_START,
                            ORDER_END,
                            ORDER_ADDITIONAL_INFO,
-        ]
+        ],
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['JSON'],
+            properties={
+                'JSON': openapi.Schema(type=openapi.TYPE_STRING)
+            },
+        ),
     )
     def post(self, request):
-        data = request.query_params
+        data = request.data
+        print(data)
         client_id = data.get('ClientId')
-        agent_id = data.get('AgentId')
+        agent_id = data.get('AgentTelegramId')
         product_info = data.get('ProductInfo')
         client_phone = data.get('ClientPhone')
         client_email = data.get('ClientEmail')
 
-        order_task = create_product_order_task.delay(client_phone, client_id, client_id, client_email,
-                                                     data.get('ClientAddress'), data.get('ClientInfo'), agent_id,
-                                                     data.get('ProductId'), data.get('OrderName'),
+        order_task = create_product_order_task.delay(client_phone, client_id, client_id, data.get('ClientFIO'),
+                                                     client_email, data.get('ClientAddress'), data.get('ClientInfo'),
+                                                     agent_id, data.get('ProductId'), data.get('OrderName'),
                                                      data.get('OrderPrice'), data.get('OrderStart'),
                                                      data.get('OrderEnd'), data.get('OrderInfo'))
         print('TASK CREATES - create order ', order_task.task_id)
@@ -383,6 +398,37 @@ class APIPOrdersCreateByClient(APIView):
 
         return Response({'Result': 'Order Created'}, status=200)
 
+
+class APIPPricesInfoByAgentID(APIView):
+    @swagger_auto_schema(
+        tags=["price"],
+        operation_description='Получает информацию о ценах на услуги агента по его ID',
+        manual_parameters=[AGENT_ID],
+    )
+    def get(self, request):
+        params = request.query_params
+        agent_id = params.get('AgentId')
+        if agent_id:
+            agent = Agent.objects.filter(id=str(agent_id)).last()
+            if agent:
+                prices = Price.objects.filter(agent_id=agent_id)
+                if prices:
+                    product_prices = {}
+                    for price in prices:
+                        product = Product.objects.filter(id=price.product_id).last()
+                        product_type = PRODUCT_TYPES[int(product.product_type)]
+                        if product_type not in product_prices.keys():
+                            product_prices[product_type] = {}
+                        product_prices[product_type][product.addition_information] = [price.price_value, price.product_id]
+
+                    result_json = json.dumps(product_prices, indent=4, ensure_ascii=False, default=str)
+
+                    return Response({'data': result_json}, status=200)
+                return Response({'error': 'Prices not found'}, status=400)
+            return Response({'error': 'Agent not found'}, status=400)
+        return Response({'error': 'Agent ID not found'}, status=400)
+
+
 class PersonViewSet(viewsets.ModelViewSet):
     queryset = Person.objects.all()
     serializer_class = PersonSerializer
@@ -411,6 +457,11 @@ class ProductViewSet(viewsets.ModelViewSet):
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+
+
+class PriceViewSet(viewsets.ModelViewSet):
+    queryset = Price.objects.all()
+    serializer_class = PriceSerializer
 
 
 def task_status(request):

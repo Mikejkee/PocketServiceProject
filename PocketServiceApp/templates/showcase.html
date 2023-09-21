@@ -14,70 +14,186 @@ header {
 header > p {
 	color: rgba(136,139,141,1);
 	font-family: 'Beer money';
-	font-size: 35px;
+	font-size: 24px;
 	font-weight: 400;
 	line-height: 1em;
 	text-shadow: -2px 2px 1px rgba(0,0,0,1);
 	margin: 0px 0px 20px 0px;
-    padding: 130px 0px 0px 102px;
+    padding: 139px 0px 0px 102px;
 	width: 700px;
 }
 
 .my_icons {
-    width: 17%;
+    width: 90px;
+    float: left;
+    border-radius: 10px;
+    border: 3px #ccc solid;
+    box-shadow: 0 0 5px #444;
+    height: 120px;
+}
+
+.my_icons_sm {
+    width: 15px;
     float: left;
 }
 
 </style>
 {% endblock link %}
 
-{% block title %} Ремонт квартиры {% endblock title %}
+{% block title %} {{ showcase_message }} {% endblock title %}
 
 {% block header %}
 
-    <p>Наши услуги </p>
+    <p>Наши специалисты </p>
 
 {% endblock header %}
 
 {% block content %}
-<div class="row py-2">
-    <div class="col">
-        <div class="card text-center border-warning mb-3" >
-            <div class="card-body">
-                <div>
-                    <img src="{% static 'img/fix_repair.png' %}" class="my_icons">
-                    <p class="card-title" style="font-size: 30px; font-weight: 400; font-family: 'Beer money';">  Ремонт квартиры</p>
+    <div class="container" id="agents_container">
+        <input type="number" name="telegram_id" id="telegram_id" class="form-control mb-0" value="{{ telegram_id }}" hidden />
+        <div class="row py-2" id="agents_card">
+                <div class="card text-center border-warning mb-3" >
+                    <div class="card-body" style="padding-bottom: 5px;">
+                        <img src="{% static 'img/chel.jpg' %}" class="my_icons">
+                        <div class="container">
+                            <p class="fio">  Виталий Николаевич </p>
+                            <div class="row">
+                                <div class="col">
+                                    <p class="card-title company"> ООО Первая фирма  </p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <img src="{% static 'img/passport_done.png' %}" class="my_icons_sm">
+                                    <p class="card-title icons_text"> Паспорт </p>
+                                </div>
+                                <div class="col">
+                                    <img src="{% static 'img/passport_done.png' %}" class="my_icons_sm">
+                                    <p class="card-title icons_text"> Гарантия </p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <img src="{% static 'img/passport_cancel.png' %}" class="my_icons_sm">
+                                    <p class="card-title icons_text"> Договор </p>
+                                </div>
+                                <div class="col">
+                                    <img src="{% static 'img/passport_cancel.png' %}" class="my_icons_sm">
+                                    <p class="card-title icons_text"> Команда </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-xs-1"></div>
+                            <div class="col-xs-10">
+                                <p class="card-text agent_description" style="">САНТЕХНИКА: Герметизация ванны керамическим плинтусом, устранение засоров + замена смесителей, сифонов, лежаков чугунной канализации… Но это не значит, что по вашей просьбе я не могу устранить какую-то ещё проблему. Основные — эти. Многие «мастера» предлагают свои услуги, не понимая сути проблемы, не имея достаточного опыта… просто «тупо хотят заработать». Потом я за ними всё переделываю… Клиенты таким образом теряют деньги, время и материалы. </p>
+                            </div>
+                            <div class="col-xs-1"></div>
+                        </div>
+                        <div class="row" style="margin: 10px 0px 10px 0px;">
+                            <div class="panel-body">
+                                <div class="pull-right">
+                                    <div class="btn-group-sm" role="group">
+                                        <button type="button" class="btn btn-secondary btn-filter" data-target="products" style="font-size: 0.5em;">Услуги/цены</button>
+                                        <button type="button" class="btn btn-secondary btn-filter" data-target="education" style="font-size: 0.5em;">Образование</button>
+                                        <button type="button" class="btn btn-secondary btn-filter" data-target="feedback" style="font-size: 0.5em;">Отзывы</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <table class="table table-striped table-hover table-sm align-middle">
+                                <thead class="" data-status="products" style="">
+                                    <tr>
+                                        <th class="col-xs-9" scope="col" style="font-size: 0.6em;">Тип услуги</th>
+                                        <th class="col-xs-3" scope="col" style="font-size: 0.6em;"> Цена </th>
+                                    </tr>
+                                </thead>
+                                <thead class="" data-status="education" style="display: none;">
+                                    <tr>
+                                        <th class="col-xs-12" scope="col" style="font-size: 0.6em;">Образование и опыт</th>
+                                    </tr>
+                                </thead>
+                                <thead class="" data-status="feedback" style="display: none;">
+                                    <tr>
+                                        <th class="col-xs-12" scope="col" style="font-size: 0.6em;">Отзывы клиентов</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody class="table-agent-info" id="agent_info_table"> </tbody>
+                            </table>
+
+                            <button type="button" class="btn btn-outline-success">Secondary</button>
+
+                        </div>
+                    </div>
                 </div>
-                <p class="card-text">Делаем ремонт с изначально обговоренной и высчитанной суммой.</p>
-                <a href="#" class="btn btn-primary">Перейти к рассчетам</a>
+        </div>
+    </div>
+
+    <div class="container" id="orderForm" style="display: none">
+        <div class="row py-2" id="agents_card">
+            <div class="card border-warning mb-3">
+                <div class="card-body" style="padding-bottom: 5px; padding-left: 0px; padding-right: 0px;">
+                    <form action="#" class="form-container" id="order_form">
+                        <small class="text-muted">ФИО<span class="required">*</span>:</small>
+                        <div class="input-group input-group-sm mb-3">
+                            <input type="text" class="form-control" placeholder="ФИО" id="fio" />
+                        </div>
+                        <small class="text-muted">Телефон<span class="required">*</span>:</small>
+                        <div class="input-group input-group-sm mb-3">
+                            <input type="text" class="form-control" placeholder="Телефонный номер" id="phone_number" />
+                        </div>
+                        <small class="text-muted">Электронная почта<span class="required">*</span>:</small>
+                        <div class="input-group input-group-sm mb-3">
+                            <input type="text" class="form-control" placeholder="Username" aria-label="Username" id="email_username" />
+                            <span class="input-group-text">@</span>
+                            <input type="text" class="form-control" placeholder="Server" aria-label="Server" id="email_server" />
+                        </div>
+                        <small class="text-muted">Адрес проживания<span class="required">*</span>:</small>
+                        <div class="input-group input-group-sm mb-3">
+                            <input type="text" class="form-control" placeholder="Ваш адрес" id="client_address" />
+                        </div>
+
+                        <div class="sticker-left sticker-success text-center" data-sticker="Информация о Вашей заявке">
+                            <select class="form-select form-select-sm" aria-label="Выбор услуги" id="agent_products_drop">
+                                <option selected>Выберите услугу</option>
+                            </select>
+                            <small class="text-muted">Название заказа<span class="required">*</span>:</small>
+                            <div class="input-group input-group-sm mb-3">
+                                <input type="text" class="form-control" placeholder="Название заказ" id="order_name" />
+                            </div>
+                            <small class="text-muted">Желаемая цена заказа<span class="required">*</span>:</small>
+                            <div class="input-group input-group-sm mb-3">
+                                <input type="text" class="form-control" placeholder="Цена заказа" id="order_price" />
+                            </div>
+                            <small class="text-muted">Желаемая дата начала<span class="required">*</span>:</small>
+                            <div class="input-group input-group-sm mb-3">
+                                <input type="text" class="form-control" placeholder="00.00.0000" id="order_start" />
+                            </div>
+                            <small class="text-muted">Желаемая дата окончания<span class="required">*</span>:</small>
+                            <div class="input-group input-group-sm mb-3">
+                                <input type="text" class="form-control" placeholder="00.00.0000" id="order_end" />
+                            </div>
+                            <small class="text-muted">Дополнительная информация<span class="required">*</span>:</small>
+                            <div class="input-group input-group-sm mb-3">
+                                <input type="text" class="form-control" placeholder="Дополнительная информация" id="order_description" />
+                            </div>
+                            <button type="button" class="btn btn-outline-success" id="create_order">Отправить заявку</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="row py-2">
-    <div class="col">
-        <div class="card text-center border-warning mb-3">
-          <div class="card-body">
-             <div>
-                    <img src="{% static 'img/smeta.png' %}" class="my_icons">
-                    <p class="card-title" style="font-size: 30px; font-weight: 400; font-family: 'Beer money';"> Рассчитать смету</p>
-                </div>
-            <p class="card-text">Рассчитываем смету по заданным парамметрам вашего жилья и типом ремонта.</p>
-            <a href="#" class="btn btn-primary">Перейти к рассчетам</a>
-          </div>
-        </div>
-    </div>
-</div>
+
 
     <!-- content -->
 {% endblock content %}
 
 {% block scripts %}
-
-<script>
-
-
-</script>
-
+    <script src="{% static 'js/showcase.js' %}"></script>
 {% endblock scripts %}

@@ -24,6 +24,7 @@ router.register('api/product', api.ProductViewSet, basename="Product")
 router.register('api/order', api.OrderViewSet, basename="Order")
 router.register('api/company', api.CompanyViewSet, basename="Order")
 router.register('api/agent', api.AgentViewSet, basename="Agent")
+router.register('api/price', api.PriceViewSet, basename="Price")
 
 urlpatterns = router.urls
 urlpatterns += [
@@ -40,6 +41,9 @@ urlpatterns += [
 
     # Company
     path('api/company_by_user/info', api.APICompanyInfoByTelegramID.as_view(), name='company_info'),
+
+    # Prices
+    path('api/prices_by_agent/info', api.APIPPricesInfoByAgentID.as_view(), name='prices_info'),
 
     #Order
     path('api/orders_by_agent/info', api.APIPOrdersInfoByAgentTelegramID.as_view(), name='orders_by_agent_info'),

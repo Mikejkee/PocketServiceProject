@@ -22,13 +22,13 @@ def save_client_task(name, surname, patronymic, person_fio, date_of_birth, phone
 
 
 @shared_task(base=BaseTask)
-def create_product_order_task(phone_number, telegram_chat_id, client_id, email, address, addition_information,
+def create_product_order_task(phone_number, telegram_chat_id, client_id, fio, email, address, addition_information,
                               agent_id, product_id, order_name, order_price, order_start_time, order_deadline,
                               order_information):
 
     from .controllers.bot_services import save_user, create_order
     save_user(phone_number=phone_number, telegram_chat_id=telegram_chat_id,
-              telegram_id=client_id, email=email, address=address,
+              telegram_id=client_id, person_fio=fio, email=email, address=address,
               addition_information=addition_information)
 
     order_id = create_order(client_id, agent_id, product_id, order_name, order_price, order_start_time,

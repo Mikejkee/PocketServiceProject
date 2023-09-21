@@ -6,37 +6,13 @@ tg.MainButton.show();
 let csrftoken = $.cookie('csrftoken');
 
 function openDiv(elem_id_to_open) {
-    formOpened = $(`#${ elem_id_to_open }`)
+    let formOpened = $(`#${ elem_id_to_open }`)
     if (formOpened.hasClass('show')) {
         formOpened.removeClass('show');
     }
     else {
         formOpened.addClass('show');
     }
-}
-
-function loadClientInfo(TelegramId, currentUrl, processUrl) {
-    let targetUrl = processUrl + '/api/client/info?TelegramId=' + TelegramId
-    $.get(targetUrl).done(function(answer) {
-        let data = answer.data;
-        console.log(data);
-
-        let $photo = $('#userPhoto');
-        $('#person_id').val(data.person_id);
-        $('#telegram_username').val(data.telegram_username);
-        $('#fio').val(data.person_fio);
-        $('#phone_number').val(data.phone_number);
-        if (data.email != null){
-            $('#email_username').val(data.email.split('@')[0]);
-            $('#email_server').val(data.email.split('@')[1]);
-        }
-        $('#date_of_birth').val(data.person_date_of_birth);
-        $('#client_address').val(data.client_address);
-        $('#addition_information').val(data.addition_information);
-
-    }).fail(function(err) {
-        console.log(err);
-    });
 }
 
 function loadAgentInfo(TelegramId, currentUrl, processUrl) {
@@ -102,30 +78,30 @@ function loadOrderInfo(targetUrl, statusArr) {
         console.log(listData);
 
         let countStrAll = 1;
+        let table = $('#analytic_table')
         $.each(listData,function(key,value) {
             // Заявки по типам
-            let table = $('#analytic_table')
             if (value.order_status === 0) {
                 let checkedValue = (value.order_control) ? "checked" : "";
                 let countStr=$('table tr[data-status=new]').length + 1;
                 table.append(
-                    `<tr data-status="new" style="display: none;">` +
-                        `<td>` +
-                            `<p class="text-center table-lc-p"> ${countStr} </p>` +
-                        `</td>` +
-                        `<td>` +
-                            `<p class="text-center table-lc-p"> ${value.order_product_type} <b> / </b> ${value.order_price}</p>` +
-                        `</td>` +
-                        `<td>` +
-                            `<p class="text-center table-lc-p">` +
-                                `<a href="#">${value.order_id} </a>` +
-                            `</p>` +
-                        `</td>` +
-                        `<td>` +
-                            `<input class="form-check-input" type="checkbox" value="" id="flexCheckChecked"  ${checkedValue}>` +
-                            `<label class="form-check-label" htmlFor="flexCheckChecked"> </label>` +
-                        `</td>` +
-                    `</tr>`
+                    `<tr data-status="new" style="display: none;">
+                        <td>
+                            <p class="text-center table-lc-p"> ${countStr} </p>
+                        </td>
+                        <td>
+                            <p class="text-center table-lc-p"> ${value.order_product_type} <b> / </b> ${value.order_price}</p>
+                        </td>
+                        <td>
+                            <p class="text-center table-lc-p">
+                                <a href="#">${value.order_id} </a>
+                            </p>
+                        </td>
+                        <td>
+                            <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked"  ${checkedValue}>
+                            <label class="form-check-label" htmlFor="flexCheckChecked"> </label>
+                        </td>
+                    </tr>`
                  );
             }
             else if (value.order_status === 1) {
@@ -133,45 +109,45 @@ function loadOrderInfo(targetUrl, statusArr) {
                 let deadline = moment(new Date(value.order_deadline)).format('hh:mm - DD.MM.YY');
                 console.log(deadline)
                 table.append(
-                    `<tr data-status="in_work" style="display: none;">` +
-                        `<td>` +
-                            `<p class="text-center table-lc-p"> ${countStr} </p>` +
-                        `</td>` +
-                        `<td>` +
-                            `<p class="text-center table-lc-p">` +
-                                `<a href="#">${value.order_id} </a>` +
-                            `</p>` +
-                        `</td>` +
-                        `<td>` +
-                            `<p class="text-center table-lc-p">` +
-                                `<a href="https://t.me/${value.order_contact_tg}"> <img class="tg_icon" src="${srcTgIcon}"></a>` +
-                            `</p>` +
-                        `</td>` +
-                        `<td>` +
-                            `<p class="text-center table-lc-p"> ${deadline} </p>` +
-                        `</td>` +
-                    `</tr>`
+                    `<tr data-status="in_work" style="display: none;">
+                        <td>
+                            <p class="text-center table-lc-p"> ${countStr} </p>
+                        </td>
+                        <td>
+                            <p class="text-center table-lc-p">
+                                <a href="#">${value.order_id} </a>
+                            </p>
+                        </td>
+                        <td>
+                            <p class="text-center table-lc-p">
+                                <a href="https://t.me/${value.order_contact_tg}"> <img class="tg_icon" src="${srcTgIcon}"></a>
+                            </p>
+                        </td>
+                        <td>
+                            <p class="text-center table-lc-p"> ${deadline} </p>
+                        </td>
+                    </tr>`
                  );
             }
             else if (value.order_status === 2){
                 let countStr=$('table tr[data-status=pause]').length + 1;
                 table.append(
-                    `<tr data-status="pause" style="display: none;">` +
-                        `<td>` +
-                            `<p class="text-center table-lc-p"> ${countStr} </p>` +
-                        `</td>` +
-                        `<td>` +
-                            `<p class="text-center table-lc-p"> ${value.order_product_type} <b> / </b> ${value.order_price}</p>` +
-                        `</td>` +
-                        `<td>` +
-                            `<p class="text-center table-lc-p">` +
-                                `<a href="https://t.me/${value.order_contact_tg}"> <img class="tg_icon" src="${srcTgIcon}"></a>` +
-                            `</p>` +
-                        `</td>` +
-                        `<td>` +
-                            `<p class="text-center table-lc-p"> ${statusArr[value.order_status]} </p>` +
-                        `</td>` +
-                    `</tr>`
+                    `<tr data-status="pause" style="display: none;">
+                        <td>
+                            <p class="text-center table-lc-p"> ${countStr} </p>
+                        </td>
+                        <td>
+                            <p class="text-center table-lc-p"> ${value.order_product_type} <b> / </b> ${value.order_price}</p>
+                        </td>
+                        <td>
+                            <p class="text-center table-lc-p">
+                                <a href="https://t.me/${value.order_contact_tg}"> <img class="tg_icon" src="${srcTgIcon}"></a>
+                            </p>
+                        </td>
+                        <td>
+                            <p class="text-center table-lc-p"> ${statusArr[value.order_status]} </p>
+                        </td>
+                    </tr>`
                  );
             }
             else {
@@ -179,41 +155,41 @@ function loadOrderInfo(targetUrl, statusArr) {
                 let start_time = moment(new Date(value.order_start_time)).format('hh:mm - DD.MM.YY');
                 let end_time = moment(new Date(value.order_end_time)).format('hh:mm - DD.MM.YY');
                 table.append(
-                    `<tr data-status="done" style="display: none;">` +
-                        `<td>` +
-                            `<p class="text-center table-lc-p"> ${countStr} </p>` +
-                        `</td>` +
-                        `<td class="text-center">` +
-                            `<p class="text-center table-lc-p"> ${start_time} <b> / </b> ${end_time}</p>` +
-                        `</td>` +
-                        `<td class="text-center">` +
-                            `<p class="text-center table-lc-p"> ${value.order_product_type} <b> / </b> ${value.order_price}</p>` +
-                        `</td>` +
-                        `<td>` +
-                            `<p class="text-center table-lc-p">` +
-                                `<a href="#">${value.order_id} </a>` +
-                            `</p>` +
-                        `</td>` +
-                    `</tr>`
+                    `<tr data-status="done" style="display: none;">
+                        <td>
+                            <p class="text-center table-lc-p"> ${countStr} </p>
+                        </td>
+                        <td class="text-center">
+                            <p class="text-center table-lc-p"> ${start_time} <b> / </b> ${end_time}</p>
+                        </td>
+                        <td class="text-center">
+                            <p class="text-center table-lc-p"> ${value.order_product_type} <b> / </b> ${value.order_price}</p>
+                        </td>
+                        <td>
+                            <p class="text-center table-lc-p">
+                                <a href="#">${value.order_id} </a>
+                            </p>
+                        </td>
+                    </tr>`
                 );
             }
             table.append(
-                `<tr data-status="all">` +
-                    `<td>` +
-                        `<p class="text-center table-lc-p"> ${countStrAll} </p>` +
-                    `</td>` +
-                    `<td class="text-center">` +
-                        `<p class="text-center table-lc-p"> ${value.order_product_type} <b> / </b> ${value.order_price}</p>` +
-                    `</td>` +
-                    `<td>` +
-                        `<p class="text-center table-lc-p">` +
-                            `<a href="https://t.me/${value.order_contact_tg}"> <img class="tg_icon" src="${srcTgIcon}"></a>` +
-                        `</p>` +
-                    `</td>` +
-                    `<td>` +
-                        `<p class="text-center table-lc-p"> ${statusArr[value.order_status]} </p>` +
-                    `</td>` +
-                `</tr>`
+                `<tr data-status="all">
+                    <td>
+                        <p class="text-center table-lc-p"> ${countStrAll} </p>
+                    </td>
+                    <td class="text-center">
+                        <p class="text-center table-lc-p"> ${value.order_product_type} <b> / </b> ${value.order_price}</p>
+                    </td>
+                    <td>
+                        <p class="text-center table-lc-p">
+                            <a href="https://t.me/${value.order_contact_tg}"> <img class="tg_icon" src="${srcTgIcon}"></a>
+                        </p>
+                    </td>
+                    <td>
+                        <p class="text-center table-lc-p"> ${statusArr[value.order_status]} </p>
+                    </td>
+                </tr>`
             );
             countStrAll += 1;
         });
@@ -272,10 +248,6 @@ $(document).ready(function(){
     // $(document).on('click','#save_info', function(){
         let validationPerson = $('#person_form').valid();
 
-        let currentUrl = window.location.href;
-        let processUrl = currentUrl.split('/profile')[0];
-
-        let telegramId = $('#telegram_id').val();
         let personId = $('#person_id').val();
         let personFio = $('#fio').val();
         let phoneNumber = $('#phone_number').val();

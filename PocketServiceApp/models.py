@@ -203,13 +203,13 @@ class Price(Registrator):
                                 null=True, blank=True, verbose_name="Агент")
 
     def save(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        print(self.agent)
-        agent_products = self.agent.products
-        if self.product.addition_information in agent_products:
-            super(Price, self).save(*args, **kwargs)
-        else:
-            raise ValueError("У агента нет такой услуги")
+        # super().__init__(*args, **kwargs)
+        if not self.pk:
+            agent_products = self.agent.products
+            if self.product in agent_products.all():
+                super(Price, self).save(*args, **kwargs)
+            else:
+                raise ValueError("У агента нет такой услуги")
 
     class Meta:
         db_table = 'price'
