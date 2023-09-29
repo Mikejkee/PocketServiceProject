@@ -243,9 +243,8 @@ class Education(Registrator):
     specialization = models.OneToOneField(Specialization, on_delete=models.SET_NULL, blank=True,
                                           related_name='specialization', verbose_name="Специальность")
 
-
     class Meta:
-        db_table = 'price'
+        db_table = 'education'
 
 
 class Client(Person):
