@@ -68,11 +68,36 @@ class OrderSerializer(PatchModelSerializer):
         model = Order
         fields = '__all__'
 
+
 class PriceSerializer(PatchModelSerializer):
     product = ProductSerializer(many=True, read_only=True)
     agent = AgentSerializer(many=True, read_only=True)
 
     class Meta:
         model = Price
+        fields = '__all__'
+
+
+class SpecializationSerializer(PatchModelSerializer):
+
+    class Meta:
+        model = Specialization
+        fields = '__all__'
+
+
+class UniversitySerializer(PatchModelSerializer):
+
+    class Meta:
+        model = University
+        fields = '__all__'
+
+
+class EducationSerializer(PatchModelSerializer):
+    agent = AgentSerializer(many=True, read_only=True)
+    specialization = SpecializationSerializer(many=True, read_only=True)
+    university = UniversitySerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Education
         fields = '__all__'
 

@@ -219,14 +219,6 @@ $(document).ready(function(){
     let currentUrl = window.location.href;
     let processUrl = currentUrl.split('/profile')[0];
 
-    $('.btn-filter').on('click', function () {
-          let $target = $(this).data('target');
-          $('.table thead').css('display', 'none');
-          $('.table tr[data-status]').css('display', 'none');
-          $('.table tr[data-status="' + $target + '"]').fadeIn('slow');
-          $('.table thead[data-status="' + $target + '"]').fadeIn('slow');
-        });
-
     let statusArr = {
             0: 'Не в работе',
             1: 'В работе',

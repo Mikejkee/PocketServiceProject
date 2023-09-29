@@ -219,6 +219,9 @@ class Specialization(Registrator):
     name = models.CharField("Название специализации", max_length=50, null=True, blank=True)
     specialization_description = models.TextField("Описание специализации", null=True, blank=True)
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         db_table = 'specialization'
 
@@ -226,6 +229,9 @@ class Specialization(Registrator):
 class University(Registrator):
     name = models.CharField("Название института/колледжа/школы", max_length=70, null=True, blank=True)
     university_description = models.TextField("Описание места учебы", null=True, blank=True)
+
+    def __str__(self):
+        return self.name
 
     class Meta:
         db_table = 'university'
@@ -238,10 +244,16 @@ class Education(Registrator):
 
     agent = models.ForeignKey(Agent, on_delete=models.SET_NULL, related_name='agent_education',
                                 null=True, blank=True, verbose_name="Агент")
-    university = models.OneToOneField(University, on_delete=models.SET_NULL, blank=True, related_name='university',
-                                            verbose_name="Место учебы")
-    specialization = models.OneToOneField(Specialization, on_delete=models.SET_NULL, blank=True,
-                                          related_name='specialization', verbose_name="Специальность")
+    university = models.ForeignKey(University, on_delete=models.SET_NULL, blank=True, null=True,
+                                   related_name='university', verbose_name="Место учебы")
+    specialization = models.ForeignKey(Specialization, on_delete=models.SET_NULL, blank=True, null=True,
+                                       related_name='specialization', verbose_name="Специальность")
+
+    def __str__(self):
+        if self.agent.telegram_username:
+            return '{}_{}_{}'.format(self.agent.telegram_username, self.university.name, self.specialization.name)
+        else:
+            return '{}_{}_{}'.format(self.agent.telegram_id, self.university.name, self.specialization.name)
 
     class Meta:
         db_table = 'education'

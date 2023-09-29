@@ -48,7 +48,8 @@ function loadClientInfo(TelegramId, currentUrl, processUrl) {
     });
 }
 
-$('.form-check-input').click(function() {
+
+$(document).on('click', '.form-check-input',function() {
     if ($(this).is(':checked') === true) {
         $(this).attr('checked', '');
     }
@@ -56,3 +57,21 @@ $('.form-check-input').click(function() {
         $(this).removeAttr('checked');
     }
 });
+
+$(document).on('click', '.btn-filter', function () {
+    let target = $(this).data('target');
+    let table = $(this).attr('table-target');
+
+    $(`#${table} thead`).css('display', 'none');
+    $(`#${table} tr[data-status]`).css('display', 'none');
+    $(`#${table} tr[data-status="${target}"]`).fadeIn('slow');
+    $(`#${table} thead[data-status="${target}"]`).fadeIn('slow');
+});
+
+// $('.btn-filter').click(function () {
+//     let $target = $(this).data('target');
+//     $('.table thead').css('display', 'none');
+//     $('.table tr[data-status]').css('display', 'none');
+//     $('.table tr[data-status="' + $target + '"]').fadeIn('slow');
+//     $('.table thead[data-status="' + $target + '"]').fadeIn('slow');
+// });

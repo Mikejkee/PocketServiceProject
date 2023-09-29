@@ -428,6 +428,38 @@ class APIPPricesInfoByAgentID(APIView):
             return Response({'error': 'Agent not found'}, status=400)
         return Response({'error': 'Agent ID not found'}, status=400)
 
+class APIPEducationsInfoByAgentID(APIView):
+    @swagger_auto_schema(
+        tags=["education"],
+        operation_description='Получает информацию об образовании агента по его ID',
+        manual_parameters=[AGENT_ID],
+    )
+    def get(self, request):
+        params = request.query_params
+        agent_id = params.get('AgentId')
+        if agent_id:
+            agent = Agent.objects.filter(id=str(agent_id)).last()
+            if agent:
+                educations = Education.objects.filter(agent_id=agent_id)
+                if educations:
+                    educations_info = []
+                    for education in educations:
+                        specialization = Specialization.objects.filter(id=education.specialization_id).last().name
+                        university = University.objects.filter(id=education.university_id).last().name
+                        educations_info.append({
+                            'specialization': specialization,
+                            'university': university,
+                            'education_start': education.period_start,
+                            'education_end': education.period_end,
+                            'education_checked': education.document_check,
+                        })
+                    result_json = json.dumps(educations_info, indent=4, ensure_ascii=False, default=str)
+
+                    return Response({'data': result_json}, status=200)
+                return Response({'error': 'Educations not found'}, status=400)
+            return Response({'error': 'Agent not found'}, status=400)
+        return Response({'error': 'Agent ID not found'}, status=400)
+
 
 class PersonViewSet(viewsets.ModelViewSet):
     queryset = Person.objects.all()
@@ -462,6 +494,21 @@ class OrderViewSet(viewsets.ModelViewSet):
 class PriceViewSet(viewsets.ModelViewSet):
     queryset = Price.objects.all()
     serializer_class = PriceSerializer
+
+
+class SpecializationViewSet(viewsets.ModelViewSet):
+    queryset = Specialization.objects.all()
+    serializer_class = SpecializationSerializer
+
+
+class UniversityViewSet(viewsets.ModelViewSet):
+    queryset = University.objects.all()
+    serializer_class = UniversitySerializer
+
+
+class EducationViewSet(viewsets.ModelViewSet):
+    queryset = Education.objects.all()
+    serializer_class = EducationSerializer
 
 
 def task_status(request):
