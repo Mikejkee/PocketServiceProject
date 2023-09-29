@@ -34,9 +34,15 @@ function loadAgentInfo(TelegramId, currentUrl, processUrl) {
         $('#agent_description').val(data.agent_description);
         $('#education_description').val(data.education_description);
         $('#work_experience').val(data.work_experience);
-        $('#command_work').val(data.command_work);
-        $('#passport_check').val(data.passport_check);
-        $('#contract_work').val(data.contract_work);
+        if (data.command_work === true) {
+            $('#command_work').attr('checked', '')
+        }
+        if (data.passport_check === true) {
+            $('#passport_check').attr('checked', '')
+        }
+        if (data.contract_work === true) {
+            $('#contract_work').attr('checked', '')
+        }
         $('#guarantee_period').val(data.guarantee_period);
 
     }).fail(function(err) {
@@ -209,7 +215,7 @@ $(document).on("click", "a", function(){
 });
 
 $(document).ready(function(){
-    let TelegramId = $('#telegram_id').val();
+    let telegramId = $('#telegram_id').val();
     let currentUrl = window.location.href;
     let processUrl = currentUrl.split('/profile')[0];
 
@@ -228,18 +234,18 @@ $(document).ready(function(){
             3: 'Выполнена',
     }
     if ($('#agent_form').length) {
-        loadAgentInfo(TelegramId, currentUrl, processUrl);
-        let targetUrl = processUrl + '/api/orders_by_agent/info?TelegramId=' + TelegramId
+        loadAgentInfo(telegramId, currentUrl, processUrl);
+        let targetUrl = processUrl + '/api/orders_by_agent/info?TelegramId=' + telegramId
         loadOrderInfo(targetUrl, statusArr);
     }
     else {
-        loadClientInfo(TelegramId, currentUrl, processUrl);
-        let targetUrl = processUrl + '/api/orders_by_client/info?TelegramId=' + TelegramId
+        loadClientInfo(telegramId, currentUrl, processUrl);
+        let targetUrl = processUrl + '/api/orders_by_client/info?TelegramId=' + telegramId
         loadOrderInfo(targetUrl, statusArr);
     }
 
     if ($('#company_form').length) {
-        loadCompanyInfo(TelegramId, currentUrl, processUrl);
+        loadCompanyInfo(telegramId, currentUrl, processUrl);
     }
 
 
@@ -267,12 +273,20 @@ $(document).ready(function(){
         let targetPersonUrl;
         if ($('#agent_form').length) {
             targetPersonUrl = processUrl + '/api/agent/' + personId + '/';
+            let commandWork = false;
+            let contractWork = false;
+            if ($('#command_work').attr('checked')){
+                commandWork = true;
+            }
+            if ($('#contract_work').attr('checked')){
+                contractWork = true;
+            }
             additionalData = {
                 'agent_description': $('#agent_description').val(),
                 'education_description': $('#education_description').val(),
                 'work_experience': $('#work_experience').val(),
-                'command_work': $('#command_work').val(),
-                'contract_work': $('#contract_work').val(),
+                'command_work': commandWork,
+                'contract_work': contractWork,
                 'guarantee_period': $('#guarantee_period').val(),
             };
         }

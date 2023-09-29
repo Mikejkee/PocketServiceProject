@@ -155,38 +155,37 @@ input:checked + .slider:before {
 
 
 .fio {
-    font-size: 20px;
+    font-size: max(0.6em, min(4em, calc(100vw * 4 / 75)));
     font-weight: 400;
     font-family: 'Beer money';
     margin-bottom: 0px;
     text-align: center
 }
 .company {
-    font-size: 10px;
+    font-size: max(0.3em, min(4em, calc(70vw * 3 / 75)));
     font-weight: 400;
     font-family: 'Monotype Corsiva';
-    text-align: left;
-    margin-left: 15px;
-    margin-bottom: 3px;
+    text-align: center;
+    margin: 5% 0 5% 0;
 }
 
 .icons_text {
-    font-size: 8px;
+    font-size: max(0.2em, min(3em, calc(70vw * 2 / 75)));
     font-weight: 400;
     font-family: 'Monotype Corsiva';
     text-align: left;
-    margin-left: 15px;
+    margin-left: 22%;
 }
 
 .agent_description {
     border: 1px solid;
     box-shadow: 0px 12px 10px -10px rgba(0,0,0,1);
-    font-size: 9px;
+    font-size: max(0.5em, min(3em, calc(70vw * 2 / 75)));
     font-weight: 400;
     font-family: Century gothic
 }
 
 .table-agent-info {
-    font-size: 0.5em;
+    font-size: max(0.7em, min(3em, calc(70vw * 2 / 75)));
 }
 +

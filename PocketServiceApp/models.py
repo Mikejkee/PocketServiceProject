@@ -109,19 +109,19 @@ class Person(Registrator):
 
 
 class Company(Registrator):
-    name = models.CharField(verbose_name="Название", max_length=255, null=True, blank=True)
-    description = models.TextField(verbose_name="Описание", null=True, blank=True)
-    legal_address = models.CharField(verbose_name="Юридический адрес", max_length=255, null=True, blank=True)
-    mail_address = models.CharField(verbose_name="Почтовый адрес", max_length=255, null=True, blank=True)
-    inn = models.CharField(verbose_name="ИНН", max_length=255, null=True, blank=True)
-    kpp = models.CharField(verbose_name="КПП", max_length=255, null=True, blank=True)
-    ogrnip = models.CharField(verbose_name="ОГРНИП", max_length=255, null=True, blank=True)
-    payment_account = models.CharField(verbose_name="Рассчетный счет", max_length=255, null=True, blank=True)
-    bank = models.CharField(verbose_name="Банк", max_length=255, null=True, blank=True)
-    bik = models.CharField(verbose_name="БИК", max_length=255, null=True, blank=True)
-    okpo = models.CharField(verbose_name="ОКПО", max_length=255, null=True, blank=True)
-    contact_phone = models.CharField(verbose_name="Контактный номер", max_length=255, null=True, blank=True)
-    email = models.EmailField(verbose_name="Электронная почта", null=True, blank=True)
+    name = models.CharField("Название", max_length=255, null=True, blank=True)
+    description = models.TextField("Описание", null=True, blank=True)
+    legal_address = models.CharField("Юридический адрес", max_length=255, null=True, blank=True)
+    mail_address = models.CharField("Почтовый адрес", max_length=255, null=True, blank=True)
+    inn = models.CharField("ИНН", max_length=255, null=True, blank=True)
+    kpp = models.CharField("КПП", max_length=255, null=True, blank=True)
+    ogrnip = models.CharField("ОГРНИП", max_length=255, null=True, blank=True)
+    payment_account = models.CharField("Рассчетный счет", max_length=255, null=True, blank=True)
+    bank = models.CharField("Банк", max_length=255, null=True, blank=True)
+    bik = models.CharField("БИК", max_length=255, null=True, blank=True)
+    okpo = models.CharField("ОКПО", max_length=255, null=True, blank=True)
+    contact_phone = models.CharField("Контактный номер", max_length=255, null=True, blank=True)
+    email = models.EmailField("Электронная почта", null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -164,14 +164,14 @@ class Product(Registrator):
 
 
 class Agent(Person):
-    agent_description = models.TextField(verbose_name="Описание агента", null=True, blank=True)
-    education_description = models.TextField(verbose_name="Образование", null=True, blank=True)
-    work_experience = models.TextField(verbose_name="Опыт работы", null=True, blank=True)
-    command_work = models.BooleanField(verbose_name="Работа в команде", null=True, blank=True)
-    passport_check = models.BooleanField(verbose_name="Проверка паспорта", null=True, blank=True)
-    contract_work = models.BooleanField(verbose_name="Работа по договору", null=True, blank=True)
-    guarantee_period = models.TextField(verbose_name="Гарантийный период", null=True, blank=True)
-    services_prices = models.TextField(verbose_name="Услуги и цены", null=True, blank=True)
+    agent_description = models.TextField("Описание агента", null=True, blank=True)
+    education_description = models.TextField("Образование", null=True, blank=True)
+    work_experience = models.TextField("Опыт работы", null=True, blank=True)
+    command_work = models.BooleanField("Работа в команде", null=True, blank=True)
+    passport_check = models.BooleanField("Проверка паспорта", null=True, blank=True)
+    contract_work = models.BooleanField("Работа по договору", null=True, blank=True)
+    guarantee_period = models.TextField("Гарантийный период", null=True, blank=True)
+    services_prices = models.TextField("Услуги и цены", null=True, blank=True)
 
     area = models.ManyToManyField(Area, blank=True, related_name='area_agents', verbose_name="Районы")
     company = models.ForeignKey(Company, on_delete=models.SET_NULL, related_name='agent_company',
@@ -215,6 +215,47 @@ class Price(Registrator):
         db_table = 'price'
 
 
+class Specialization(Registrator):
+    name = models.CharField("Название специализации", max_length=50, null=True, blank=True)
+    specialization_description = models.TextField("Описание специализации", null=True, blank=True)
+
+    class Meta:
+        db_table = 'specialization'
+
+
+class University(Registrator):
+    name = models.CharField("Название института/колледжа/школы", max_length=70, null=True, blank=True)
+    university_description = models.TextField("Описание места учебы", null=True, blank=True)
+
+    class Meta:
+        db_table = 'university'
+
+
+class Education(Registrator):
+    period_start = models.DateField("Срок начала учебы", blank=True, null=True)
+    period_end = models.DateField("Срок конца учебы", blank=True, null=True)
+    document_check = models.BooleanField("Проверка документа", null=True, blank=True)
+
+    agent = models.ForeignKey(Agent, on_delete=models.SET_NULL, related_name='agent_education',
+                                null=True, blank=True, verbose_name="Агент")
+    university = models.OneToOneField(University, on_delete=models.SET_NULL, blank=True, related_name='university',
+                                            verbose_name="Место учебы")
+    specialization = models.OneToOneField(Specialization, on_delete=models.SET_NULL, blank=True,
+                                          related_name='specialization', verbose_name="Специальность")
+
+    def save(self, *args, **kwargs):
+        # super().__init__(*args, **kwargs)
+        if not self.pk:
+            agent_products = self.agent.products
+            if self.product in agent_products.all():
+                super(Price, self).save(*args, **kwargs)
+            else:
+                raise ValueError("У агента нет такой услуги")
+
+    class Meta:
+        db_table = 'price'
+
+
 class Client(Person):
     address = models.CharField("Адрес проживания", max_length=255, null=True, blank=True)
     addition_information = models.TextField("Дополнительная информация", null=True, blank=True)
@@ -232,14 +273,14 @@ class Order(Registrator):
     # Заявка
     name = models.CharField("Имя", max_length=255, null=True, blank=True)
     price = models.DecimalField("Цена", max_digits=10, decimal_places=2, blank=True, null=True)
-    deadline = models.DateTimeField("Запланированный срок конца работы", blank=True, null=True)
+    deadline = models.DateField("Запланированный срок конца работы", blank=True, null=True)
     addition_information = models.TextField("Дополнительная информация", null=True, blank=True)
     reminder_status = models.BooleanField("Статус напоминания", default=0)
     control_flag = models.BooleanField("Флаг новизны", default=0)
     status_flag = models.PositiveSmallIntegerField('Статус выполнения', choices=STATUS_TYPES_CHOICE,
                                                    blank=True, null=True, default=0)
-    start_time = models.DateTimeField("Срок начала работы", blank=True, null=True)
-    end_time = models.DateTimeField("Срок конца работы", blank=True, null=True)
+    start_time = models.DateField("Срок начала работы", blank=True, null=True)
+    end_time = models.DateField("Срок конца работы", blank=True, null=True)
 
     client = models.ForeignKey(Client, on_delete=models.SET_NULL, related_name='client_orders', null=True, blank=True,
                                verbose_name="Клиент")
@@ -264,8 +305,8 @@ class Order(Registrator):
 class Contract(Registrator):
     name = models.CharField("Название контракта", max_length=20, null=True, blank=True)
     contract_number = models.CharField("Номер договора", max_length=20, null=True, blank=True)
-    start_date = models.DateTimeField("Дата начала работ", null=True, blank=True)
-    end_date = models.DateTimeField("Дата конца работ", null=True, blank=True)
+    start_date = models.DateField("Дата начала работ", null=True, blank=True)
+    end_date = models.DateField("Дата конца работ", null=True, blank=True)
 
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, related_name='contact_order', null=True, blank=True,
                               verbose_name="Заявка")
@@ -308,7 +349,7 @@ class OnlineTransaction(Registrator):
     total_amount = models.CharField('Итоговая сумма', max_length=255, blank=True, null=True)
     invoice_payload = models.CharField('Invoice payload', max_length=255, blank=True, null=True)
     provider_payment_charge_id = models.CharField('Provider Payment Charge ID', max_length=255, blank=True, null=True)
-    status = models.BooleanField(default=False, verbose_name="Status")
+    status = models.BooleanField("Status", default=False)
     status_str = models.CharField('Status Str', max_length=255, blank=True, null=True)
     operation = models.CharField('Operation', max_length=255, blank=True, null=True)
 
@@ -316,7 +357,7 @@ class OnlineTransaction(Registrator):
     bank_name = models.CharField('Bank Name', max_length=255, blank=True, null=True)
     payment_way = models.CharField('Payment Way', max_length=255, blank=True, null=True)
     expiry = models.CharField('Expiry', max_length=255, blank=True, null=True)
-    payment_date = models.DateTimeField(blank=True, null=True, verbose_name="Payment Time")
+    payment_date = models.DateTimeField("Payment Time", blank=True, null=True)
 
     class Meta:
         ordering = ['-id']

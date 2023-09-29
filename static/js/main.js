@@ -47,3 +47,12 @@ function loadClientInfo(TelegramId, currentUrl, processUrl) {
         console.log(err);
     });
 }
+
+$('.form-check-input').click(function() {
+    if ($(this).is(':checked') === true) {
+        $(this).attr('checked', '');
+    }
+    else {
+        $(this).removeAttr('checked');
+    }
+});

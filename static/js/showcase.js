@@ -89,33 +89,41 @@ function loadAgentsInfo(currentUrl, processUrl, companysInfo) {
 
                 bodyDiv.append(
                         `<div class="card text-center border-warning mb-3">
-                            <div class="card-body" style="padding-bottom: 5px;">
-                                <img src="${agentImg}" class="my_icons">
-                                <div class="container">
-                                    <p class="fio"> ${fio} </p>
+                            <div class="card-body" style="padding: 5% 1% 5% 1%;">
+                                <div class="container-fluid">
                                     <div class="row">
-                                        <div class="col">
-                                            <p class="card-title company"> ${companyName} </p>
+                                        <div class="col-5">
+                                            <img src="${agentImg}" class="my_icons">
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col">
-                                            <img src="${passport}" class="my_icons_sm">
-                                                <p class="card-title icons_text"> Паспорт </p>
-                                        </div>
-                                        <div class="col">
-                                            <img src="${guarantee}" class="my_icons_sm">
-                                                <p class="card-title icons_text"> Гарантия </p>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col">
-                                            <img src="${contract}" class="my_icons_sm">
-                                                <p class="card-title icons_text"> Договор </p>
-                                        </div>
-                                        <div class="col">
-                                            <img src="${command}" class="my_icons_sm">
-                                                <p class="card-title icons_text"> Команда </p>
+                                        <div class="col-7">
+                                            <p class="fio"> ${fio} </p>
+                                            <div class="container-fluid">
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <p class="card-title company"> ${companyName} </p>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <img src="${passport}" class="my_icons_sm">
+                                                            <p class="card-title icons_text"> Паспорт </p>
+                                                    </div>
+                                                    <div class="col">
+                                                        <img src="${guarantee}" class="my_icons_sm">
+                                                            <p class="card-title icons_text"> Гарантия </p>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <img src="${contract}" class="my_icons_sm">
+                                                            <p class="card-title icons_text"> Договор </p>
+                                                    </div>
+                                                    <div class="col">
+                                                        <img src="${command}" class="my_icons_sm">
+                                                            <p class="card-title icons_text"> Команда </p>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -128,13 +136,13 @@ function loadAgentsInfo(currentUrl, processUrl, companysInfo) {
                                 </div>
                                 <div class="col-xs-1"></div>
                             </div>
-                            <div class="row" style="margin: 10px 0px 10px 0px;">
+                            <div class="row table-agent-info" style="margin: 10px 0px 10px 0px;">
                                 <div class="panel-body">
                                     <div class="pull-right">
                                         <div class="btn-group-sm" role="group">
-                                            <button type="button" class="btn btn-secondary btn-filter" data-target="products" style="font-size: 0.5em;">Услуги/цены</button>
-                                            <button type="button" class="btn btn-secondary btn-filter" data-target="education" style="font-size: 0.5em;">Образование</button>
-                                            <button type="button" class="btn btn-secondary btn-filter" data-target="feedback" style="font-size: 0.5em;">Отзывы</button>
+                                            <button type="button" class="btn btn-secondary btn-filter" data-target="products">Услуги/цены</button>
+                                            <button type="button" class="btn btn-secondary btn-filter" data-target="education">Образование</button>
+                                            <button type="button" class="btn btn-secondary btn-filter" data-target="feedback">Отзывы</button>
                                         </div>
                                     </div>
                                 </div>
@@ -142,18 +150,18 @@ function loadAgentsInfo(currentUrl, processUrl, companysInfo) {
                                 <table class="table table-sm table-hover align-middle">
                                     <thead class="" data-status="products" style="">
                                         <tr>
-                                            <th class="col-xs-9" scope="col" style="font-size: 0.6em;">Тип услуги</th>
-                                            <th class="col-xs-3" scope="col" style="font-size: 0.6em;"> Цена </th>
+                                            <th class="col-xs-9" scope="col">Тип услуги</th>
+                                            <th class="col-xs-3" scope="col"> Цена </th>
                                         </tr>
                                     </thead>
                                     <thead class="" data-status="education" style="display: none;">
                                         <tr>
-                                            <th class="col-xs-12" scope="col" style="font-size: 0.6em;">Образование и опыт</th>
+                                            <th class="col-xs-12" scope="col">Образование и опыт</th>
                                         </tr>
                                     </thead>
                                     <thead class="" data-status="feedback" style="display: none;">
                                         <tr>
-                                            <th class="col-xs-12" scope="col" style="font-size: 0.6em;">Отзывы клиентов</th>
+                                            <th class="col-xs-12" scope="col">Отзывы клиентов</th>
                                         </tr>
                                     </thead>
     
