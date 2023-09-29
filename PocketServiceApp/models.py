@@ -243,14 +243,6 @@ class Education(Registrator):
     specialization = models.OneToOneField(Specialization, on_delete=models.SET_NULL, blank=True,
                                           related_name='specialization', verbose_name="Специальность")
 
-    def save(self, *args, **kwargs):
-        # super().__init__(*args, **kwargs)
-        if not self.pk:
-            agent_products = self.agent.products
-            if self.product in agent_products.all():
-                super(Price, self).save(*args, **kwargs)
-            else:
-                raise ValueError("У агента нет такой услуги")
 
     class Meta:
         db_table = 'price'
