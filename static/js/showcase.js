@@ -142,9 +142,9 @@ function loadAgentsInfo(currentUrl, processUrl, companysInfo) {
                             <div class="panel-body">
                                 <div class="pull-right">
                                     <div class="btn-group-sm" role="group">
-                                        <button type="button" table-target="agent_${value.id}_table" class="btn btn-secondary btn-filter" data-target="products">Услуги/цены</button>
-                                        <button type="button" table-target="agent_${value.id}_table" class="btn btn-secondary btn-filter" data-target="education">Образование</button>
-                                        <button type="button" table-target="agent_${value.id}_table" class="btn btn-secondary btn-filter" data-target="feedback">Отзывы</button>
+                                        <button type="button" table-target="agent_${value.id}_table" class="btn btn-secondary btn-filter table-agent-info" data-target="products">Услуги/цены</button>
+                                        <button type="button" table-target="agent_${value.id}_table" class="btn btn-secondary btn-filter table-agent-info" data-target="education">Образование</button>
+                                        <button type="button" table-target="agent_${value.id}_table" class="btn btn-secondary btn-filter table-agent-info" data-target="feedback">Отзывы</button>
                                     </div>
                                 </div>
                             </div>
@@ -152,16 +152,16 @@ function loadAgentsInfo(currentUrl, processUrl, companysInfo) {
                             <table class="table table-sm table-hover align-middle" id="agent_${value.id}_table">
                                 <thead class="" data-status="products" style="">
                                     <tr>
-                                        <th class="col-xs-9" scope="col">Тип услуги</th>
-                                        <th class="col-xs-3" scope="col"> Цена </th>
+                                        <th class="col-xs-9 table-agent-info" scope="col">Тип услуги</th>
+                                        <th class="col-xs-3 table-agent-info" scope="col"> Цена </th>
                                     </tr>
                                 </thead>
                                 <thead class="" data-status="education" style="display: none;">
                                     <tr>
-                                        <th class="col-xs-4" scope="col"> ВУЗ </th>
-                                        <th class="col-xs-4" scope="col"> Специальность </th>
-                                        <th class="col-xs-2" scope="col"> Дата окончания </th>
-                                        <th class="col-xs-1" scope="col"> Подтверждение </th>
+                                        <th class="col-xs-4 table-agent-info" scope="col"> ВУЗ </th>
+                                        <th class="col-xs-4 table-agent-info" scope="col"> Специальность </th>
+                                        <th class="col-xs-2 table-agent-info" scope="col"> Дата окончания </th>
+                                        <th class="col-xs-1 table-agent-info" scope="col"> Подтверждение </th>
                                     </tr>
                                 </thead>
                                 <thead class="" data-status="feedback" style="display: none;">
@@ -170,7 +170,7 @@ function loadAgentsInfo(currentUrl, processUrl, companysInfo) {
                                     </tr>
                                 </thead>
 
-                                <tbody class="table-agent-info" id="${value.id}"> </tbody>
+                                <tbody class="table-agent-info table-agent-info" id="${value.id}"> </tbody>
                             </table>
 
                             <button type="button" class="btn btn-outline-success" onclick="openForm(${value.id}, ${value.telegram_id})">Оставить заявку</button>  

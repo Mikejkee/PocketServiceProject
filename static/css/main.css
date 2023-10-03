@@ -186,6 +186,5 @@ input:checked + .slider:before {
 }
 
 .table-agent-info {
-    font-size: max(0.7em, min(3em, calc(70vw * 2 / 75)));
+    font-size: max(0.8em, min(3em, calc(70vw * 2 / 75)));
 }
-+
