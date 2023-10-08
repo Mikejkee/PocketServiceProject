@@ -153,7 +153,6 @@ input:checked + .slider:before {
     height: 35px;
 }
 
-
 .fio {
     font-size: max(0.6em, min(4em, calc(100vw * 4 / 75)));
     font-weight: 400;
@@ -187,4 +186,19 @@ input:checked + .slider:before {
 
 .table-agent-info {
     font-size: max(0.8em, min(3em, calc(70vw * 2 / 75)));
+}
+
+.comment_text {
+    font-size: max(1em, min(4em, calc(70vw * 3 / 75)));
+    text-align:justify;
+    margin: 5% 0 5% 0;
+}
+
+.comment_img{
+    width: 30%;
+    float: left;
+}
+
+.comment_img_full{
+    width: 100%;
 }

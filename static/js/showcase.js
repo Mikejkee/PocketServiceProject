@@ -47,6 +47,7 @@ function loadAgentsInfo(currentUrl, processUrl, companysInfo) {
     let targetUrl = processUrl + '/api/agent/'
     let targetPricesUrl = processUrl + '/api/prices_by_agent/info?AgentId='
     let targetEducationUrl = processUrl + '/api/education_by_agent/info?AgentId='
+    let targetCommentUrl = processUrl + '/api/comments_by_agent/info?AgentId='
 
     $.get(targetUrl).done(function(answer) {
         let listData = answer;
@@ -166,7 +167,8 @@ function loadAgentsInfo(currentUrl, processUrl, companysInfo) {
                                 </thead>
                                 <thead class="" data-status="feedback" style="display: none;">
                                     <tr>
-                                        <th class="col-xs-12" scope="col">Отзывы клиентов</th>
+                                        <th class="col-xs-4 table-agent-info" scope="col"> Оценка/дата </th>
+                                        <th class="col-xs-4 table-agent-info" scope="col"> Комментарий </th>
                                     </tr>
                                 </thead>
 
@@ -178,7 +180,7 @@ function loadAgentsInfo(currentUrl, processUrl, companysInfo) {
                     </div>
                 </div>`)
 
-            // Загрузка цен и услуш агента
+            // Загрузка цен и услуг агента
             $.get(targetPricesUrl+value.id).done(function(answer) {
                 let listPrices = JSON.parse(answer.data);
                 console.log(listPrices);
@@ -233,6 +235,45 @@ function loadAgentsInfo(currentUrl, processUrl, companysInfo) {
                     );
                 })
             })
+
+            // Загрузка комментариев
+            $.get(targetCommentUrl+value.id).done(function(answer) {
+                let listComments = JSON.parse(answer.data);
+                console.log(listComments);
+
+                let table = $(`#${value.id}`)
+                $.each(listComments,function(key, commentInfo) {
+                    table.append(
+                        `<tr data-status="feedback" style="display: none;">
+                            <td>
+                                <p class="text-center table-lc-p" id="raiting_${commentInfo.id}" style="margin: 0 auto 0 auto"></p>
+                                <p class="text-center table-lc-p"> ${commentInfo.data} </p>
+                            </td>
+                            <td>
+                                <p class="table-lc-p" style="text-align:left;"> <b> ${commentInfo.client} </b></p>
+                                <p class="table-lc-p" style="text-align:left; color: gray"> <i> ${commentInfo.product} </i></p>
+                                <p class="comment_text"> ${commentInfo.text}</p>
+                                <p class="text-center table-lc-p" id="images_${commentInfo.id}"></p>
+                            </td>
+                        </tr>`
+                    );
+                     $(`#raiting_${commentInfo.id}`).rateYo({
+                         rating: commentInfo.rating,
+                         starWidth: '17px',
+                         readOnly: true,
+                     });
+                     $.each(commentInfo.images, function (key, img){
+                         $(`#images_${commentInfo.id}`).append(
+                             `<a data-fancybox 
+                                 data-src="${img}" 
+                                 data-caption="${commentInfo.text} class="comment_img_full">
+                                <img class="comment_img" src="${img}">
+                             </a>`
+                         )
+                     });
+                })
+            })
+
         })
 /*            let $photo = $('#userPhoto');
             $('#person_id').val(data.person_id);

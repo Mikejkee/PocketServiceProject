@@ -22,12 +22,13 @@ router.register('api/person', api.PersonViewSet, basename="Person")
 router.register('api/client', api.ClientViewSet, basename="Client")
 router.register('api/product', api.ProductViewSet, basename="Product")
 router.register('api/order', api.OrderViewSet, basename="Order")
-router.register('api/company', api.CompanyViewSet, basename="Order")
+router.register('api/company', api.CompanyViewSet, basename="Company")
 router.register('api/agent', api.AgentViewSet, basename="Agent")
 router.register('api/price', api.PriceViewSet, basename="Price")
-router.register('api/specialization', api.SpecializationViewSet, basename="Price")
-router.register('api/university', api.UniversityViewSet, basename="Price")
-router.register('api/education', api.EducationViewSet, basename="Price")
+router.register('api/specialization', api.SpecializationViewSet, basename="Specialization")
+router.register('api/university', api.UniversityViewSet, basename="University")
+router.register('api/education', api.EducationViewSet, basename="Education")
+router.register('api/comment', api.CommentViewSet, basename="Comment")
 
 urlpatterns = router.urls
 urlpatterns += [
@@ -51,7 +52,10 @@ urlpatterns += [
     # Education
     path('api/education_by_agent/info', api.APIPEducationsInfoByAgentID.as_view(), name='educations_info'),
 
-    #Order
+    # Comment
+    path('api/comments_by_agent/info', api.APIPCommentsInfoByAgentID.as_view(), name='comments_info'),
+
+    # Order
     path('api/orders_by_agent/info', api.APIPOrdersInfoByAgentTelegramID.as_view(), name='orders_by_agent_info'),
     path('api/orders_by_client/info', api.APIPOrdersInfoByClientTelegramID.as_view(), name='orders_by_client_info'),
     path('api/orders_by_client/create', api.APIPOrdersCreateByClient.as_view(), name='orders_create_by_client'),

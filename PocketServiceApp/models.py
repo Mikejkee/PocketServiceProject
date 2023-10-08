@@ -26,6 +26,15 @@ STATUS_TYPES_CHOICE = [
     (3, 'Выполнена'),
 ]
 
+RATING_CHOICES = (
+    (1, '1 звезда'),
+    (2, '2 звезды'),
+    (3, '3 звезды'),
+    (4, '4 звезды'),
+    (5, '5 звезд')
+)
+
+
 class Registrator(models.Model):
     creation_datetime = models.DateTimeField("Время создания", auto_now_add=True)
     update_datetime = models.DateTimeField("Время обновления", auto_now_add=True)
@@ -76,7 +85,7 @@ class Person(Registrator):
     surname = models.CharField("Фамилия", max_length=20, null=True, blank=True)
     patronymic = models.CharField("Отчество", max_length=20, null=True, blank=True)
     date_of_birth = models.DateField("Дата рождения", null=True, blank=True)
-    person_fio = models.CharField("ФИО",  max_length=200, null=True, blank=True)
+    person_fio = models.CharField("ФИО", max_length=200, null=True, blank=True)
     phone_number = models.CharField("Номер телефона", max_length=12, null=True, blank=True)
     telegram_chat_id = models.CharField('ID Чата', max_length=255, null=True, blank=True)
     telegram_id = models.CharField("ID Телеграмм", max_length=20, null=True, blank=True)
@@ -151,7 +160,6 @@ class Product(Registrator):
     product_image = models.ImageField('Картинка услуг', upload_to='./postgres_data/objects/products/images/', null=True,
                                       blank=True)
 
-
     def __str__(self):
         return self.addition_information
 
@@ -200,7 +208,7 @@ class Price(Registrator):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, related_name='product_price',
                                 null=True, blank=True, verbose_name="Услуга")
     agent = models.ForeignKey(Agent, on_delete=models.SET_NULL, related_name='agent_product_price',
-                                null=True, blank=True, verbose_name="Агент")
+                              null=True, blank=True, verbose_name="Агент")
 
     def save(self, *args, **kwargs):
         # super().__init__(*args, **kwargs)
@@ -242,12 +250,12 @@ class Education(Registrator):
     period_end = models.DateField("Срок конца учебы", blank=True, null=True)
     document_check = models.BooleanField("Проверка документа", null=True, blank=True)
 
-    agent = models.ForeignKey(Agent, on_delete=models.SET_NULL, related_name='agent_education',
-                                null=True, blank=True, verbose_name="Агент")
+    agent = models.ForeignKey(Agent, on_delete=models.SET_NULL, related_name='education',
+                              null=True, blank=True, verbose_name="Агент")
     university = models.ForeignKey(University, on_delete=models.SET_NULL, blank=True, null=True,
-                                   related_name='university', verbose_name="Место учебы")
+                                   related_name='education', verbose_name="Место учебы")
     specialization = models.ForeignKey(Specialization, on_delete=models.SET_NULL, blank=True, null=True,
-                                       related_name='specialization', verbose_name="Специальность")
+                                       related_name='education', verbose_name="Специальность")
 
     def __str__(self):
         if self.agent.telegram_username:
@@ -271,6 +279,7 @@ class Client(Person):
 
     class Meta:
         db_table = 'client'
+
 
 class Order(Registrator):
     # Заявка
@@ -345,6 +354,7 @@ class Smeta(Registrator):
 
                   ] + Registrator.Meta.indexes
 
+
 class OnlineTransaction(Registrator):
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, blank=True, null=True, related_name='order',
                               verbose_name="Заказ")
@@ -373,82 +383,64 @@ class OnlineTransaction(Registrator):
         return f'{self.provider_payment_charge_id}'
 
 
-class ImageObject(Registrator):
-    person = models.ForeignKey(Person,
-                               on_delete=models.SET_NULL,
-                               related_name='person_image',
-                               null=True,
-                               blank=True,
+class Comment(Registrator):
+    rating = models.PositiveSmallIntegerField('Рейтинг', choices=RATING_CHOICES, blank=True, null=True)
+    text = models.TextField("Текст комментария", null=True, blank=True)
+
+    agent = models.ForeignKey(Agent, on_delete=models.SET_NULL, related_name='comments', null=True, blank=True,
+                              verbose_name="Агент")
+    client = models.ForeignKey(Client, on_delete=models.SET_NULL, related_name='comments', null=True, blank=True,
+                               verbose_name="Клиент")
+    order = models.ForeignKey(Order, on_delete=models.SET_NULL, related_name='comments', null=True, blank=True,
+                              verbose_name="Заявка")
+
+    def __str__(self):
+        return 'Comment by {} on {} for {}'.format(self.agent_id, self.client_id, self.order_id)
+
+    class Meta:
+        db_table = 'comment'
+
+
+class CommentImages(Registrator):
+    image_object = models.ImageField('Картинка', upload_to='./postgres_data/objects/comments/images/',
+                                     null=True, blank=True)
+
+    comment = models.ForeignKey(Comment, on_delete=models.SET_NULL, related_name='images', null=True, blank=True,
+                               verbose_name="Фото к отзыву")
+
+    def __str__(self):
+        return self.image_object.url
+
+    class Meta:
+        db_table = 'comment_image'
+        indexes = [] + Registrator.Meta.indexes
+
+
+class PersonImages(Registrator):
+    image_object = models.ImageField('Картинка', upload_to='./postgres_data/objects/persons/images/',
+                                     null=True, blank=True)
+
+    person = models.ForeignKey(Person, on_delete=models.SET_NULL, related_name='images', null=True, blank=True,
                                verbose_name="Картинки пользователя")
-
-    smeta = models.ForeignKey(Smeta,
-                              on_delete=models.SET_NULL,
-                              null=True,
-                              blank=True,
-                              related_name='smeta_image',
-                              verbose_name="Картинки для сметы"
-                              )
-    contract = models.ForeignKey(Contract,
-                                 on_delete=models.SET_NULL,
-                                 null=True,
-                                 blank=True,
-                                 related_name='contract_image',
-                                 verbose_name="Картинки для контракта"
-                                 )
-
-    image_object = models.ImageField(
-        'Объект картинки',
-        upload_to='./postgres_data/objects/persons/images/',
-        null=True,
-        blank=True
-    )
 
     def __str__(self):
         return self.image_object
 
     class Meta:
-        db_table = 'image_object'
+        db_table = 'person_image'
         indexes = [] + Registrator.Meta.indexes
 
 
-class FileObject(Registrator):
-    person = models.ForeignKey(
-        Person,
-        on_delete=models.SET_NULL,
-        related_name='person_files',
-        null=True,
-        blank=True,
-        verbose_name="Файлы пользователя",
-    )
+class PersonFiles(Registrator):
+    object_type = models.CharField("Тип файла", max_length=100)
+    file_object = models.FileField('Файл', upload_to='./postgres_data/objects/persons/files/', null=True, blank=True)
 
-    smeta = models.ForeignKey(Smeta,
-                              on_delete=models.SET_NULL,
-                              null=True,
-                              blank=True,
-                              related_name='smeta_file',
-                              verbose_name="Файлы для сметы"
-                              )
-    contract = models.ForeignKey(Contract,
-                                 on_delete=models.SET_NULL,
-                                 null=True,
-                                 blank=True,
-                                 related_name='contract_file',
-                                 verbose_name="Файлы для контракта"
-                                 )
-
-    object_type = models.CharField("Тип объекта",
-                                   max_length=100)
-    file_object = models.FileField(
-        'Объект файла',
-        upload_to='./postgres_data/objects/persons/files/',
-        null=True,
-        blank=True,
-    )
+    person = models.ForeignKey(Person, on_delete=models.SET_NULL, related_name='files', null=True, blank=True,
+                               verbose_name="Файлы пользователя")
 
     def __str__(self):
         return self.file_object
 
     class Meta:
-        db_table = 'file_object'
+        db_table = 'person_file'
         indexes = [] + Registrator.Meta.indexes
-

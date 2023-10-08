@@ -101,3 +101,12 @@ class EducationSerializer(PatchModelSerializer):
         model = Education
         fields = '__all__'
 
+
+class CommentSerializer(PatchModelSerializer):
+    agent = AgentSerializer(many=True, read_only=True)
+    client = ClientSerializer(many=True, read_only=True)
+    order = OrderSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = '__all__'

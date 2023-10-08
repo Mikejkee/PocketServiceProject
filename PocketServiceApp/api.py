@@ -428,6 +428,7 @@ class APIPPricesInfoByAgentID(APIView):
             return Response({'error': 'Agent not found'}, status=400)
         return Response({'error': 'Agent ID not found'}, status=400)
 
+
 class APIPEducationsInfoByAgentID(APIView):
     @swagger_auto_schema(
         tags=["education"],
@@ -461,25 +462,70 @@ class APIPEducationsInfoByAgentID(APIView):
         return Response({'error': 'Agent ID not found'}, status=400)
 
 
+class APIPCommentsInfoByAgentID(APIView):
+    @swagger_auto_schema(
+        tags=["comment"],
+        operation_description='Получает комментарии за работу агентом по его ID',
+        manual_parameters=[AGENT_ID],
+    )
+    def get(self, request):
+        params = request.query_params
+        agent_id = params.get('AgentId')
+        if agent_id:
+            agent = Agent.objects.filter(id=str(agent_id)).last()
+            if agent:
+                comments = Comment.objects.filter(agent_id=agent_id)
+                if comments:
+                    comments_info = []
+                    for comment in comments:
+                        client = Client.objects.filter(id=comment.client_id).last()
+                        product = Product.objects.filter(id=Order.objects.filter(id=comment.order_id).last().product_id).last()
+
+                        images_list = []
+                        for image in comment.images.all():
+                            images_list.append(image.image_object.url)
+
+                        comments_info.append({
+                            'id': comment.id,
+                            'client': client,
+                            'product': product,
+                            'rating': comment.rating,
+                            'text': comment.text,
+                            'data': comment.creation_datetime,
+                            'images': images_list
+                        })
+                    result_json = json.dumps(comments_info, indent=4, ensure_ascii=False, default=str)
+
+                    return Response({'data': result_json}, status=200)
+                return Response({'error': 'Comments not found'}, status=400)
+            return Response({'error': 'Agent not found'}, status=400)
+        return Response({'error': 'Agent ID not found'}, status=400)
+
+
 class PersonViewSet(viewsets.ModelViewSet):
     queryset = Person.objects.all()
     serializer_class = PersonSerializer
+
 
 class AdminsViewSet(viewsets.ModelViewSet):
     queryset = Administrator.objects.all()
     serializer_class = AdministratorSerializer
 
+
 class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
+
 
 class AgentViewSet(viewsets.ModelViewSet):
     queryset = Agent.objects.all()
     serializer_class = AgentSerializer
 
+
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
+
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
@@ -509,6 +555,11 @@ class UniversityViewSet(viewsets.ModelViewSet):
 class EducationViewSet(viewsets.ModelViewSet):
     queryset = Education.objects.all()
     serializer_class = EducationSerializer
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
 
 
 def task_status(request):

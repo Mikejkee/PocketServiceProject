@@ -66,6 +66,10 @@ $(document).on('click', '.btn-filter', function () {
     $(`#${table} tr[data-status]`).css('display', 'none');
     $(`#${table} tr[data-status="${target}"]`).fadeIn('slow');
     $(`#${table} thead[data-status="${target}"]`).fadeIn('slow');
+
+    $('[data-fancybox]').fancybox({
+	    clickContent: 'close',
+    });
 });
 
 // $('.btn-filter').click(function () {
