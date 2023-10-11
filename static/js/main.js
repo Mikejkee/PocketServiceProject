@@ -69,8 +69,18 @@ $(document).on('click', '.btn-filter', function () {
 
     $('[data-fancybox]').fancybox({
       protect: true,
-      clickContent : function( current, event ) {
+      clickContent : function(current, event) {
           return current.type === 'image' ? 'close' : 'zoom';
+      },
+      mobile: {
+          preventCaptionOverlap: !1,
+          idleTime: !1,
+          clickContent: function (current, event) {
+              return "image" === current.type && "close";
+          },
+          clickSlide: function (current, event) {
+              return "image" === current.type && "close";
+          },
       }
     });
 });
