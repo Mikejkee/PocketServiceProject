@@ -264,7 +264,7 @@ function loadAgentsInfo(currentUrl, processUrl, companysInfo) {
                      });
                      $.each(commentInfo.images, function (key, img){
                          $(`#images_${commentInfo.id}`).append(
-                             `<a data-fancybox 
+                             `<a data-fancybox="images" 
                                  data-src="${img}" 
                                  data-caption="${commentInfo.text} class="comment_img_full">
                                 <img class="comment_img" src="${img}">

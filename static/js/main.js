@@ -68,9 +68,13 @@ $(document).on('click', '.btn-filter', function () {
     $(`#${table} thead[data-status="${target}"]`).fadeIn('slow');
 
     $('[data-fancybox]').fancybox({
-	    clickContent: 'close',
+      protect: true,
+      clickContent : function( current, event ) {
+          return current.type === 'image' ? 'close' : 'zoom';
+      }
     });
 });
+
 
 // $('.btn-filter').click(function () {
 //     let $target = $(this).data('target');
