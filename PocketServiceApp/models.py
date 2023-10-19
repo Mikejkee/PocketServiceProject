@@ -187,10 +187,12 @@ class Agent(Person):
     products = models.ManyToManyField(Product, blank=True, related_name='products_agent', verbose_name="Услуги")
 
     def __str__(self):
+        username, fio = ("", "")
         if self.telegram_username:
-            return self.telegram_username
-        else:
-            return self.telegram_id
+            username = "(@{})".format(self.telegram_username)
+        if self.person_fio:
+            fio = self.person_fio
+        return "{}{}".format(fio, username)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -304,7 +306,9 @@ class Order(Registrator):
                                       null=True, blank=True, verbose_name="Администратор")
 
     def __str__(self):
-        return self.name
+        product = "{}".format(self.product.__str__())
+        time = "Создана: {}".format(self.creation_datetime)
+        return '«{}» {}[{}]'.format(product, time, self.id)
 
     class Meta:
         db_table = 'order'
@@ -406,7 +410,7 @@ class CommentImages(Registrator):
                                      null=True, blank=True)
 
     comment = models.ForeignKey(Comment, on_delete=models.SET_NULL, related_name='images', null=True, blank=True,
-                               verbose_name="Фото к отзыву")
+                                verbose_name="Фото к отзыву")
 
     def __str__(self):
         return self.image_object.url

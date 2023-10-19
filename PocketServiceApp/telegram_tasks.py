@@ -53,3 +53,12 @@ def tg_message_task(telegram_id, message, token):
 
     return True
 
+
+@shared_task(base=BaseTask)
+def create_comment_task(comment_photos, agent_id, client_telegram_id, order_id, rating, comment_text):
+
+    from .controllers.bot_services import create_comment
+
+    comment_id = create_comment(comment_photos, agent_id, client_telegram_id, order_id, rating, comment_text)
+
+    return comment_id
