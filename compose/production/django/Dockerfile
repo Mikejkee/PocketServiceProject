@@ -61,6 +61,7 @@ WORKDIR /PocketServiceProject
 COPY . .
 
 RUN chown -R django:django /PocketServiceProject
+RUN chmod -R 777 /PocketServiceProject/media
 
 USER django
 

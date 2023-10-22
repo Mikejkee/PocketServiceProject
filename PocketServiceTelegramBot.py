@@ -26,7 +26,6 @@ from PocketServiceApp.models import Person, Client, Agent, Order
 # Логирование
 logging.basicConfig(level=logging.INFO)
 
-agents_list = Agent.objects.all().__str__()
 rating_list = ['1 ⭐', '2 ⭐', '3 ⭐', '4 ⭐', '5 ⭐']
 
 TOKEN = os.environ.get('TELEGRAM_TOKEN')
@@ -42,6 +41,13 @@ class CommentState(StatesGroup):
     choosing_comment_text = State()
     choosing_photo = State()
 
+
+@sync_to_async
+def get_agents_list():
+    return Agent.objects.all().__str__()
+
+
+agents_list = asyncio.run(get_agents_list())
 
 @sync_to_async
 def save_client(name=None, surname=None, patronymic=None, person_fio=None,
