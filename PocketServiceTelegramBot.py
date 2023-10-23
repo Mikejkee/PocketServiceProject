@@ -1,4 +1,6 @@
 import asyncio
+import io
+import base64
 import os
 import time
 from pprint import pprint
@@ -181,7 +183,10 @@ def create_comment(comment_data, telegram_id):
 
     comment_images = []
     for i in range(1, int(comment_data['photo_counter']) + 1):
-        comment_images.append(comment_data[f'comment_photo_{i}'])
+        comment_images.append([
+            comment_data[f'comment_photo_{i}_name'],
+            comment_data[f'comment_photo_{i}']
+        ])
     print(comment_images)
 
     comment_task = create_comment_task.delay(comment_images, comment_data['agent'], telegram_id, order_id,
@@ -483,19 +488,20 @@ async def photos_chosen(message: Message, state: FSMContext, bot: Bot):
     from_user = message.from_user
     telegram_id = from_user.id
 
+    file_io = io.BytesIO()
     if message.content_type == 'photo':
         photo = message.photo[-1]
-        time.sleep(1)
         photo_file = await bot.get_file(photo.file_id)
         photo_path = photo_file.file_path
-        destination = f"/postgres_data/objects/comments/images/{photo.file_unique_id}.jpg"
-        await bot.download_file(photo_path, f'./media{destination}')
+        await bot.download_file(file_path=photo_path, destination=file_io)
 
         user_data = await state.get_data()
         photo_counter = user_data['photo_counter'] + 1
+        image = base64.b64encode(file_io.read())
 
         await state.update_data({
-            f'comment_photo_{photo_counter}': destination,
+            f'comment_photo_{photo_counter}': image.decode(),
+            f'comment_photo_{photo_counter}_name': photo.file_unique_id,
             'photo_counter': photo_counter,
         })
     else:

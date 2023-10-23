@@ -60,8 +60,8 @@ RUN mkdir /PocketServiceProject/flower_db
 WORKDIR /PocketServiceProject
 COPY . .
 
+RUN chmod -R 755 /PocketServiceProject
 RUN chown -R django:django /PocketServiceProject
-RUN chmod -R 777 /PocketServiceProject/media
 
 USER django
 

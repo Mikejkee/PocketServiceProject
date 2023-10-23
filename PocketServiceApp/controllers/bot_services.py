@@ -1,4 +1,8 @@
+import base64
+import io
+
 from django.db import transaction, IntegrityError
+from django.core.files.images import ImageFile
 from datetime import datetime
 
 from PocketServiceApp.models import *
@@ -174,7 +178,8 @@ def create_comment(comment_photos, agent_id, client_telegram_id, order_id, ratin
 
             try:
                 for photo in comment_photos:
-                    CommentImages.objects.create(image_object=photo, comment=new_comment)
+                    image = ImageFile(io.BytesIO(base64.b64decode(photo[1].encode())), name=f'{photo[0]}.jpg')
+                    CommentImages.objects.create(image_object=image, comment=new_comment)
                     print("Photo created")
             except Exception as e:
                 print(e)
