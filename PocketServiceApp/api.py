@@ -161,6 +161,7 @@ class APIClientInfoByTelegramID(APIView):
             return Response({'error': 'Client not found'}, status=400)
         return Response({'error': 'Telegram user not found'}, status=400)
 
+
 class APIAgentInfoByTelegramID(APIView):
     @swagger_auto_schema(
         tags=["agent"],
@@ -187,12 +188,13 @@ class APIAgentInfoByTelegramID(APIView):
                     'person_id': user_id,
                     'person_photo': user_photo,
                     'telegram_username': agent.telegram_username,
+                    'telegram_id': agent.telegram_id,
                     'person_fio': fio,
                     'phone_number': agent.phone_number,
                     'person_date_of_birth': agent.date_of_birth,
                     'email': agent.email,
                     'agent_description': agent.agent_description,
-                    'education_description': agent.education_description,
+                    # 'education_description': agent.education_description,
                     'work_experience': agent.work_experience,
                     'command_work': agent.command_work,
                     'passport_check': agent.passport_check,
@@ -203,6 +205,7 @@ class APIAgentInfoByTelegramID(APIView):
                 return Response({'data': result_dict}, status=200)
             return Response({'error': 'Client not found'}, status=400)
         return Response({'error': 'Telegram user not found'}, status=400)
+
 
 class APICompanyInfoByTelegramID(APIView):
     @swagger_auto_schema(
@@ -243,6 +246,7 @@ class APICompanyInfoByTelegramID(APIView):
                 return Response({'error': 'User is not head of company'}, status=400)
             return Response({'error': 'User not found'}, status=400)
         return Response({'error': 'Telegram user not found'}, status=400)
+
 
 class APIPOrdersInfoByAgentTelegramID(APIView):
     @swagger_auto_schema(

@@ -84,12 +84,3 @@ $(document).on('click', '.btn-filter', function () {
       }
     });
 });
-
-
-// $('.btn-filter').click(function () {
-//     let $target = $(this).data('target');
-//     $('.table thead').css('display', 'none');
-//     $('.table tr[data-status]').css('display', 'none');
-//     $('.table tr[data-status="' + $target + '"]').fadeIn('slow');
-//     $('.table thead[data-status="' + $target + '"]').fadeIn('slow');
-// });

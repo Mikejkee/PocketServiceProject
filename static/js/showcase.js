@@ -216,6 +216,10 @@ function loadAgentsInfo(currentUrl, processUrl, companysInfo) {
 
                 let table = $(`#${value.id}`)
                 $.each(listEducations,function(key, educationInfo) {
+                    let education = ''
+                    if (educationInfo.education_checked===true) {
+                        education = 'checked="checked"'
+                    }
                     table.append(
                         `<tr data-status="education" style="display: none;">
                             <td>
@@ -228,7 +232,7 @@ function loadAgentsInfo(currentUrl, processUrl, companysInfo) {
                                 <p class="text-center table-lc-p"> ${educationInfo.education_end}</p>
                             </td>
                             <td>
-                                <input class="form-check-input" type="checkbox" value="" id="educationChecked"  ${educationInfo.education_checked}>
+                                <input class="form-check-input" type="checkbox" value="" id="educationChecked"  ${education} disabled>
                                 <label class="form-check-label" htmlFor="educationChecked"> </label>    
                             </td>
                         </tr>`

@@ -17,6 +17,10 @@ function openDiv(elem_id_to_open) {
 
 function loadAgentInfo(TelegramId, currentUrl, processUrl) {
     let targetUrl = processUrl + '/api/agent/info?TelegramId=' + TelegramId
+    let targetPricesUrl = processUrl + '/api/prices_by_agent/info?AgentId='
+    let targetEducationUrl = processUrl + '/api/education_by_agent/info?AgentId='
+    let targetCommentUrl = processUrl + '/api/comments_by_agent/info?AgentId='
+
     $.get(targetUrl).done(function(answer) {
         let data = answer.data;
         console.log(data);
@@ -32,7 +36,7 @@ function loadAgentInfo(TelegramId, currentUrl, processUrl) {
         }
         $('#date_of_birth').val(data.person_date_of_birth);
         $('#agent_description').val(data.agent_description);
-        $('#education_description').val(data.education_description);
+        // $('#education_description').val(data.education_description);
         $('#work_experience').val(data.work_experience);
         if (data.command_work === true) {
             $('#command_work').attr('checked', '')
@@ -45,9 +49,121 @@ function loadAgentInfo(TelegramId, currentUrl, processUrl) {
         }
         $('#guarantee_period').val(data.guarantee_period);
 
+        // Загрузка цен и услуг агента
+        $.get(targetPricesUrl+data.person_id).done(function(answer) {
+            let listPrices = JSON.parse(answer.data);
+            console.log(listPrices);
+
+            let table = $(`#${data.telegram_id}`)
+            $.each(listPrices,function(typeProduct,products) {
+                 table.append(
+                        `<tr class="table-group-divide table-dark" data-status="products">
+                            <td colspan="3">
+                                <p class="text-center table-lc-p" style="margin-bottom: 0px;"> ${typeProduct} </p>
+                            </td>
+                        </tr>`
+                 );
+                $.each(products,function(type_info, price_info) {
+                    table.append(
+                        `<tr data-status="products">
+                            <td>
+                                <p class="text-center table-lc-p order-info" style="margin-bottom: 0px;" id="${price_info[1]}"> ${type_info} </p>
+                            </td>
+                            <td>
+                                <p class="text-center table-lc-p" style="margin-bottom: 0px;" > ${price_info[0]}</p>
+                            </td>
+                            <td>
+                                <p class="text-center table-lc-p">
+                                    <img onclick="" class="my_icons_sm" src="${srcEdit}"></a>
+                                    <img onclick="" class="my_icons_sm" src="${srcCancel}"></a>
+                                </p>
+                            </td>
+                        </tr>`
+                    );
+                })
+            })
+        })
+
+        // Загрузка образования агента
+        $.get(targetEducationUrl+data.person_id).done(function(answer) {
+            let listEducations = JSON.parse(answer.data);
+            console.log(listEducations);
+
+            let table = $(`#${data.telegram_id}`)
+            $.each(listEducations,function(key, educationInfo) {
+                let education = ''
+                if (educationInfo.education_checked===true) {
+                    education = 'checked="checked"'
+                }
+                table.append(
+                    `<tr data-status="education" style="display: none;">
+                        <td>
+                            <p class="text-center table-lc-p"> ${educationInfo.university} </p>
+                        </td>
+                        <td>
+                            <p class="text-center table-lc-p"> ${educationInfo.specialization}</p>
+                        </td>
+                        <td>
+                            <p class="text-center table-lc-p"> ${educationInfo.education_end}</p>
+                        </td>
+                        <td>
+                            <input class="form-check-input" type="checkbox" value="" id="educationChecked"  ${education} disabled>
+                            <label class="form-check-label" htmlFor="educationChecked"> </label>    
+                        </td>
+                        <td>
+                            <p class="text-center table-lc-p">
+                                <img onclick="" class="my_icons_sm" src="${srcEdit}"></a>
+                                <img onclick="" class="my_icons_sm" src="${srcCancel}"></a>
+                            </p>
+                        </td>
+                    </tr>`
+                );
+            })
+        })
+
+        // Загрузка комментариев
+        $.get(targetCommentUrl+data.person_id).done(function(answer) {
+            let listComments = JSON.parse(answer.data);
+            console.log(listComments);
+
+            let table = $(`#${data.telegram_id}`)
+            $.each(listComments,function(key, commentInfo) {
+                table.append(
+                    `<tr data-status="feedback" style="display: none;">
+                        <td>
+                            <p class="text-center table-lc-p" id="raiting_${commentInfo.id}" style="margin: 0 auto 0 auto"></p>
+                            <p class="text-center table-lc-p"> ${commentInfo.data} </p>
+                        </td>
+                        <td>
+                            <p class="table-lc-p" style="text-align:left;"> <b> ${commentInfo.client} </b></p>
+                            <p class="table-lc-p" style="text-align:left; color: gray"> <i> ${commentInfo.product} </i></p>
+                            <p class="comment_text"> ${commentInfo.text}</p>
+                            <p class="text-center table-lc-p" id="images_${commentInfo.id}"></p>
+                        </td>
+                    </tr>`
+                );
+                 $(`#raiting_${commentInfo.id}`).rateYo({
+                     rating: commentInfo.rating,
+                     starWidth: '17px',
+                     readOnly: true,
+                 });
+                 $.each(commentInfo.images, function (key, img){
+                     $(`#images_${commentInfo.id}`).append(
+                         `<a data-fancybox="images" 
+                             data-src="${img}" 
+                             data-caption="${commentInfo.text} class="comment_img_full">
+                            <img class="comment_img" src="${img}">
+                         </a>`
+                     )
+                 });
+            })
+        })
+
     }).fail(function(err) {
         console.log(err);
     });
+
+
 }
 
 function loadCompanyInfo(TelegramId, currentUrl, processUrl) {

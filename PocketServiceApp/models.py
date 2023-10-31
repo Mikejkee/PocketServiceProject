@@ -173,13 +173,13 @@ class Product(Registrator):
 
 class Agent(Person):
     agent_description = models.TextField("Описание агента", null=True, blank=True)
-    education_description = models.TextField("Образование", null=True, blank=True)
+    # education_description = models.TextField("Образование", null=True, blank=True)
     work_experience = models.TextField("Опыт работы", null=True, blank=True)
     command_work = models.BooleanField("Работа в команде", null=True, blank=True)
     passport_check = models.BooleanField("Проверка паспорта", null=True, blank=True)
     contract_work = models.BooleanField("Работа по договору", null=True, blank=True)
     guarantee_period = models.TextField("Гарантийный период", null=True, blank=True)
-    services_prices = models.TextField("Услуги и цены", null=True, blank=True)
+    # services_prices = models.TextField("Услуги и цены", null=True, blank=True)
 
     area = models.ManyToManyField(Area, blank=True, related_name='area_agents', verbose_name="Районы")
     company = models.ForeignKey(Company, on_delete=models.SET_NULL, related_name='agent_company',

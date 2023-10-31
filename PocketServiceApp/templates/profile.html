@@ -26,6 +26,11 @@
 	    float: left;
 	}
 
+
+    .my_icons_sm {
+        width: 6vw;
+    }
+
 </style>
 {% endblock link %}
 
@@ -41,7 +46,7 @@
     <div class="row py-2">
         <div class="col">
             <div class="card text-center border-warning mb-3">
-                <h5 class="card-header bg-secondary text-white" , style="margin-bottom: 3px; font-size: 20px; font-weight: 400; font-family: 'Beer money';" onclick="openDiv('personalityForm')">Персональные данные</h5>
+                <h5 class="card-header bg-secondary text-white" style="margin-bottom: 3px; font-size: 20px; font-weight: 400; font-family: 'Beer money';" onclick="openDiv('personalityForm')">Персональные данные</h5>
                 <div class="card mb-4 mt-2 box-shadow collapse" id="personalityForm">
                     <div class="sticker-left">
                         <form id="person_form">
@@ -91,10 +96,10 @@
 
                         {% if role_type_agent %}
                         <form id="agent_form">
-                            <small class="text-muted">Образование</span>:</small>
-                            <div class="input-group input-group-sm mb-3">
-                                <input type="text" class="form-control" placeholder="Ваше образование" id="education_description" />
-                            </div>
+{#                            <small class="text-muted">Образование</span>:</small>#}
+{#                            <div class="input-group input-group-sm mb-3">#}
+{#                                <input type="text" class="form-control" placeholder="Ваше образование" id="education_description" />#}
+{#                            </div>#}
                             <small class="text-muted">Опыт работы</span>:</small>
                             <div class="input-group input-group-sm mb-3">
                                 <input type="text" class="form-control" placeholder="Ваш опыт" id="work_experience" />
@@ -123,66 +128,110 @@
                         {% endif %}
 
                         {% if role_type_head_agent %}
-                        <div class="sticker-left sticker-success text-center" data-sticker="Информация о Вашей компании">
+                        <div class="sticker-left sticker-success text-center" onclick="openDiv('company_form_div')" data-sticker="Информация о Вашей компании">
                             <form id="company_form">
-                                {% csrf_token %}
-                                <small class="text-muted">Название компании<span class="required">*</span>:</small>
-                                <div class="input-group input-group-sm mb-3">
-                                    <input type="number" name="company_id" id="company_id" class="form-control mb-0" hidden />
-                                    <input type="text" class="form-control" placeholder="Название" id="company_name"/>
+                                <div class="collapse" id="company_form_div">
+                                    {% csrf_token %}
+                                    <small class="text-muted">Название компании<span class="required">*</span>:</small>
+                                    <div class="input-group input-group-sm mb-3">
+                                        <input type="number" name="company_id" id="company_id" class="form-control mb-0" hidden />
+                                        <input type="text" class="form-control" placeholder="Название" id="company_name"/>
+                                    </div>
+                                    <small class="text-muted">Юридический адрес<span class="required">*</span>:</small>
+                                    <div class="input-group input-group-sm mb-3">
+                                        <input type="text" class="form-control" placeholder="Адрес" id="legal_address"/>
+                                    </div>
+                                    <small class="text-muted">Почтовый адрес<span class="required">*</span>:</small>
+                                    <div class="input-group input-group-sm mb-3">
+                                        <input type="text" class="form-control" placeholder="Адрес" id="mail_address"/>
+                                    </div>
+                                    <small class="text-muted">Электронная почта<span class="required">*</span>:</small>
+                                    <div class="input-group input-group-sm mb-3">
+                                        <input type="text" class="form-control" placeholder="Почта" id="email_address"/>
+                                    </div>
+                                    <small class="text-muted">Контактный телефон<span class="required">*</span>:</small>
+                                    <div class="input-group input-group-sm mb-3">
+                                        <input type="text" class="form-control" placeholder="Телефон" id="contact_phone"/>
+                                    </div>
+                                    <small class="text-muted">ИНН<span class="required">*</span>:</small>
+                                    <div class="input-group input-group-sm mb-3">
+                                        <input type="text" class="form-control" placeholder="ИНН" id="inn"/>
+                                    </div>
+                                    <small class="text-muted">КПП<span class="required">*</span>:</small>
+                                    <div class="input-group input-group-sm mb-3">
+                                        <input type="text" class="form-control" placeholder="КПП" id="kpp"/>
+                                    </div>
+                                    <small class="text-muted">ОГРНИП<span class="required">*</span>:</small>
+                                    <div class="input-group input-group-sm mb-3">
+                                        <input type="text" class="form-control" placeholder="ОГРНИП" id="ogrnip"/>
+                                    </div>
+                                    <small class="text-muted">Рассчетный счет<span class="required">*</span>:</small>
+                                    <div class="input-group input-group-sm mb-3">
+                                        <input type="text" class="form-control" placeholder="Счет" id="payment_account"/>
+                                    </div>
+                                    <small class="text-muted">Название банка<span class="required">*</span>:</small>
+                                    <div class="input-group input-group-sm mb-3">
+                                        <input type="text" class="form-control" placeholder="Банк" id="bank"/>
+                                    </div>
+                                    <small class="text-muted">БИК<span class="required">*</span>:</small>
+                                    <div class="input-group input-group-sm mb-3">
+                                        <input type="text" class="form-control" placeholder="БИК" id="bik"/>
+                                    </div>
+                                    <small class="text-muted">ОКПО<span class="required">*</span>:</small>
+                                    <div class="input-group input-group-sm mb-3">
+                                        <input type="text" class="form-control" placeholder="ОКПО" id="okpo"/>
+                                    </div>
+                                    <small class="text-muted">Дополнительное описание:</small>
+                                    <div class="input-group input-group-sm mb-3">
+                                        <input type="text" class="form-control" placeholder="Описание" id="description"/>
+                                    </div>
                                 </div>
-                                <small class="text-muted">Юридический адрес<span class="required">*</span>:</small>
-                                <div class="input-group input-group-sm mb-3">
-                                    <input type="text" class="form-control" placeholder="Адрес" id="legal_address"/>
-                                </div>
-                                <small class="text-muted">Почтовый адрес<span class="required">*</span>:</small>
-                                <div class="input-group input-group-sm mb-3">
-                                    <input type="text" class="form-control" placeholder="Адрес" id="mail_address"/>
-                                </div>
-                                <small class="text-muted">Электронная почта<span class="required">*</span>:</small>
-                                <div class="input-group input-group-sm mb-3">
-                                    <input type="text" class="form-control" placeholder="Почта" id="email_address"/>
-                                </div>
-                                <small class="text-muted">Контактный телефон<span class="required">*</span>:</small>
-                                <div class="input-group input-group-sm mb-3">
-                                    <input type="text" class="form-control" placeholder="Телефон" id="contact_phone"/>
-                                </div>
-                                <small class="text-muted">ИНН<span class="required">*</span>:</small>
-                                <div class="input-group input-group-sm mb-3">
-                                    <input type="text" class="form-control" placeholder="ИНН" id="inn"/>
-                                </div>
-                                <small class="text-muted">КПП<span class="required">*</span>:</small>
-                                <div class="input-group input-group-sm mb-3">
-                                    <input type="text" class="form-control" placeholder="КПП" id="kpp"/>
-                                </div>
-                                <small class="text-muted">ОГРНИП<span class="required">*</span>:</small>
-                                <div class="input-group input-group-sm mb-3">
-                                    <input type="text" class="form-control" placeholder="ОГРНИП" id="ogrnip"/>
-                                </div>
-                                <small class="text-muted">Рассчетный счет<span class="required">*</span>:</small>
-                                <div class="input-group input-group-sm mb-3">
-                                    <input type="text" class="form-control" placeholder="Счет" id="payment_account"/>
-                                </div>
-                                <small class="text-muted">Название банка<span class="required">*</span>:</small>
-                                <div class="input-group input-group-sm mb-3">
-                                    <input type="text" class="form-control" placeholder="Банк" id="bank"/>
-                                </div>
-                                <small class="text-muted">БИК<span class="required">*</span>:</small>
-                                <div class="input-group input-group-sm mb-3">
-                                    <input type="text" class="form-control" placeholder="БИК" id="bik"/>
-                                </div>
-                                <small class="text-muted">ОКПО<span class="required">*</span>:</small>
-                                <div class="input-group input-group-sm mb-3">
-                                    <input type="text" class="form-control" placeholder="ОКПО" id="okpo"/>
-                                </div>
-                                <small class="text-muted">Дополнительное описание:</small>
-                                <div class="input-group input-group-sm mb-3">
-                                    <input type="text" class="form-control" placeholder="Описание" id="description"/>
-                                </div>
-
                             </form>
                         </div>
                         {% endif %}
+
+                        {% if role_type_agent %}
+                            <div class="row table-agent-info" style="margin: 10px 0px 10px 0px;">
+                            <div class="panel-body">
+                                <div class="pull-right">
+                                    <div class="btn-group-sm" role="group">
+                                        <button type="button" table-target="agent_{{ telegram_id }}_table" class="btn btn-secondary btn-filter table-agent-info" data-target="products">Услуги/цены</button>
+                                        <button type="button" table-target="agent_{{ telegram_id }}_table" class="btn btn-secondary btn-filter table-agent-info" data-target="education">Образование</button>
+                                        <button type="button" table-target="agent_{{ telegram_id }}_table" class="btn btn-secondary btn-filter table-agent-info" data-target="feedback">Отзывы</button>
+                                        <button type="button" class="btn btn-success btn-filter table-agent-info">Создать</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                                <table class="table table-sm table-hover align-middle" id="agent_{{ telegram_id }}_table">
+                                    <thead class="" data-status="products" style="">
+                                        <tr>
+                                            <th class="col-xs-7 table-agent-info" scope="col">Тип услуги</th>
+                                            <th class="col-xs-3 table-agent-info" scope="col"> Цена </th>
+                                            <th class="col-xs-1 table-agent-info" scope="col"> </th>
+                                        </tr>
+                                    </thead>
+                                    <thead class="" data-status="education" style="display: none;">
+                                        <tr>
+                                            <th class="col-xs-4 table-agent-info" scope="col"> ВУЗ </th>
+                                            <th class="col-xs-4 table-agent-info" scope="col"> Специальность </th>
+                                            <th class="col-xs-1 table-agent-info" scope="col"> Дата окончания </th>
+                                            <th class="col-xs-1 table-agent-info" scope="col"> Подтверждение </th>
+                                            <th class="col-xs-1 table-agent-info" scope="col"> </th>
+                                        </tr>
+                                    </thead>
+                                    <thead class="" data-status="feedback" style="display: none;">
+                                        <tr>
+                                            <th class="col-xs-4 table-agent-info" scope="col"> Оценка/дата </th>
+                                            <th class="col-xs-4 table-agent-info" scope="col"> Комментарий </th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody class="table-agent-info table-agent-info" id="{{ telegram_id }}"> </tbody>
+                                </table>
+                            </div>
+                        {% endif %}
+
                         <a href="#" class="btn btn-primary" id="save_info">Сохранить</a>
                     </div>
                 </div>
