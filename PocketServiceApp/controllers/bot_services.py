@@ -94,28 +94,29 @@ def save_user(role_type=None, name=None, surname=None, patronymic=None, person_f
             try:
                 if "агент" in role_type:
                     new_user = Agent.objects.create(name=name, surname=surname, patronymic=patronymic,
-                                                 date_of_birth=date_of_birth, phone_number=phone_number,
-                                                 telegram_chat_id=telegram_chat_id,
-                                                 telegram_id=telegram_id, telegram_username=telegram_username,
-                                                 telegram_name=telegram_name, telegram_surname=telegram_surname,
-                                                 email=email, background_image=background_image, address=address,
-                                                 addition_information=addition_information)
+                                                    date_of_birth=date_of_birth, phone_number=phone_number,
+                                                    telegram_chat_id=telegram_chat_id,
+                                                    telegram_id=telegram_id, telegram_username=telegram_username,
+                                                    telegram_name=telegram_name, telegram_surname=telegram_surname,
+                                                    email=email, background_image=background_image, address=address,
+                                                    addition_information=addition_information)
                 elif "администратор" in role_type:
                     new_user = Administrator.objects.create(name=name, surname=surname, patronymic=patronymic,
-                                                 date_of_birth=date_of_birth, phone_number=phone_number,
-                                                 telegram_chat_id=telegram_chat_id,
-                                                 telegram_id=telegram_id, telegram_username=telegram_username,
-                                                 telegram_name=telegram_name, telegram_surname=telegram_surname,
-                                                 email=email, background_image=background_image, address=address,
-                                                 addition_information=addition_information)
+                                                            date_of_birth=date_of_birth, phone_number=phone_number,
+                                                            telegram_chat_id=telegram_chat_id,
+                                                            telegram_id=telegram_id, telegram_username=telegram_username,
+                                                            telegram_name=telegram_name,
+                                                            telegram_surname=telegram_surname, email=email,
+                                                            background_image=background_image, address=address,
+                                                            addition_information=addition_information)
                 elif "Клиент" in role_type:
                     new_user = Client.objects.create(name=name, surname=surname, patronymic=patronymic,
-                                                 date_of_birth=date_of_birth, phone_number=phone_number,
-                                                 telegram_chat_id=telegram_chat_id,
-                                                 telegram_id=telegram_id, telegram_username=telegram_username,
-                                                 telegram_name=telegram_name, telegram_surname=telegram_surname,
-                                                 email=email, background_image=background_image, address=address,
-                                                 addition_information=addition_information)
+                                                     date_of_birth=date_of_birth, phone_number=phone_number,
+                                                     telegram_chat_id=telegram_chat_id,
+                                                     telegram_id=telegram_id, telegram_username=telegram_username,
+                                                     telegram_name=telegram_name, telegram_surname=telegram_surname,
+                                                     email=email, background_image=background_image, address=address,
+                                                     addition_information=addition_information)
                 new_user.save()
                 new_user.role.add(role)
                 print('USER CREATED')
@@ -201,3 +202,22 @@ async def tg_message(bot, telegram_id, content, messages=None):
         print(e)
 
 
+def update_education(education_id, university_name=None, specialization_name=None, education_end=None):
+    with transaction.atomic():
+        education = Education.objects.filter(id=str(education_id))
+        if education.count() > 0:
+            education = education.last()
+            print('Education START UPDATE')
+
+            if university_name:
+                education.university.name = university_name
+            if specialization_name:
+                education.specialization.name = specialization_name
+            if education_end:
+                education.period_end = education_end
+            education.save()
+
+            print('Education UPDATED')
+            return True
+        else:
+            return False

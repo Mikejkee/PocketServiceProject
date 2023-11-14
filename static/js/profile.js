@@ -5,8 +5,9 @@ tg.MainButton.show();
 
 let csrftoken = $.cookie('csrftoken');
 
-function openDiv(elem_id_to_open) {
-    let formOpened = $(`#${ elem_id_to_open }`)
+
+function openDiv(elemIdToOpen) {
+    let formOpened = $(`#${ elemIdToOpen }`)
     if (formOpened.hasClass('show')) {
         formOpened.removeClass('show');
     }
@@ -14,6 +15,55 @@ function openDiv(elem_id_to_open) {
         formOpened.addClass('show');
     }
 }
+
+
+function editStrInfo(elem) {
+    let row = $(elem).closest('tr');
+    let thead = $(`thead[data-status=${row.attr('data-status')}]`).find('th')
+    let cells = row.find('td');
+
+    // Создание формы для редактирования ячеек
+    let closeButton = $(`<button type="button" class="btn-close close-form" aria-label="Close"></button>`)
+    let inputForm = $(`<div class="container edit-form"> <form id="editForm">`).append(closeButton);
+    thead.each(function (index, value) {
+        let theadId = $(value).prop('id');
+        if (theadId !== "") {
+            inputForm.append(
+                `<div class="mb-3">
+                    <label class="form-label" for="${theadId}">${$(value).text()}:</label>
+                    <input class="form-control" type="text" id="${theadId}" value="${$(cells[index]).text().trim()}">
+                </div>`
+            )
+        }
+    });
+    let saveButton = $('<input class="btn btn-primary" type="submit" value="Сохранить">');
+    inputForm.append(saveButton);
+    inputForm.append(`</form> </div>`);
+
+    saveButton.click(function() {
+          inputForm.find('input[class="form-control"]').each(function(key, value) {
+            // editedData[$(this).prop('id')] = $(this).val();
+              $(cells[key]).text($(value).val())
+          });
+
+          inputForm.hide(100);
+          $('.overlay').hide();
+          inputForm.remove()
+    });
+
+    closeButton.click(function() {
+        inputForm.hide(100)
+        $('.overlay').hide();
+        inputForm.remove()
+    });
+
+
+    // Добавление формы для редактирования в строку таблицы
+    $('#main-div').append(inputForm);
+    $('.overlay').show();
+    $('.edit-form').show(100);
+}
+
 
 function loadAgentInfo(TelegramId, currentUrl, processUrl) {
     let targetUrl = processUrl + '/api/agent/info?TelegramId=' + TelegramId
@@ -96,7 +146,7 @@ function loadAgentInfo(TelegramId, currentUrl, processUrl) {
                     education = 'checked="checked"'
                 }
                 table.append(
-                    `<tr data-status="education" style="display: none;">
+                    `<tr data-status="education" education-id="${educationInfo.education_id}" style="display: none;">
                         <td>
                             <p class="text-center table-lc-p"> ${educationInfo.university} </p>
                         </td>
@@ -112,8 +162,8 @@ function loadAgentInfo(TelegramId, currentUrl, processUrl) {
                         </td>
                         <td>
                             <p class="text-center table-lc-p">
-                                <img onclick="" class="my_icons_sm" src="${srcEdit}"></a>
-                                <img onclick="" class="my_icons_sm" src="${srcCancel}"></a>
+                                <img class="edit-btn my_icons_sm" onclick="editStrInfo(this)" src="${srcEdit}"></a>
+                                <img class="delete-btn my_icons_sm" src="${srcCancel}"></a>
                             </p>
                         </td>
                     </tr>`

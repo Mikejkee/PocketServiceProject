@@ -64,6 +64,23 @@ ORDER_ADDITIONAL_INFO = openapi.Parameter('OrderInfo', in_=openapi.IN_QUERY,
                                           type=openapi.TYPE_STRING, required=True,
                                           description='Дополнительная информация заявки')
 
+UNIVERSITY_NAME = openapi.Parameter('UniversityName', in_=openapi.IN_QUERY,
+                                    type=openapi.TYPE_STRING, required=True,
+                                    description='Имя ВУЗа')
+
+SPECIALIZATION_NAME = openapi.Parameter('SpecializationName', in_=openapi.IN_QUERY,
+                                        type=openapi.TYPE_STRING, required=True,
+                                        description='Название специальности')
+
+EDUCATION_ID = openapi.Parameter('EducationID', in_=openapi.IN_QUERY,
+                                  type=openapi.TYPE_STRING, required=True,
+                                  description='ID образования')
+
+EDUCATION_END = openapi.Parameter('EducationEnd', in_=openapi.IN_QUERY,
+                                  type=openapi.TYPE_STRING, required=True,
+                                  description='Дата окончания образования')
+
+
 status_dict = {
     0: 'Не в работе',
     1: 'В работе',
@@ -122,6 +139,7 @@ class APIPersonInfoByTelegramID(APIView):
                 return Response({'data': result_dict}, status=200)
             return Response({'error': 'User not found'}, status=400)
         return Response({'error': 'Telegram user not found'}, status=400)
+
 
 class APIClientInfoByTelegramID(APIView):
     @swagger_auto_schema(
@@ -452,6 +470,7 @@ class APIPEducationsInfoByAgentID(APIView):
                         specialization = Specialization.objects.filter(id=education.specialization_id).last().name
                         university = University.objects.filter(id=education.university_id).last().name
                         educations_info.append({
+                            'education_id': education.id,
                             'specialization': specialization,
                             'university': university,
                             'education_start': education.period_start,
@@ -464,6 +483,33 @@ class APIPEducationsInfoByAgentID(APIView):
                 return Response({'error': 'Educations not found'}, status=400)
             return Response({'error': 'Agent not found'}, status=400)
         return Response({'error': 'Agent ID not found'}, status=400)
+
+
+class APIPEducationsEditByID(APIView):
+    @swagger_auto_schema(
+        tags=["education"],
+        operation_description='Обновление информации об образовании агента',
+        manual_parameters=[UNIVERSITY_NAME,
+                           SPECIALIZATION_NAME,
+                           EDUCATION_END,
+        ],
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['JSON'],
+            properties={
+                'JSON': openapi.Schema(type=openapi.TYPE_STRING)
+            },
+        ),
+    )
+    def post(self, request):
+        data = request.data
+        print(data)
+
+        education_task = update_education_task.delay(data.get('EducationID'), data.get('UniversityName'),
+                                                     data.get('SpecializationName'), data.get('EducationEnd'))
+        print('TASK CREATES - update education ', education_task.task_id)
+
+        return Response({'Result': 'Education updated'}, status=200)
 
 
 class APIPCommentsInfoByAgentID(APIView):

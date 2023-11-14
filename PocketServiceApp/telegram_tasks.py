@@ -62,3 +62,11 @@ def create_comment_task(comment_photos, agent_id, client_telegram_id, order_id, 
     comment_id = create_comment(comment_photos, agent_id, client_telegram_id, order_id, rating, comment_text)
 
     return comment_id
+
+
+@shared_task(base=BaseTask)
+def update_education_task(education_id, university_name, specialization_name, education_end):
+
+    from .controllers.bot_services import update_education
+
+    update_education(education_id, university_name, specialization_name, education_end)

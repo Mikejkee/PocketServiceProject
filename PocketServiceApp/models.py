@@ -238,6 +238,8 @@ class Specialization(Registrator):
 
 class University(Registrator):
     name = models.CharField("Название института/колледжа/школы", max_length=70, null=True, blank=True)
+    town = models.CharField("Город", max_length=70, null=True, blank=True)
+    country = models.CharField("Страна", max_length=70, null=True, blank=True)
     university_description = models.TextField("Описание места учебы", null=True, blank=True)
 
     def __str__(self):
