@@ -215,9 +215,33 @@ def update_education(education_id, university_name=None, specialization_name=Non
                 education.specialization.name = specialization_name
             if education_end:
                 education.period_end = education_end
+
+            education.specialization.save()
+            education.university.save()
             education.save()
 
             print('Education UPDATED')
+            return True
+        else:
+            return False
+
+
+def update_price(price_id, price_value=None, product_info=None):
+    with transaction.atomic():
+        price = Price.objects.filter(id=str(price_id))
+        if price.count() > 0:
+            price = price.last()
+            print('Price START UPDATE')
+
+            if product_info:
+                price.product.addition_information = product_info
+            if price_value:
+                price.price_value = price_value
+
+            price.product.save()
+            price.save()
+
+            print('Price UPDATED')
             return True
         else:
             return False

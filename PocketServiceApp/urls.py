@@ -48,9 +48,11 @@ urlpatterns += [
 
     # Prices
     path('api/prices_by_agent/info', api.APIPPricesInfoByAgentID.as_view(), name='prices_info'),
+    path('api/prices_by_agent/edit', api.APIPricesEditByID.as_view(), name='price_edit'),
 
     # Education
     path('api/education_by_agent/info', api.APIPEducationsInfoByAgentID.as_view(), name='educations_info'),
+    path('api/education_by_agent/edit', api.APIPEducationsEditByID.as_view(), name='education_edit'),
 
     # Comment
     path('api/comments_by_agent/info', api.APIPCommentsInfoByAgentID.as_view(), name='comments_info'),

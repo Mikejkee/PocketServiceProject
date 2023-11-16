@@ -7,17 +7,20 @@ let csrftoken = $.cookie('csrftoken');
 
 
 function openDiv(elemIdToOpen) {
-    let formOpened = $(`#${ elemIdToOpen }`)
+    let formOpened = $(`#${elemIdToOpen}`)
     if (formOpened.hasClass('show')) {
         formOpened.removeClass('show');
-    }
-    else {
+    } else {
         formOpened.addClass('show');
     }
 }
 
 
 function editStrInfo(elem) {
+    let currentUrl = window.location.href;
+    let processUrl = currentUrl.split('/profile')[0];
+    let telegramId = $('#telegram_id').val();
+
     let row = $(elem).closest('tr');
     let thead = $(`thead[data-status=${row.attr('data-status')}]`).find('th')
     let cells = row.find('td');
@@ -40,18 +43,59 @@ function editStrInfo(elem) {
     inputForm.append(saveButton);
     inputForm.append(`</form> </div>`);
 
-    saveButton.click(function() {
-          inputForm.find('input[class="form-control"]').each(function(key, value) {
-            // editedData[$(this).prop('id')] = $(this).val();
-              $(cells[key]).text($(value).val())
-          });
+    saveButton.click(function () {
+        let editedData = {};
+        let targetEditUrl;
+        editedData['EducationId'] = row.attr('education-id')
+        if (editedData['EducationId'] !== undefined){
+            targetEditUrl = processUrl + '/api/education_by_agent/edit'
+        }
+        else {
+            editedData['PriceId'] = row.attr('price-id')
+            targetEditUrl = processUrl + '/api/prices_by_agent/edit'
+        }
 
-          inputForm.hide(100);
-          $('.overlay').hide();
-          inputForm.remove()
+
+        inputForm.find('input[class="form-control"]').each(function (key, value) {
+            editedData[$(this).prop('id')] = $(this).val();
+            $(cells[key]).text($(value).val())
+        });
+
+
+        if ($('#editForm').valid()) {
+            $('.alert').hide();
+            $.ajax({
+                url: targetEditUrl,
+                type: "POST",
+                dataType: "json",
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Authorization': 'Telegram ' + telegramId
+                },
+                traditional: true,
+                data: editedData,
+                success: function (response) {
+                    console.log(response);
+                    let result = {
+                        'Save': 1,
+                    };
+                    tg.sendData(JSON.stringify(result));
+                    tg.close();
+                },
+                error: function (response) {
+                    console.log(response);
+                }
+            });
+        } else {
+            $('.alert').show();
+        }
+
+        inputForm.hide(100);
+        $('.overlay').hide();
+        inputForm.remove()
     });
 
-    closeButton.click(function() {
+    closeButton.click(function () {
         inputForm.hide(100)
         $('.overlay').hide();
         inputForm.remove()
@@ -71,7 +115,7 @@ function loadAgentInfo(TelegramId, currentUrl, processUrl) {
     let targetEducationUrl = processUrl + '/api/education_by_agent/info?AgentId='
     let targetCommentUrl = processUrl + '/api/comments_by_agent/info?AgentId='
 
-    $.get(targetUrl).done(function(answer) {
+    $.get(targetUrl).done(function (answer) {
         let data = answer.data;
         console.log(data);
 
@@ -80,7 +124,7 @@ function loadAgentInfo(TelegramId, currentUrl, processUrl) {
         $('#telegram_username').val(data.telegram_username);
         $('#fio').val(data.person_fio);
         $('#phone_number').val(data.phone_number);
-        if (data.email != null){
+        if (data.email != null) {
             $('#email_username').val(data.email.split('@')[0]);
             $('#email_server').val(data.email.split('@')[1]);
         }
@@ -100,32 +144,32 @@ function loadAgentInfo(TelegramId, currentUrl, processUrl) {
         $('#guarantee_period').val(data.guarantee_period);
 
         // Загрузка цен и услуг агента
-        $.get(targetPricesUrl+data.person_id).done(function(answer) {
+        $.get(targetPricesUrl + data.person_id).done(function (answer) {
             let listPrices = JSON.parse(answer.data);
             console.log(listPrices);
 
             let table = $(`#${data.telegram_id}`)
-            $.each(listPrices,function(typeProduct,products) {
-                 table.append(
-                        `<tr class="table-group-divide table-dark" data-status="products">
+            $.each(listPrices, function (typeProduct, products) {
+                table.append(
+                    `<tr class="table-group-divide table-dark" data-status="products">
                             <td colspan="3">
                                 <p class="text-center table-lc-p" style="margin-bottom: 0px;"> ${typeProduct} </p>
                             </td>
                         </tr>`
-                 );
-                $.each(products,function(type_info, price_info) {
+                );
+                $.each(products, function (type_info, price_info) {
                     table.append(
-                        `<tr data-status="products">
+                        `<tr data-status="products" price-id="${price_info[1]}" product-id="${price_info[2]}">
                             <td>
-                                <p class="text-center table-lc-p order-info" style="margin-bottom: 0px;" id="${price_info[1]}"> ${type_info} </p>
+                                <p class="text-center table-lc-p order-info" style="margin-bottom: 0px;" > ${type_info} </p>
                             </td>
                             <td>
                                 <p class="text-center table-lc-p" style="margin-bottom: 0px;" > ${price_info[0]}</p>
                             </td>
                             <td>
                                 <p class="text-center table-lc-p">
-                                    <img onclick="" class="my_icons_sm" src="${srcEdit}"></a>
-                                    <img onclick="" class="my_icons_sm" src="${srcCancel}"></a>
+                                    <img class="edit-btn my_icons_sm" onclick="editStrInfo(this)" src="${srcEdit}"></a>
+                                    <img class="delete-btn my_icons_sm" src="${srcCancel}"></a>
                                 </p>
                             </td>
                         </tr>`
@@ -135,29 +179,29 @@ function loadAgentInfo(TelegramId, currentUrl, processUrl) {
         })
 
         // Загрузка образования агента
-        $.get(targetEducationUrl+data.person_id).done(function(answer) {
+        $.get(targetEducationUrl + data.person_id).done(function (answer) {
             let listEducations = JSON.parse(answer.data);
             console.log(listEducations);
 
             let table = $(`#${data.telegram_id}`)
-            $.each(listEducations,function(key, educationInfo) {
-                let education = ''
-                if (educationInfo.education_checked===true) {
-                    education = 'checked="checked"'
+            $.each(listEducations, function (key, educationInfo) {
+                let EducationChecked = ''
+                if (educationInfo.EducationChecked === true) {
+                    EducationChecked = 'checked="checked"'
                 }
                 table.append(
-                    `<tr data-status="education" education-id="${educationInfo.education_id}" style="display: none;">
+                    `<tr data-status="education" education-id="${educationInfo.EducationId}" style="display: none;">
                         <td>
-                            <p class="text-center table-lc-p"> ${educationInfo.university} </p>
+                            <p class="text-center table-lc-p"> ${educationInfo.UniversityName} </p>
                         </td>
                         <td>
-                            <p class="text-center table-lc-p"> ${educationInfo.specialization}</p>
+                            <p class="text-center table-lc-p"> ${educationInfo.SpecializationName}</p>
                         </td>
                         <td>
-                            <p class="text-center table-lc-p"> ${educationInfo.education_end}</p>
+                            <p class="text-center table-lc-p"> ${educationInfo.EducationEnd}</p>
                         </td>
                         <td>
-                            <input class="form-check-input" type="checkbox" value="" id="educationChecked"  ${education} disabled>
+                            <input class="form-check-input" type="checkbox" value="" id="educationChecked"  ${EducationChecked} disabled>
                             <label class="form-check-label" htmlFor="educationChecked"> </label>    
                         </td>
                         <td>
@@ -172,12 +216,12 @@ function loadAgentInfo(TelegramId, currentUrl, processUrl) {
         })
 
         // Загрузка комментариев
-        $.get(targetCommentUrl+data.person_id).done(function(answer) {
+        $.get(targetCommentUrl + data.person_id).done(function (answer) {
             let listComments = JSON.parse(answer.data);
             console.log(listComments);
 
             let table = $(`#${data.telegram_id}`)
-            $.each(listComments,function(key, commentInfo) {
+            $.each(listComments, function (key, commentInfo) {
                 table.append(
                     `<tr data-status="feedback" style="display: none;">
                         <td>
@@ -192,24 +236,24 @@ function loadAgentInfo(TelegramId, currentUrl, processUrl) {
                         </td>
                     </tr>`
                 );
-                 $(`#raiting_${commentInfo.id}`).rateYo({
-                     rating: commentInfo.rating,
-                     starWidth: '17px',
-                     readOnly: true,
-                 });
-                 $.each(commentInfo.images, function (key, img){
-                     $(`#images_${commentInfo.id}`).append(
-                         `<a data-fancybox="images" 
+                $(`#raiting_${commentInfo.id}`).rateYo({
+                    rating: commentInfo.rating,
+                    starWidth: '17px',
+                    readOnly: true,
+                });
+                $.each(commentInfo.images, function (key, img) {
+                    $(`#images_${commentInfo.id}`).append(
+                        `<a data-fancybox="images" 
                              data-src="${img}" 
                              data-caption="${commentInfo.text} class="comment_img_full">
                             <img class="comment_img" src="${img}">
                          </a>`
-                     )
-                 });
+                    )
+                });
             })
         })
 
-    }).fail(function(err) {
+    }).fail(function (err) {
         console.log(err);
     });
 
@@ -218,7 +262,7 @@ function loadAgentInfo(TelegramId, currentUrl, processUrl) {
 
 function loadCompanyInfo(TelegramId, currentUrl, processUrl) {
     let targetUrl = processUrl + '/api/company_by_user/info?TelegramId=' + TelegramId
-    $.get(targetUrl).done(function(answer) {
+    $.get(targetUrl).done(function (answer) {
         let data = answer.data;
         console.log(data);
 
@@ -238,24 +282,24 @@ function loadCompanyInfo(TelegramId, currentUrl, processUrl) {
         $('#description').val(data.company_description);
 
 
-    }).fail(function(err) {
+    }).fail(function (err) {
         console.log(err);
     });
 }
 
 function loadOrderInfo(targetUrl, statusArr) {
     // TODO: Сделать контактную возможность не только в тг, а еслит нет юзернейма у пользователя, то по телефону
-    $.get(targetUrl).done(function(answer) {
+    $.get(targetUrl).done(function (answer) {
         let listData = JSON.parse(answer.data);
         console.log(listData);
 
         let countStrAll = 1;
         let table = $('#analytic_table')
-        $.each(listData,function(key,value) {
+        $.each(listData, function (key, value) {
             // Заявки по типам
             if (value.order_status === 0) {
                 let checkedValue = (value.order_control) ? "checked" : "";
-                let countStr=$('table tr[data-status=new]').length + 1;
+                let countStr = $('table tr[data-status=new]').length + 1;
                 table.append(
                     `<tr data-status="new" style="display: none;">
                         <td>
@@ -274,10 +318,9 @@ function loadOrderInfo(targetUrl, statusArr) {
                             <label class="form-check-label" htmlFor="flexCheckChecked"> </label>
                         </td>
                     </tr>`
-                 );
-            }
-            else if (value.order_status === 1) {
-                let countStr=$('table tr[data-status=in_work]').length + 1;
+                );
+            } else if (value.order_status === 1) {
+                let countStr = $('table tr[data-status=in_work]').length + 1;
                 let deadline = moment(new Date(value.order_deadline)).format('hh:mm - DD.MM.YY');
                 console.log(deadline)
                 table.append(
@@ -299,10 +342,9 @@ function loadOrderInfo(targetUrl, statusArr) {
                             <p class="text-center table-lc-p"> ${deadline} </p>
                         </td>
                     </tr>`
-                 );
-            }
-            else if (value.order_status === 2){
-                let countStr=$('table tr[data-status=pause]').length + 1;
+                );
+            } else if (value.order_status === 2) {
+                let countStr = $('table tr[data-status=pause]').length + 1;
                 table.append(
                     `<tr data-status="pause" style="display: none;">
                         <td>
@@ -320,10 +362,9 @@ function loadOrderInfo(targetUrl, statusArr) {
                             <p class="text-center table-lc-p"> ${statusArr[value.order_status]} </p>
                         </td>
                     </tr>`
-                 );
-            }
-            else {
-                let countStr=$('table tr[data-status=done]').length + 1;
+                );
+            } else {
+                let countStr = $('table tr[data-status=done]').length + 1;
                 let start_time = moment(new Date(value.order_start_time)).format('hh:mm - DD.MM.YY');
                 let end_time = moment(new Date(value.order_end_time)).format('hh:mm - DD.MM.YY');
                 table.append(
@@ -366,37 +407,36 @@ function loadOrderInfo(targetUrl, statusArr) {
             countStrAll += 1;
         });
 
-    typedStatusChart(statusArr, listData);
+        typedStatusChart(statusArr, listData);
 
-    }).fail(function(err) {
+    }).fail(function (err) {
         console.log(err);
     });
 }
 
-$(document).on("click", "a", function(){
+$(document).on("click", "a", function () {
     let href = $(this).attr('href');
     if (href.indexOf('tg') === 0) {
         tg.openTelegramLink(href);
     }
 });
 
-$(document).ready(function(){
+$(document).ready(function () {
     let telegramId = $('#telegram_id').val();
     let currentUrl = window.location.href;
     let processUrl = currentUrl.split('/profile')[0];
 
     let statusArr = {
-            0: 'Не в работе',
-            1: 'В работе',
-            2: 'Приостановлена',
-            3: 'Выполнена',
+        0: 'Не в работе',
+        1: 'В работе',
+        2: 'Приостановлена',
+        3: 'Выполнена',
     }
     if ($('#agent_form').length) {
         loadAgentInfo(telegramId, currentUrl, processUrl);
         let targetUrl = processUrl + '/api/orders_by_agent/info?TelegramId=' + telegramId
         loadOrderInfo(targetUrl, statusArr);
-    }
-    else {
+    } else {
         loadClientInfo(telegramId, currentUrl, processUrl);
         let targetUrl = processUrl + '/api/orders_by_client/info?TelegramId=' + telegramId
         loadOrderInfo(targetUrl, statusArr);
@@ -408,15 +448,15 @@ $(document).ready(function(){
 
 
     // SAVE INFO
-    Telegram.WebApp.onEvent('mainButtonClicked', function() {
-    // $(document).on('click','#save_info', function(){
+    Telegram.WebApp.onEvent('mainButtonClicked', function () {
+        // $(document).on('click','#save_info', function(){
         let validationPerson = $('#person_form').valid();
 
         let personId = $('#person_id').val();
         let personFio = $('#fio').val();
         let phoneNumber = $('#phone_number').val();
         let personDateBirth = $('#date_of_birth').val();
-        let email = $('#email_username').val() +'@'+ $('#email_server').val();
+        let email = $('#email_username').val() + '@' + $('#email_server').val();
         if (email === '@') {
             email = '';
         }
@@ -433,10 +473,10 @@ $(document).ready(function(){
             targetPersonUrl = processUrl + '/api/agent/' + personId + '/';
             let commandWork = false;
             let contractWork = false;
-            if ($('#command_work').attr('checked')){
+            if ($('#command_work').attr('checked')) {
                 commandWork = true;
             }
-            if ($('#contract_work').attr('checked')){
+            if ($('#contract_work').attr('checked')) {
                 contractWork = true;
             }
             additionalData = {
@@ -447,8 +487,7 @@ $(document).ready(function(){
                 'contract_work': contractWork,
                 'guarantee_period': $('#guarantee_period').val(),
             };
-        }
-        else {
+        } else {
             targetPersonUrl = processUrl + '/api/client/' + personId + '/';
             additionalData = {
                 'address': $('#client_address').val(),
@@ -456,7 +495,7 @@ $(document).ready(function(){
             };
         }
 
-        if(validationPerson) {
+        if (validationPerson) {
             $('.alert').hide();
             $.ajax({
                 url: targetPersonUrl,
@@ -488,22 +527,22 @@ $(document).ready(function(){
         if ($('#company_form').length) {
             let validationCompany = $('#company_form').valid();
             let companyId = $('#company_id').val();
-            let companyName =  $('#company_name').val();
-            let legalAddress =  $('#legal_address').val();
-            let mailAddress =  $('#mail_address').val();
-            let emailAddress =  $('#email_address').val();
-            let contactPhone =  $('#contact_phone').val();
-            let inn =  $('#inn').val();
-            let kpp =  $('#kpp').val();
-            let ogrnip =  $('#ogrnip').val();
-            let paymentAccount =  $('#payment_account').val();
-            let bank =  $('#bank').val();
-            let bik =  $('#bik').val();
-            let okpo =  $('#okpo').val();
-            let description =  $('#description').val();
+            let companyName = $('#company_name').val();
+            let legalAddress = $('#legal_address').val();
+            let mailAddress = $('#mail_address').val();
+            let emailAddress = $('#email_address').val();
+            let contactPhone = $('#contact_phone').val();
+            let inn = $('#inn').val();
+            let kpp = $('#kpp').val();
+            let ogrnip = $('#ogrnip').val();
+            let paymentAccount = $('#payment_account').val();
+            let bank = $('#bank').val();
+            let bik = $('#bik').val();
+            let okpo = $('#okpo').val();
+            let description = $('#description').val();
             let targetCompanyUrl = processUrl + '/api/company/' + companyId + '/';
 
-            if(validationCompany) {
+            if (validationCompany) {
                 $('.alert').hide();
                 $.ajax({
                     url: targetCompanyUrl,
@@ -546,7 +585,6 @@ $(document).ready(function(){
             }
         }
     });
-
 
 
     // WEBSOCKET

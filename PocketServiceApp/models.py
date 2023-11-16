@@ -220,6 +220,8 @@ class Price(Registrator):
                 super(Price, self).save(*args, **kwargs)
             else:
                 raise ValueError("У агента нет такой услуги")
+        else:
+            super(Price, self).save(*args, **kwargs)
 
     class Meta:
         db_table = 'price'

@@ -70,3 +70,11 @@ def update_education_task(education_id, university_name, specialization_name, ed
     from .controllers.bot_services import update_education
 
     update_education(education_id, university_name, specialization_name, education_end)
+
+
+@shared_task(base=BaseTask)
+def update_price_task(price_id, price_value, product_info):
+
+    from .controllers.bot_services import update_price
+
+    update_price(price_id, price_value, product_info)

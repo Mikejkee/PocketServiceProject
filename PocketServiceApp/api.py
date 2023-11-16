@@ -63,16 +63,20 @@ ORDER_END = openapi.Parameter('OrderEnd', in_=openapi.IN_QUERY,
 ORDER_ADDITIONAL_INFO = openapi.Parameter('OrderInfo', in_=openapi.IN_QUERY,
                                           type=openapi.TYPE_STRING, required=True,
                                           description='Дополнительная информация заявки')
-
+PRICE_VALUE = openapi.Parameter('PriceValue', in_=openapi.IN_QUERY,
+                                type=openapi.TYPE_STRING, required=True,
+                                description='Цена')
+PRICE_ID = openapi.Parameter('PriceId', in_=openapi.IN_QUERY,
+                             type=openapi.TYPE_STRING, required=True,
+                             description='ID цены')
 UNIVERSITY_NAME = openapi.Parameter('UniversityName', in_=openapi.IN_QUERY,
                                     type=openapi.TYPE_STRING, required=True,
                                     description='Имя ВУЗа')
-
 SPECIALIZATION_NAME = openapi.Parameter('SpecializationName', in_=openapi.IN_QUERY,
                                         type=openapi.TYPE_STRING, required=True,
                                         description='Название специальности')
 
-EDUCATION_ID = openapi.Parameter('EducationID', in_=openapi.IN_QUERY,
+EDUCATION_ID = openapi.Parameter('EducationId', in_=openapi.IN_QUERY,
                                   type=openapi.TYPE_STRING, required=True,
                                   description='ID образования')
 
@@ -441,7 +445,8 @@ class APIPPricesInfoByAgentID(APIView):
                         product_type = PRODUCT_TYPES[int(product.product_type)]
                         if product_type not in product_prices.keys():
                             product_prices[product_type] = {}
-                        product_prices[product_type][product.addition_information] = [price.price_value, price.product_id]
+                        product_prices[product_type][product.addition_information] = [price.price_value, price.id,
+                                                                                      price.product_id]
 
                     result_json = json.dumps(product_prices, indent=4, ensure_ascii=False, default=str)
 
@@ -449,6 +454,32 @@ class APIPPricesInfoByAgentID(APIView):
                 return Response({'error': 'Prices not found'}, status=400)
             return Response({'error': 'Agent not found'}, status=400)
         return Response({'error': 'Agent ID not found'}, status=400)
+
+
+class APIPricesEditByID(APIView):
+    @swagger_auto_schema(
+        tags=["price"],
+        operation_description='Обновление информации о ценах на услуги агента',
+        manual_parameters=[PRICE_ID,
+                           PRICE_VALUE,
+                           PRODUCT_INFO
+        ],
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['JSON'],
+            properties={
+                'JSON': openapi.Schema(type=openapi.TYPE_STRING)
+            },
+        ),
+    )
+    def post(self, request):
+        data = request.data
+        print(data)
+
+        price_task = update_price_task.delay(data.get('PriceId'), data.get('PriceValue'), data.get('ProductInfo'))
+        print('TASK CREATES - update price ', price_task.task_id)
+
+        return Response({'Result': 'Price updated'}, status=200)
 
 
 class APIPEducationsInfoByAgentID(APIView):
@@ -470,12 +501,12 @@ class APIPEducationsInfoByAgentID(APIView):
                         specialization = Specialization.objects.filter(id=education.specialization_id).last().name
                         university = University.objects.filter(id=education.university_id).last().name
                         educations_info.append({
-                            'education_id': education.id,
-                            'specialization': specialization,
-                            'university': university,
-                            'education_start': education.period_start,
-                            'education_end': education.period_end,
-                            'education_checked': education.document_check,
+                            'EducationId': education.id,
+                            'SpecializationName': specialization,
+                            'UniversityName': university,
+                            'EducationStart': education.period_start,
+                            'EducationEnd': education.period_end,
+                            'EducationChecked': education.document_check,
                         })
                     result_json = json.dumps(educations_info, indent=4, ensure_ascii=False, default=str)
 
@@ -505,7 +536,7 @@ class APIPEducationsEditByID(APIView):
         data = request.data
         print(data)
 
-        education_task = update_education_task.delay(data.get('EducationID'), data.get('UniversityName'),
+        education_task = update_education_task.delay(data.get('EducationId'), data.get('UniversityName'),
                                                      data.get('SpecializationName'), data.get('EducationEnd'))
         print('TASK CREATES - update education ', education_task.task_id)
 
