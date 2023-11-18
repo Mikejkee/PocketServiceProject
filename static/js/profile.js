@@ -15,7 +15,6 @@ function openDiv(elemIdToOpen) {
     }
 }
 
-
 function editStrInfo(elem) {
     let currentUrl = window.location.href;
     let processUrl = currentUrl.split('/profile')[0];
@@ -47,10 +46,9 @@ function editStrInfo(elem) {
         let editedData = {};
         let targetEditUrl;
         editedData['EducationId'] = row.attr('education-id')
-        if (editedData['EducationId'] !== undefined){
+        if (editedData['EducationId'] !== undefined) {
             targetEditUrl = processUrl + '/api/education_by_agent/edit'
-        }
-        else {
+        } else {
             editedData['PriceId'] = row.attr('price-id')
             targetEditUrl = processUrl + '/api/prices_by_agent/edit'
         }
@@ -108,7 +106,6 @@ function editStrInfo(elem) {
     $('.edit-form').show(100);
 }
 
-
 function loadAgentInfo(TelegramId, currentUrl, processUrl) {
     let targetUrl = processUrl + '/api/agent/info?TelegramId=' + TelegramId
     let targetPricesUrl = processUrl + '/api/prices_by_agent/info?AgentId='
@@ -144,11 +141,11 @@ function loadAgentInfo(TelegramId, currentUrl, processUrl) {
         $('#guarantee_period').val(data.guarantee_period);
 
         // Загрузка цен и услуг агента
+        let table = $(`#agent_${data.telegram_id}_tbody`)
         $.get(targetPricesUrl + data.person_id).done(function (answer) {
             let listPrices = JSON.parse(answer.data);
             console.log(listPrices);
 
-            let table = $(`#${data.telegram_id}`)
             $.each(listPrices, function (typeProduct, products) {
                 table.append(
                     `<tr class="table-group-divide table-dark" data-status="products">
@@ -183,7 +180,6 @@ function loadAgentInfo(TelegramId, currentUrl, processUrl) {
             let listEducations = JSON.parse(answer.data);
             console.log(listEducations);
 
-            let table = $(`#${data.telegram_id}`)
             $.each(listEducations, function (key, educationInfo) {
                 let EducationChecked = ''
                 if (educationInfo.EducationChecked === true) {
@@ -220,7 +216,6 @@ function loadAgentInfo(TelegramId, currentUrl, processUrl) {
             let listComments = JSON.parse(answer.data);
             console.log(listComments);
 
-            let table = $(`#${data.telegram_id}`)
             $.each(listComments, function (key, commentInfo) {
                 table.append(
                     `<tr data-status="feedback" style="display: none;">
@@ -436,6 +431,134 @@ $(document).ready(function () {
         loadAgentInfo(telegramId, currentUrl, processUrl);
         let targetUrl = processUrl + '/api/orders_by_agent/info?TelegramId=' + telegramId
         loadOrderInfo(targetUrl, statusArr);
+
+        $('#createInfo').click(function () {
+            let theadData = $(`#agent_${telegramId}_table`).find('thead:visible').attr('data-status')
+
+            // Создание формы
+            let formfield = ""
+            if (theadData === 'products') {
+                formfield =
+                    `<div class="mb-3">
+                        <label class="form-label" for="typeProduct">Тип услуги:</label>
+                        <select class="form-select" id="typeProduct">
+                            <option selected>Выберите тип услуги</option>
+                            <option value="1">Ремонт квартиры</option>
+                            <option value="2">Ремонт техники</option>
+                            <option value="3">Ремонт мебели</option>
+                            <option value="4">Услуги красоты</option>
+                            <option value="5">Уборка</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="productInfo">Описание услуги:</label>
+                        <input class="form-control" type="text" id="productInfo" placeholder="Выравнивание стен, пола и т.д.">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="productPrice">Цена за услугу:</label>
+                        <input class="form-control" type="text" id="productPrice">
+                    </div>`
+            } else {
+                formfield =
+                    `<div class="mb-3">
+                        <label class="form-label" for="universityCountry">Страна обучения:</label>
+                        <input class="form-control" type="text" id="universityCountry">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="universityTown">Город обучения:</label>
+                        <input class="form-control" type="text" id="universityTown">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="universityName">Название места обучения:</label>
+                        <input class="form-control" type="text" id="universityName">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="universityDescription">Описание места обучения:</label>
+                        <input class="form-control" type="text" id="universityDescription">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="specializationName">Название специальности:</label>
+                        <input class="form-control" type="text" id="specializationName">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="specializationDescription">Описание специальности:</label>
+                        <input class="form-control" type="text" id="specializationDescription">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="educationStart">Год/дата начала обучения:</label>
+                        <input class="form-control" type="text" id="educationStart" placeholder="00.00.0000">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="educationEnd">Год/дата конца обучения:</label>
+                        <input class="form-control" type="text" id="educationEnd" placeholder="00.00.0000">
+                    </div>`
+            }
+            let closeButton = $(`<button type="button" class="btn-close close-form" aria-label="Close"></button>`)
+            let createButton = $('<input class="btn btn-primary" type="submit" value="Создать">');
+            let inputForm = $(`<div class="container edit-form"> <form id="createForm">`)
+                .append(closeButton)
+                .append(formfield)
+                .append(saveButton)
+                .append(`</form> </div>`);
+
+            createButton.click(function () {
+                let createData = {};
+                inputForm.find('input[class="form-control"]').each(function (key, value) {
+                    createData[$(this).prop('id')] = $(this).val();
+                });
+
+                let targetEditUrl;
+                let table = $(`#agent_${data.telegram_id}_tbody`)
+                if (theadData === 'products') {
+                    targetEditUrl = processUrl + '/api/prices_by_agent/create'
+                } else {
+                    targetEditUrl = processUrl + '/api/education_by_agent/create'
+                }
+
+                if ($('#editForm').valid()) {
+                    $('.alert').hide();
+                    $.ajax({
+                        url: targetEditUrl,
+                        type: "POST",
+                        dataType: "json",
+                        headers: {
+                            'X-CSRFToken': csrftoken,
+                            'Authorization': 'Telegram ' + telegramId
+                        },
+                        traditional: true,
+                        data: editedData,
+                        success: function (response) {
+                            console.log(response);
+                            let result = {
+                                'Save': 1,
+                            };
+                            tg.sendData(JSON.stringify(result));
+                            tg.close();
+                        },
+                        error: function (response) {
+                            console.log(response);
+                        }
+                    });
+                } else {
+                    $('.alert').show();
+                }
+
+                inputForm.hide(100);
+                $('.overlay').hide();
+                inputForm.remove()
+            });
+
+            closeButton.click(function () {
+                inputForm.hide(100)
+                $('.overlay').hide();
+                inputForm.remove()
+            });
+
+            // Добавление формы для создания в строку таблицы
+            $('#main-div').append(inputForm);
+            $('.overlay').show();
+            $('.edit-form').show(100);
+        })
     } else {
         loadClientInfo(telegramId, currentUrl, processUrl);
         let targetUrl = processUrl + '/api/orders_by_client/info?TelegramId=' + telegramId

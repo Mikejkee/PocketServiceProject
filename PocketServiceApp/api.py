@@ -14,7 +14,6 @@ from .serializers import *
 from .telegram_tasks import *
 from PocketServiceTelegramBot import TOKEN
 
-
 TELEGRAM_ID_QUERY = openapi.Parameter('TelegramId', in_=openapi.IN_QUERY,
                                       type=openapi.TYPE_STRING, required=True,
                                       description='Телеграмм ID')
@@ -22,8 +21,8 @@ CLIENT_ID = openapi.Parameter('ClientId', in_=openapi.IN_QUERY,
                               type=openapi.TYPE_STRING, required=True,
                               description='Телеграмм ID клиента')
 CLIENT_FIO = openapi.Parameter('ClientFIO', in_=openapi.IN_QUERY,
-                                 type=openapi.TYPE_STRING, required=True,
-                                 description='ФИО клиента')
+                               type=openapi.TYPE_STRING, required=True,
+                               description='ФИО клиента')
 CLIENT_PHONE = openapi.Parameter('ClientPhone', in_=openapi.IN_QUERY,
                                  type=openapi.TYPE_STRING, required=True,
                                  description='Телефон клиента')
@@ -40,14 +39,14 @@ AGENT_ID = openapi.Parameter('AgentId', in_=openapi.IN_QUERY,
                              type=openapi.TYPE_STRING, required=True,
                              description='ID агента')
 AGENT_TELEGRAM_ID = openapi.Parameter('AgentTelegramId', in_=openapi.IN_QUERY,
-                             type=openapi.TYPE_STRING, required=True,
-                             description='Телеграмм ID агента')
+                                      type=openapi.TYPE_STRING, required=True,
+                                      description='Телеграмм ID агента')
 PRODUCT_ID = openapi.Parameter('ProductId', in_=openapi.IN_QUERY,
                                type=openapi.TYPE_STRING, required=True,
                                description='ID услуги')
 PRODUCT_INFO = openapi.Parameter('ProductInfo', in_=openapi.IN_QUERY,
-                               type=openapi.TYPE_STRING, required=True,
-                               description='Информация об услуге')
+                                 type=openapi.TYPE_STRING, required=True,
+                                 description='Информация об услуге')
 ORDER_NAME = openapi.Parameter('OrderName', in_=openapi.IN_QUERY,
                                type=openapi.TYPE_STRING, required=True,
                                description='Имя заявки')
@@ -69,21 +68,42 @@ PRICE_VALUE = openapi.Parameter('PriceValue', in_=openapi.IN_QUERY,
 PRICE_ID = openapi.Parameter('PriceId', in_=openapi.IN_QUERY,
                              type=openapi.TYPE_STRING, required=True,
                              description='ID цены')
+UNIVERSITY_ID = openapi.Parameter('UniversityId', in_=openapi.IN_QUERY,
+                                  type=openapi.TYPE_STRING, required=True,
+                                  description='ID ВУЗа')
 UNIVERSITY_NAME = openapi.Parameter('UniversityName', in_=openapi.IN_QUERY,
                                     type=openapi.TYPE_STRING, required=True,
                                     description='Имя ВУЗа')
-SPECIALIZATION_NAME = openapi.Parameter('SpecializationName', in_=openapi.IN_QUERY,
+UNIVERSITY_TOWN = openapi.Parameter('UniversityTown', in_=openapi.IN_QUERY,
+                                    type=openapi.TYPE_STRING, required=True,
+                                    description='Город ВУЗа')
+UNIVERSITY_COUNTRY = openapi.Parameter('UniversityCountry', in_=openapi.IN_QUERY,
+                                       type=openapi.TYPE_STRING, required=True,
+                                       description='Страна ВУЗа')
+UNIVERSITY_DESCRIPTION = openapi.Parameter('UniversityDescription', in_=openapi.IN_QUERY,
+                                           type=openapi.TYPE_STRING, required=True,
+                                           description='Описание ВУЗа')
+SPECIALIZATION_ID = openapi.Parameter('SpecializationId', in_=openapi.IN_QUERY,
+                                      type=openapi.TYPE_STRING, required=True,
+                                      description='ID специальности')
+SPECIALIZATION_NAME = openapi.Parameter('SpecializationDescription', in_=openapi.IN_QUERY,
                                         type=openapi.TYPE_STRING, required=True,
-                                        description='Название специальности')
-
+                                        description='Описание специальности')
+SPECIALIZATION_DESCRIPTION = openapi.Parameter('SpecializationName', in_=openapi.IN_QUERY,
+                                               type=openapi.TYPE_STRING, required=True,
+                                               description='Название специальности')
 EDUCATION_ID = openapi.Parameter('EducationId', in_=openapi.IN_QUERY,
-                                  type=openapi.TYPE_STRING, required=True,
-                                  description='ID образования')
-
+                                 type=openapi.TYPE_STRING, required=True,
+                                 description='ID образования')
+EDUCATION_START = openapi.Parameter('EducationStart', in_=openapi.IN_QUERY,
+                                    type=openapi.TYPE_STRING, required=True,
+                                    description='Дата начала образования')
 EDUCATION_END = openapi.Parameter('EducationEnd', in_=openapi.IN_QUERY,
                                   type=openapi.TYPE_STRING, required=True,
                                   description='Дата окончания образования')
-
+EDUCATION_CHECKED = openapi.Parameter('EducationChecked', in_=openapi.IN_QUERY,
+                                      type=openapi.TYPE_STRING, required=True,
+                                      description='Проверка образования')
 
 status_dict = {
     0: 'Не в работе',
@@ -280,7 +300,7 @@ class APIPOrdersInfoByAgentTelegramID(APIView):
         params = request.query_params
         telegram_id = params.get('TelegramId')
         if telegram_id:
-            agent= Agent.objects.filter(telegram_id=str(telegram_id)).last()
+            agent = Agent.objects.filter(telegram_id=str(telegram_id)).last()
             if agent:
                 orders = Order.objects.filter(agent_id=agent.id)
                 if orders:
@@ -373,7 +393,7 @@ class APIPOrdersCreateByClient(APIView):
                            ORDER_START,
                            ORDER_END,
                            ORDER_ADDITIONAL_INFO,
-        ],
+                           ],
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             required=['JSON'],
@@ -463,7 +483,7 @@ class APIPricesEditByID(APIView):
         manual_parameters=[PRICE_ID,
                            PRICE_VALUE,
                            PRODUCT_INFO
-        ],
+                           ],
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             required=['JSON'],
@@ -523,7 +543,7 @@ class APIPEducationsEditByID(APIView):
         manual_parameters=[UNIVERSITY_NAME,
                            SPECIALIZATION_NAME,
                            EDUCATION_END,
-        ],
+                           ],
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             required=['JSON'],
@@ -543,6 +563,36 @@ class APIPEducationsEditByID(APIView):
         return Response({'Result': 'Education updated'}, status=200)
 
 
+class APIPEducationsCreate(APIView):
+    @swagger_auto_schema(
+        tags=["education"],
+        operation_description='Создание образования агента',
+        manual_parameters=[
+            UNIVERSITY_NAME, UNIVERSITY_TOWN, UNIVERSITY_COUNTRY, UNIVERSITY_DESCRIPTION,
+            SPECIALIZATION_NAME,
+            EDUCATION_START, EDUCATION_END,
+        ],
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['JSON'],
+            properties={
+                'JSON': openapi.Schema(type=openapi.TYPE_STRING)
+            },
+        ),
+    )
+    def post(self, request):
+        data = request.data
+        print(data)
+
+        education_task = create_education_task.delay(data.get('UniversityName'), data.get('UniversityTown'),
+                                                     data.get('UniversityCountry'), data.get('UniversityDescription'),
+                                                     data.get('SpecializationName'),
+                                                     data.get('EducationStart'), data.get('EducationEnd'))
+        print('TASK CREATES - create education ', education_task.task_id)
+
+        return Response({'Result': 'Education create'}, status=200)
+
+
 class APIPCommentsInfoByAgentID(APIView):
     @swagger_auto_schema(
         tags=["comment"],
@@ -560,7 +610,8 @@ class APIPCommentsInfoByAgentID(APIView):
                     comments_info = []
                     for comment in comments:
                         client = Client.objects.filter(id=comment.client_id).last()
-                        product = Product.objects.filter(id=Order.objects.filter(id=comment.order_id).last().product_id).last()
+                        product = Product.objects.filter(
+                            id=Order.objects.filter(id=comment.order_id).last().product_id).last()
 
                         images_list = []
                         for image in comment.images.all():

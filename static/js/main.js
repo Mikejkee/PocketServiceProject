@@ -62,10 +62,18 @@ $(document).on('click', '.btn-filter', function () {
     let target = $(this).data('target');
     let table = $(this).attr('table-target');
 
+    if (target === 'feedback') {
+        $('#createInfo').css('display', 'none')
+    }
+    else {
+        $('#createInfo').css('display', '')
+    }
+
     $(`#${table} thead`).css('display', 'none');
     $(`#${table} tr[data-status]`).css('display', 'none');
     $(`#${table} tr[data-status="${target}"]`).fadeIn('slow');
     $(`#${table} thead[data-status="${target}"]`).fadeIn('slow');
+
 
     $('[data-fancybox]').fancybox({
       protect: true,

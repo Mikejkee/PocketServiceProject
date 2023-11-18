@@ -145,11 +145,11 @@
                                     <input type="text" class="form-control" placeholder="Server" aria-label="Server" id="email_server" />
                                 </div>
                                 {% if role_type_agent == None %}
-                                <small class="text-muted">Адрес проживания</span>:</small>
+                                <small class="text-muted">Адрес проживания:</small>
                                 <div class="input-group input-group-sm mb-3">
                                     <input type="text" class="form-control" placeholder="Ваш адрес" id="client_address" />
                                 </div>
-                                <small class="text-muted">Дополнительная информация</span>:</small>
+                                <small class="text-muted">Дополнительная информация:</small>
                                 <div class="input-group input-group-sm mb-3">
                                     <input type="text" class="form-control" placeholder="О Вас" id="client_description" />
                                 </div>
@@ -163,7 +163,7 @@
 {#                            <div class="input-group input-group-sm mb-3">#}
 {#                                <input type="text" class="form-control" placeholder="Ваше образование" id="education_description" />#}
 {#                            </div>#}
-                            <small class="text-muted">Опыт работы</span>:</small>
+                            <small class="text-muted">Опыт работы:</small>
                             <div class="input-group input-group-sm mb-3">
                                 <input type="text" class="form-control" placeholder="Ваш опыт" id="work_experience" />
                             </div>
@@ -175,11 +175,11 @@
                                 <input class="form-check-input" type="checkbox" id="contract_work">
                                 <label class="form-check-label" for="contract_work" style="padding-right: 82px; font-size: .899em;">Работа по договору</label>
                             </div>
-                            <small class="text-muted">Гарантийный период</span>:</small>
+                            <small class="text-muted">Гарантийный период:</small>
                             <div class="input-group input-group-sm mb-3">
                                 <input type="text" class="form-control" placeholder="Ваши гарантини" id="guarantee_period" />
                             </div>
-                            <small class="text-muted">Дополнительная информация</span>:</small>
+                            <small class="text-muted">Дополнительная информация:</small>
                             <div class="input-group input-group-sm mb-3">
                                 <input type="text" class="form-control" placeholder="О Вас" id="agent_description" />
                             </div>
@@ -261,7 +261,7 @@
                                         <button type="button" table-target="agent_{{ telegram_id }}_table" class="btn btn-secondary btn-filter table-agent-info" data-target="products">Услуги/цены</button>
                                         <button type="button" table-target="agent_{{ telegram_id }}_table" class="btn btn-secondary btn-filter table-agent-info" data-target="education">Образование</button>
                                         <button type="button" table-target="agent_{{ telegram_id }}_table" class="btn btn-secondary btn-filter table-agent-info" data-target="feedback">Отзывы</button>
-                                        <button type="button" class="btn btn-success btn-filter table-agent-info">Создать</button>
+                                        <button type="button" class="btn btn-success btn-filter table-agent-info" id="createInfo">Создать</button>
                                     </div>
                                 </div>
                             </div>
@@ -290,7 +290,7 @@
                                         </tr>
                                     </thead>
 
-                                    <tbody class="table-agent-info table-agent-info" id="{{ telegram_id }}"> </tbody>
+                                    <tbody class="table-agent-info table-agent-info" id="agent_{{ telegram_id }}_tbody"> </tbody>
                                 </table>
                             </div>
                         {% endif %}
