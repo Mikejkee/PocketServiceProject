@@ -73,8 +73,27 @@ def update_education_task(education_id, university_name, specialization_name, ed
 
 
 @shared_task(base=BaseTask)
+def create_education_task(university_name, university_town, university_country, university_description,
+                          specialization_name, specialization_description, education_start, education_end, agent_id):
+
+    from .controllers.bot_services import create_education
+
+    create_education(university_name, university_town, university_country, university_description,  specialization_name,
+                     specialization_description, education_start, education_end, agent_id)
+
+
+@shared_task(base=BaseTask)
 def update_price_task(price_id, price_value, product_info):
 
     from .controllers.bot_services import update_price
 
     update_price(price_id, price_value, product_info)
+
+
+@shared_task(base=BaseTask)
+def create_price_task(agent_id, price_value, product_info, product_type):
+
+    from .controllers.bot_services import create_price
+
+    create_price(agent_id, price_value, product_info, product_type)
+

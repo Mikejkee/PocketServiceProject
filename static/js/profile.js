@@ -443,11 +443,11 @@ $(document).ready(function () {
                         <label class="form-label" for="typeProduct">Тип услуги:</label>
                         <select class="form-select" id="typeProduct">
                             <option selected>Выберите тип услуги</option>
-                            <option value="1">Ремонт квартиры</option>
-                            <option value="2">Ремонт техники</option>
-                            <option value="3">Ремонт мебели</option>
-                            <option value="4">Услуги красоты</option>
-                            <option value="5">Уборка</option>
+                            <option value="0">Ремонт квартиры</option>
+                            <option value="1">Ремонт техники</option>
+                            <option value="2">Ремонт мебели</option>
+                            <option value="3">Услуги красоты</option>
+                            <option value="4">Уборка</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -498,7 +498,7 @@ $(document).ready(function () {
             let inputForm = $(`<div class="container edit-form"> <form id="createForm">`)
                 .append(closeButton)
                 .append(formfield)
-                .append(saveButton)
+                .append(createButton)
                 .append(`</form> </div>`);
 
             createButton.click(function () {
@@ -506,16 +506,17 @@ $(document).ready(function () {
                 inputForm.find('input[class="form-control"]').each(function (key, value) {
                     createData[$(this).prop('id')] = $(this).val();
                 });
+                createData[$(inputForm.find('select[class="form-select"]')).prop('id')] = $(inputForm.find('select[class="form-select"]')).val()
+                createData['agentId'] = $('#person_id').val();
 
                 let targetEditUrl;
-                let table = $(`#agent_${data.telegram_id}_tbody`)
                 if (theadData === 'products') {
                     targetEditUrl = processUrl + '/api/prices_by_agent/create'
                 } else {
                     targetEditUrl = processUrl + '/api/education_by_agent/create'
                 }
 
-                if ($('#editForm').valid()) {
+                if ($('#createForm').valid()) {
                     $('.alert').hide();
                     $.ajax({
                         url: targetEditUrl,
@@ -526,7 +527,7 @@ $(document).ready(function () {
                             'Authorization': 'Telegram ' + telegramId
                         },
                         traditional: true,
-                        data: editedData,
+                        data: createData,
                         success: function (response) {
                             console.log(response);
                             let result = {

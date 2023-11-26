@@ -14,6 +14,22 @@ from .serializers import *
 from .telegram_tasks import *
 from PocketServiceTelegramBot import TOKEN
 
+status_dict = {
+    0: 'Не в работе',
+    1: 'В работе',
+    2: 'Приостановлена',
+    3: 'Выполнена',
+}
+
+PRODUCT_TYPES = {
+    0: 'Ремонт квартиры',
+    1: 'Ремонт сантехники',
+    2: 'Ремонт мебели',
+    3: 'Уборка',
+    4: 'Услуги красоты',
+}
+
+
 TELEGRAM_ID_QUERY = openapi.Parameter('TelegramId', in_=openapi.IN_QUERY,
                                       type=openapi.TYPE_STRING, required=True,
                                       description='Телеграмм ID')
@@ -47,6 +63,9 @@ PRODUCT_ID = openapi.Parameter('ProductId', in_=openapi.IN_QUERY,
 PRODUCT_INFO = openapi.Parameter('ProductInfo', in_=openapi.IN_QUERY,
                                  type=openapi.TYPE_STRING, required=True,
                                  description='Информация об услуге')
+PRODUCT_TYPE = openapi.Parameter('ProductType', in_=openapi.IN_QUERY,
+                                 type=openapi.TYPE_STRING, required=True,
+                                 description='Информация об услуге')
 ORDER_NAME = openapi.Parameter('OrderName', in_=openapi.IN_QUERY,
                                type=openapi.TYPE_STRING, required=True,
                                description='Имя заявки')
@@ -62,12 +81,12 @@ ORDER_END = openapi.Parameter('OrderEnd', in_=openapi.IN_QUERY,
 ORDER_ADDITIONAL_INFO = openapi.Parameter('OrderInfo', in_=openapi.IN_QUERY,
                                           type=openapi.TYPE_STRING, required=True,
                                           description='Дополнительная информация заявки')
-PRICE_VALUE = openapi.Parameter('PriceValue', in_=openapi.IN_QUERY,
-                                type=openapi.TYPE_STRING, required=True,
-                                description='Цена')
 PRICE_ID = openapi.Parameter('PriceId', in_=openapi.IN_QUERY,
                              type=openapi.TYPE_STRING, required=True,
                              description='ID цены')
+PRICE_VALUE = openapi.Parameter('PriceValue', in_=openapi.IN_QUERY,
+                                type=openapi.TYPE_STRING, required=True,
+                                description='Цена')
 UNIVERSITY_ID = openapi.Parameter('UniversityId', in_=openapi.IN_QUERY,
                                   type=openapi.TYPE_STRING, required=True,
                                   description='ID ВУЗа')
@@ -104,21 +123,6 @@ EDUCATION_END = openapi.Parameter('EducationEnd', in_=openapi.IN_QUERY,
 EDUCATION_CHECKED = openapi.Parameter('EducationChecked', in_=openapi.IN_QUERY,
                                       type=openapi.TYPE_STRING, required=True,
                                       description='Проверка образования')
-
-status_dict = {
-    0: 'Не в работе',
-    1: 'В работе',
-    2: 'Приостановлена',
-    3: 'Выполнена',
-}
-
-PRODUCT_TYPES = {
-    0: 'Ремонт квартиры',
-    1: 'Ремонт сантехники',
-    2: 'Ремонт мебели',
-    3: 'Уборка',
-    4: 'Услуги красоты',
-}
 
 
 def tg_reminder(telegram_id, message, time=0):
@@ -502,6 +506,33 @@ class APIPricesEditByID(APIView):
         return Response({'Result': 'Price updated'}, status=200)
 
 
+class APIPricesCreate(APIView):
+    @swagger_auto_schema(
+        tags=["price"],
+        operation_description='Создание услуги агента и ее цены',
+        manual_parameters=[
+            AGENT_ID, PRICE_VALUE,
+            PRODUCT_INFO, PRODUCT_TYPE,
+        ],
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['JSON'],
+            properties={
+                'JSON': openapi.Schema(type=openapi.TYPE_STRING)
+            },
+        ),
+    )
+    def post(self, request):
+        data = request.data
+        print(data)
+
+        price_task = create_price_task.delay(data.get('agentId'), data.get('priceValue'),
+                                             data.get('productInfo'), data.get('typeProduct'))
+        print('TASK CREATES - create education ', price_task.task_id)
+
+        return Response({'Result': 'Price create'}, status=200)
+8
+
 class APIPEducationsInfoByAgentID(APIView):
     @swagger_auto_schema(
         tags=["education"],
@@ -584,10 +615,11 @@ class APIPEducationsCreate(APIView):
         data = request.data
         print(data)
 
-        education_task = create_education_task.delay(data.get('UniversityName'), data.get('UniversityTown'),
-                                                     data.get('UniversityCountry'), data.get('UniversityDescription'),
-                                                     data.get('SpecializationName'),
-                                                     data.get('EducationStart'), data.get('EducationEnd'))
+        education_task = create_education_task.delay(data.get('universityName'), data.get('universityTown'),
+                                                     data.get('universityCountry'), data.get('universityDescription'),
+                                                     data.get('specializationName'), data.get('specializationDescription'),
+                                                     data.get('educationStart'), data.get('educationEnd'),
+                                                     data.get('agentId'))
         print('TASK CREATES - create education ', education_task.task_id)
 
         return Response({'Result': 'Education create'}, status=200)

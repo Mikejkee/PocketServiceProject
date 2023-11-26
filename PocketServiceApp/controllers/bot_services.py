@@ -226,6 +226,38 @@ def update_education(education_id, university_name=None, specialization_name=Non
             return False
 
 
+def create_education(university_name=None, university_town=None, university_country=None, university_description=None,
+                     specialization_name=None, specialization_description=None, education_start=None,
+                     education_end=None, agent_id=None):
+    print('education create start')
+
+    with transaction.atomic():
+        agent = Agent.objects.filter(id=str(agent_id)).last()
+        try:
+            new_university = University.objects.create(name=university_name, town=university_town,
+                                                       country=university_country, university_description=university_description)
+            print("University created")
+        except Exception as e:
+            print("University not created", e)
+
+        try:
+            new_specialization = Specialization.objects.create(name=specialization_name,
+                                                               specialization_description=specialization_description)
+            print("specialization created")
+        except Exception as e:
+            print("specialization not created", e)
+
+        try:
+            new_education = Education.objects.create(university=new_university, specialization=new_specialization,
+                                                     period_start=education_start, period_end=education_end,
+                                                     document_check=False, agent=agent)
+            print("education created")
+            return new_education.id
+        except Exception as e:
+            print("education not created", e)
+            return False
+
+
 def update_price(price_id, price_value=None, product_info=None):
     with transaction.atomic():
         price = Price.objects.filter(id=str(price_id))
@@ -244,4 +276,25 @@ def update_price(price_id, price_value=None, product_info=None):
             print('Price UPDATED')
             return True
         else:
+            return False
+
+
+def create_price(agent_id, price_value=None, product_info=None, product_type=None):
+    print('price create start')
+
+    with transaction.atomic():
+        agent = Agent.objects.filter(id=str(agent_id)).last()
+        try:
+            new_product = Product.objects.create(product_type=product_type, addition_information=product_info)
+            agent.products.add(new_product)
+            print("Product created")
+        except Exception as e:
+            print("Product not created", e)
+
+        try:
+            new_price = Price.objects.create(price_value=price_value, product=new_product, agent=agent)
+            print("price created")
+            return new_price.id
+        except Exception as e:
+            print("price not created", e)
             return False
