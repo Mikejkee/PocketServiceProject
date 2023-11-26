@@ -526,7 +526,7 @@ class APIPricesCreate(APIView):
         data = request.data
         print(data)
 
-        price_task = create_price_task.delay(data.get('agentId'), data.get('priceValue'),
+        price_task = create_price_task.delay(data.get('agentId'), data.get('productPrice'),
                                              data.get('productInfo'), data.get('typeProduct'))
         print('TASK CREATES - create education ', price_task.task_id)
 
