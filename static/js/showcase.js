@@ -216,23 +216,23 @@ function loadAgentsInfo(currentUrl, processUrl, companysInfo) {
 
                 let table = $(`#${value.id}`)
                 $.each(listEducations,function(key, educationInfo) {
-                    let education = ''
-                    if (educationInfo.education_checked===true) {
-                        education = 'checked="checked"'
+                    let EducationChecked = ''
+                    if (educationInfo.EducationChecked === true) {
+                        EducationChecked = 'checked="checked"'
                     }
                     table.append(
-                        `<tr data-status="education" style="display: none;">
+                        `<tr data-status="education" education-id="${educationInfo.EducationId}" style="display: none;">
                             <td>
-                                <p class="text-center table-lc-p"> ${educationInfo.university} </p>
+                                <p class="text-center table-lc-p"> ${educationInfo.UniversityName} </p>
                             </td>
                             <td>
-                                <p class="text-center table-lc-p"> ${educationInfo.specialization}</p>
+                                <p class="text-center table-lc-p"> ${educationInfo.SpecializationName}</p>
                             </td>
                             <td>
-                                <p class="text-center table-lc-p"> ${educationInfo.education_end}</p>
+                                <p class="text-center table-lc-p"> ${educationInfo.EducationEnd}</p>
                             </td>
                             <td>
-                                <input class="form-check-input" type="checkbox" value="" id="educationChecked"  ${education} disabled>
+                                <input class="form-check-input" type="checkbox" value="" id="educationChecked"  ${EducationChecked} disabled>
                                 <label class="form-check-label" htmlFor="educationChecked"> </label>    
                             </td>
                         </tr>`
